@@ -8,5 +8,6 @@ void startScheduler(const Config& config);
 void stopScheduler();
 void addProcess(std::shared_ptr<Process> p);
 void generateReport();
+extern bool running;
 
 #endif
