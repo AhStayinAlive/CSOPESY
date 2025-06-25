@@ -1,0 +1,7 @@
+﻿  main.cpp
+C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(82,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(177,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+  process.cpp
+  scheduler.cpp
+  Generating Code...
+  MO1_2.vcxproj -> C:\Users\stayi\Downloads\CSOPESY\MO1_2\x64\Debug\MO1_2.exe

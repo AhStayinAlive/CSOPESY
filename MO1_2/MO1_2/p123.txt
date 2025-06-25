@@ -1,0 +1,4 @@
+Process name: p123
+Process ID: 123
+Logs:
+
