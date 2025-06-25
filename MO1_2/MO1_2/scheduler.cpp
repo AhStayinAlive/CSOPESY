@@ -15,8 +15,8 @@ std::vector<std::shared_ptr<Process>> allProcesses;
 static std::queue<std::shared_ptr<Process>> readyQueue;
 static std::mutex mtx;
 static std::condition_variable cv;
-static bool stop = false;
-static bool running = false;
+bool stop = false;
+bool running = false;
 static Config globalConfig;
 
 void cpuWorker(int coreId, int delay) {
