@@ -10,6 +10,7 @@
 struct Instruction {
     std::string opcode;
     std::string arg1, arg2, arg3;
+    std::vector<Instruction> subInstructions;
 };
 
 struct Process {
@@ -27,6 +28,7 @@ struct Process {
     std::vector<Instruction> instructions;
     std::vector<std::string> logs;
     std::unordered_map<std::string, uint16_t> variables;
+
 };
 
 std::shared_ptr<Process> generateRandomProcess(int pid, int minIns, int maxIns);
