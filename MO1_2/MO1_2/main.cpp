@@ -60,7 +60,7 @@ int main() {
             }
             startScheduler(config);
             std::thread([&]() {
-                while (true) {
+                while (running) {
                     if (!std::cin) break;
                     auto p = generateRandomProcess(pidCounter++, config.minInstructions, config.maxInstructions);
                     addProcess(p);
