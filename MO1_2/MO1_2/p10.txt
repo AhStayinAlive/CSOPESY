@@ -223,3 +223,4 @@ Logs:
 (06/25/2025 04:58:47PM) Core:1 "Hello world from p10!"
 (06/25/2025 04:58:47PM) Core:1 "Hello world from p10!"
 (06/25/2025 04:58:47PM) Core:1 "Hello world from p10!"
+(06/26/2025 03:03:23AM) Core:3 "Hello from p10 [0]"

@@ -1,0 +1,2 @@
+(06/26/2025 03:03:14AM) Core:0 "Instruction error: invalid stoi argument"
+(06/26/2025 01:41:36PM) Core:0 "Instruction error: invalid stoi argument"

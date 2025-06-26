@@ -1,26 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\",
+  "WorkspaceRootPath": "C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,67 +23,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\main.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
-              "RelativeToolTip": "MO1_2\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Title": "scheduler.cpp",
+              "DocumentMoniker": "C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\scheduler.cpp",
+              "ToolTip": "C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "RelativeToolTip": "MO1_2\\scheduler.cpp",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:31.617Z",
-              "IsPinned": true,
+              "WhenOpened": "2025-06-26T07:10:10.633Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "process.h",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
-              "RelativeDocumentMoniker": "MO1_2\\process.h",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
-              "RelativeToolTip": "MO1_2\\process.h",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-06-25T08:46:52.791Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "scheduler.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\scheduler.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
-              "RelativeToolTip": "MO1_2\\scheduler.cpp",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAkwFsAAAAaAAAAAAAAAA==",
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\main.cpp",
+              "ToolTip": "C:\\Users\\stayi\\OneDrive\\Documents\\GitHub\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "RelativeToolTip": "MO1_2\\main.cpp",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwMYAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:44.443Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "process.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\process.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
-              "RelativeToolTip": "MO1_2\\process.cpp",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAkwEsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:38.706Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "config.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\config.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
-              "RelativeToolTip": "MO1_2\\config.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:25.964Z",
+              "WhenOpened": "2025-06-26T07:10:09.889Z",
               "EditorCaption": ""
             }
           ]

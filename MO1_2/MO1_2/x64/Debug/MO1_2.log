@@ -1,7 +1,35 @@
 ﻿  main.cpp
-C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(82,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(177,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
   process.cpp
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(58,23): error C2039: 'memory': is not a member of 'Process'
+      C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\process.h(16,8):
+      see declaration of 'Process'
+  
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(58,15): error C2530: 'mem': references must be initialized
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(65,13): error C3536: 'mem': cannot be used before it is initialized
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(65,25): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(67,25): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(67,64): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(68,48): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(70,25): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(70,64): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(71,48): error C2088: built-in operator '[' cannot be applied to an operand of type 'std::string'
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(143,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(184,37): error C2660: 'generateRandomProcess': function does not take 4 arguments
+      C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\process.h(34,26):
+      see declaration of 'generateRandomProcess'
+      C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(184,37):
+      while trying to match the argument list '(std::string, int, int, int)'
+  
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(230,29): error C2660: 'generateRandomProcess': function does not take 4 arguments
+      C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\process.h(34,26):
+      see declaration of 'generateRandomProcess'
+      C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(230,29):
+      while trying to match the argument list '(std::string, int, int, int)'
+  
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp(255,29): error C3861: 'count_if': identifier not found
   scheduler.cpp
+  utils.cpp
+\utils.cpp(1,1): error C1083: Cannot open source file: 'utils.cpp': No such file or directory
+  (compiling source file '/utils.cpp')
+  
   Generating Code...
-  MO1_2.vcxproj -> C:\Users\stayi\Downloads\CSOPESY\MO1_2\x64\Debug\MO1_2.exe
