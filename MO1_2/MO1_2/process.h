@@ -5,12 +5,13 @@
 #include <atomic>
 #include <memory>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 struct Instruction {
     std::string opcode;
     std::string arg1, arg2, arg3;
-    std::vector<Instruction> subInstructions;
+    std::vector<Instruction> subInstructions;  // Used for FOR loops
+    int loopCount = 0;                          // Optional: in case FOR loop count is needed
 };
 
 struct Process {
@@ -27,10 +28,13 @@ struct Process {
     std::shared_ptr<std::atomic<int>> completedInstructions;
     std::vector<Instruction> instructions;
     std::vector<std::string> logs;
-    std::unordered_map<std::string, uint16_t> variables;
 
+    std::map<std::string, unsigned short> memory;  // For variable handling (used in main.cpp)
 };
 
-std::shared_ptr<Process> generateRandomProcess(int pid, int minIns, int maxIns);
+extern std::vector<std::shared_ptr<Process>> allProcesses;
+
+
+std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns);
 
 #endif

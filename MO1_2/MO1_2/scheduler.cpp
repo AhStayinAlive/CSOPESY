@@ -11,7 +11,6 @@
 #include <chrono>
 #include <fstream>
 
-std::vector<std::shared_ptr<Process>> allProcesses;
 static std::queue<std::shared_ptr<Process>> readyQueue;
 static std::mutex mtx;
 static std::condition_variable cv;
@@ -23,8 +22,8 @@ void executeInstructions(std::shared_ptr<Process>& proc, const std::vector<Instr
     for (const auto& ins : instructions) {
         if (ins.opcode == "PRINT") {
             std::string msg = ins.arg1;
-            if (proc->variables.count(ins.arg1)) {
-                msg += " = " + std::to_string(proc->variables[ins.arg1]);
+            if (proc->memory.count(ins.arg1)) {
+                msg += " = " + std::to_string(proc->memory[ins.arg1]);
             }
             logToFile(proc->name, msg, coreId);
             proc->logs.push_back(msg);
@@ -33,20 +32,20 @@ void executeInstructions(std::shared_ptr<Process>& proc, const std::vector<Instr
             std::this_thread::sleep_for(std::chrono::milliseconds(100 * std::stoi(ins.arg1)));
         }
         else if (ins.opcode == "ADD") {
-            uint16_t lhs = proc->variables.count(ins.arg2) ? proc->variables[ins.arg2] : std::stoi(ins.arg2);
-            uint16_t rhs = proc->variables.count(ins.arg3) ? proc->variables[ins.arg3] : std::stoi(ins.arg3);
-            proc->variables[ins.arg1] = lhs + rhs;
+            uint16_t lhs = proc->memory.count(ins.arg2) ? proc->memory[ins.arg2] : std::stoi(ins.arg2);
+            uint16_t rhs = proc->memory.count(ins.arg3) ? proc->memory[ins.arg3] : std::stoi(ins.arg3);
+            proc->memory[ins.arg1] = lhs + rhs;
             logToFile(proc->name, "ADD " + ins.arg1 + " = " + std::to_string(lhs) + " + " + std::to_string(rhs), coreId);
         }
         else if (ins.opcode == "SUBTRACT") {
-            uint16_t lhs = proc->variables.count(ins.arg2) ? proc->variables[ins.arg2] : std::stoi(ins.arg2);
-            uint16_t rhs = proc->variables.count(ins.arg3) ? proc->variables[ins.arg3] : std::stoi(ins.arg3);
-            proc->variables[ins.arg1] = lhs - rhs;
+            uint16_t lhs = proc->memory.count(ins.arg2) ? proc->memory[ins.arg2] : std::stoi(ins.arg2);
+            uint16_t rhs = proc->memory.count(ins.arg3) ? proc->memory[ins.arg3] : std::stoi(ins.arg3);
+            proc->memory[ins.arg1] = lhs - rhs;
             logToFile(proc->name, "SUBTRACT " + ins.arg1 + " = " + std::to_string(lhs) + " - " + std::to_string(rhs), coreId);
         }
         else if (ins.opcode == "DECLARE") {
             uint16_t val = std::stoi(ins.arg2);
-            proc->variables[ins.arg1] = val;
+            proc->memory[ins.arg1] = val;
             logToFile(proc->name, "DECLARE " + ins.arg1 + " = " + ins.arg2, coreId);
         }
         else if (ins.opcode == "FOR") {
