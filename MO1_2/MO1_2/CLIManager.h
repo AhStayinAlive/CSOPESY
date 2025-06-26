@@ -1,6 +1,4 @@
-// CLIManager.h
 #pragma once
-
 #include <string>
 #include <vector>
 #include <thread>
@@ -8,7 +6,6 @@
 class CLIManager {
 public:
     CLIManager();
-
     void run();
     void stopScheduler();
     void showHelp() const;
