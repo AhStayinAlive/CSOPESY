@@ -10,6 +10,7 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include "instruction_executor.h"
 
 static std::queue<std::shared_ptr<Process>> readyQueue;
 static std::mutex mtx;
@@ -19,47 +20,13 @@ bool running = false;
 static Config globalConfig;
 
 void executeInstructions(std::shared_ptr<Process>& proc, const std::vector<Instruction>& instructions, int coreId, int delay) {
-    for (const auto& ins : instructions) {
-        if (ins.opcode == "PRINT") {
-            std::string msg = ins.arg1;
-            if (proc->memory.count(ins.arg1)) {
-                msg += " = " + std::to_string(proc->memory[ins.arg1]);
-            }
-            logToFile(proc->name, msg, coreId);
-            proc->logs.push_back(msg);
-        }
-        else if (ins.opcode == "SLEEP") {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100 * std::stoi(ins.arg1)));
-        }
-        else if (ins.opcode == "ADD") {
-            uint16_t lhs = proc->memory.count(ins.arg2) ? proc->memory[ins.arg2] : std::stoi(ins.arg2);
-            uint16_t rhs = proc->memory.count(ins.arg3) ? proc->memory[ins.arg3] : std::stoi(ins.arg3);
-            proc->memory[ins.arg1] = lhs + rhs;
-            logToFile(proc->name, "ADD " + ins.arg1 + " = " + std::to_string(lhs) + " + " + std::to_string(rhs), coreId);
-        }
-        else if (ins.opcode == "SUBTRACT") {
-            uint16_t lhs = proc->memory.count(ins.arg2) ? proc->memory[ins.arg2] : std::stoi(ins.arg2);
-            uint16_t rhs = proc->memory.count(ins.arg3) ? proc->memory[ins.arg3] : std::stoi(ins.arg3);
-            proc->memory[ins.arg1] = lhs - rhs;
-            logToFile(proc->name, "SUBTRACT " + ins.arg1 + " = " + std::to_string(lhs) + " - " + std::to_string(rhs), coreId);
-        }
-        else if (ins.opcode == "DECLARE") {
-            uint16_t val = std::stoi(ins.arg2);
-            proc->memory[ins.arg1] = val;
-            logToFile(proc->name, "DECLARE " + ins.arg1 + " = " + ins.arg2, coreId);
-        }
-        else if (ins.opcode == "FOR") {
-            int repeat = std::stoi(ins.arg2);
-            for (int i = 0; i < repeat; ++i) {
-                executeInstructions(proc, ins.subInstructions, coreId, delay);
-            }
-        }
-
-        (*proc->completedInstructions)++;
+    for (size_t i = 0; i < instructions.size(); ++i) {
+        proc->instructionPointer = i;  // track current instruction index
+        if (!executeSingleInstruction(proc, instructions[i], coreId)) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     }
-}
 
+}
 
 void cpuWorker(int coreId, int delay) {
     while (true) {

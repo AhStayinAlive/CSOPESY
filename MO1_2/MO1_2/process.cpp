@@ -26,36 +26,47 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
         int numInstructions = instructionCount(gen);
         proc->totalInstructions = numInstructions;
 
-        for (int i = 0; i < numInstructions; ++i) {
+        // Always declare at least 5 variables first
+        for (int i = 0; i < 5; ++i) {
+            Instruction declareInst;
+            declareInst.opcode = "DECLARE";
+            declareInst.arg1 = "var" + std::to_string(i);
+            declareInst.arg2 = std::to_string(valueDist(gen));
+            proc->instructions.push_back(declareInst);
+        }
+
+        // Then generate the rest
+        for (int i = 5; i < numInstructions; ++i) {
             Instruction inst;
             int op = opcodePicker(gen);
+
             switch (op) {
-            case 0:
+            case 0: // Extra DECLAREs allowed
                 inst.opcode = "DECLARE";
                 inst.arg1 = "var" + std::to_string(i);
                 inst.arg2 = std::to_string(valueDist(gen));
                 break;
-            case 1:
+            case 1: // ADD
                 inst.opcode = "ADD";
                 inst.arg1 = "result" + std::to_string(i);
-                inst.arg2 = "var" + std::to_string(i % 5);
+                inst.arg2 = "var" + std::to_string(i % 5);  // safe: var0–var4
                 inst.arg3 = "var" + std::to_string((i + 1) % 5);
                 break;
-            case 2:
+            case 2: // SUBTRACT
                 inst.opcode = "SUBTRACT";
                 inst.arg1 = "result" + std::to_string(i);
                 inst.arg2 = "var" + std::to_string(i % 5);
                 inst.arg3 = "var" + std::to_string((i + 1) % 5);
                 break;
-            case 3:
+            case 3: // PRINT
                 inst.opcode = "PRINT";
                 inst.arg1 = "Hello from " + name + " [" + std::to_string(i) + "]";
                 break;
-            case 4:
+            case 4: // SLEEP
                 inst.opcode = "SLEEP";
-                inst.arg1 = std::to_string(sleepTime(gen)); // milliseconds
+                inst.arg1 = std::to_string(sleepTime(gen));
                 break;
-            case 5:
+            case 5: // FOR
                 inst.opcode = "FOR";
                 inst.loopCount = loopCountDist(gen);
                 for (int j = 0; j < 3; ++j) {
@@ -66,13 +77,13 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
                 }
                 break;
             }
+
             proc->instructions.push_back(inst);
         }
+
     }
     catch (const std::exception& e) {
-        std::ostringstream oss;
-        oss << "Process generation failed: " << e.what();
-        proc->logs.push_back(oss.str());
+        proc->logs.push_back("Process generation failed: " + std::string(e.what()));
     }
 
     return proc;

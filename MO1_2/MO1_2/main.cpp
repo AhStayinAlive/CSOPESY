@@ -10,6 +10,7 @@
 #include "process.h"
 #include "utils.h"
 #include "scheduler.h"
+#include "instruction_executor.h"
 
 using namespace std;
 
@@ -56,53 +57,39 @@ int getAvailableCore() {
     return -1;
 }
 
-void simulateExecution(shared_ptr<Process> proc) {
+void simulateExecution(std::shared_ptr<Process> proc) {
     try {
         proc->startTime = getCurrentTimestamp();
         proc->isRunning = true;
-        auto& mem = proc->memory;
+        proc->isFinished = false;
 
-        for (int i = 0; i < proc->instructions.size(); ++i) {
-            Instruction ins = proc->instructions[i];
-            try {
-                if (ins.opcode == "PRINT") {
-                    logToFile(proc->name, ins.arg1, proc->coreAssigned);
-                }
-                else if (ins.opcode == "DECLARE") {
-                    mem[ins.arg1] = static_cast<uint16_t>(stoi(ins.arg2));
-                }
-                else if (ins.opcode == "ADD") {
-                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(stoi(ins.arg2));
-                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(stoi(ins.arg3));
-                    mem[ins.arg1] = left + right;
-                }
-                else if (ins.opcode == "SUBTRACT") {
-                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(stoi(ins.arg2));
-                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(stoi(ins.arg3));
-                    mem[ins.arg1] = left - right;
-                }
-                else if (ins.opcode == "SLEEP") {
-                    this_thread::sleep_for(chrono::milliseconds(500 * stoi(ins.arg1)));
-                }
-            }
-            catch (const exception& e) {
-                logToFile(proc->name, "Instruction error: " + string(e.what()), proc->coreAssigned);
+        while (proc->instructionPointer < proc->instructions.size()) {
+            const auto& ins = proc->instructions[proc->instructionPointer];
+
+            bool success = executeSingleInstruction(proc, ins, proc->coreAssigned);
+            if (!success) {
+                logToFile(proc->name,
+                    "Execution stopped early at instruction " + std::to_string(proc->instructionPointer + 1) +
+                    " (" + ins.opcode + ")", proc->coreAssigned);
                 break;
             }
-            this_thread::sleep_for(chrono::milliseconds(config.delayPerInstruction * 100));
-            (*proc->completedInstructions)++;
+
+            proc->instructionPointer++;
+            std::this_thread::sleep_for(std::chrono::milliseconds(config.delayPerInstruction * 100));
         }
 
         proc->endTime = getCurrentTimestamp();
         proc->isRunning = false;
         proc->isFinished = true;
     }
-    catch (const exception& e) {
-        logToFile(proc->name, "Process execution error: " + string(e.what()), proc->coreAssigned);
+    catch (const std::exception& e) {
+        logToFile(proc->name,
+            "Unhandled exception: " + std::string(e.what()), proc->coreAssigned);
         proc->isRunning = false;
         proc->isFinished = true;
     }
 }
+
 
 void dispatcher() {
     while (emulatorRunning) {
@@ -119,7 +106,7 @@ void dispatcher() {
     }
 }
 
-void screenConsole(shared_ptr<Process> proc) {
+void screenConsole(std::shared_ptr<Process> proc) {
     cout << "+--------------------------------------+\n";
     cout << "|         PROCESS CONSOLE VIEW        |\n";
     cout << "+--------------------------------------+\n";
@@ -127,14 +114,34 @@ void screenConsole(shared_ptr<Process> proc) {
     cout << "| ID           : " << proc->pid << "\n";
 
     ifstream logFile(proc->name + ".txt");
-    string line;
-    while (getline(logFile, line)) {
-        cout << line << "\n";
+    if (logFile.is_open()) {
+        string line;
+        while (getline(logFile, line)) {
+            cout << line << "\n";
+        }
+    }
+    else {
+        cout << "| [Warning] Could not open log file.\n";
     }
 
     cout << "| Current instruction line: " << *proc->completedInstructions << "\n";
     cout << "| Lines of code: " << proc->instructions.size() << "\n";
-    if (proc->isFinished) cout << "\nFinished!\n\n";
+
+    if (proc->isFinished) {
+        if (*proc->completedInstructions == proc->instructions.size()) {
+            cout << "\nFinished!\n\n";
+        }
+        else {
+            cout << "\nExecution stopped early due to an error.\n";
+            if (proc->instructionPointer < proc->instructions.size()) {
+                cout << "Failed at instruction: " << proc->instructionPointer + 1
+                    << " (" << proc->instructions[proc->instructionPointer].opcode << ")\n\n";
+            }
+            else {
+                cout << "Instruction pointer out of bounds.\n\n";
+            }
+        }
+    }
 
     while (true) {
         cout << "root:\\> ";
@@ -143,15 +150,41 @@ void screenConsole(shared_ptr<Process> proc) {
 
         if (input == "process-smi") {
             ifstream log(proc->name + ".txt");
-            while (getline(log, line)) {
-                cout << line << "\n";
+            if (log.is_open()) {
+                string line;
+                while (getline(log, line)) {
+                    cout << line << "\n";
+                }
+                log.close();
             }
+            else {
+                cout << "[Error] Unable to open log file.\n";
+            }
+
             cout << "Current instruction line: " << *proc->completedInstructions << "\n";
             cout << "Lines of code: " << proc->instructions.size() << "\n";
-            if (proc->isFinished) cout << "\nFinished!\n\n";
+
+            if (proc->isFinished && *proc->completedInstructions == proc->instructions.size()) {
+                cout << "\nFinished!\n\n";
+            }
+            else if (proc->isFinished && *proc->completedInstructions != proc->instructions.size()) {
+                cout << "\nExecution stopped early due to an error.\n";
+                if (proc->instructionPointer < proc->instructions.size()) {
+                    cout << "Failed at instruction: " << proc->instructionPointer + 1
+                        << " (" << proc->instructions[proc->instructionPointer].opcode << ")\n\n";
+                }
+                else {
+                    cout << "Instruction pointer out of bounds.\n\n";
+                }
+            }
+
         }
-        else if (input == "exit") break;
-        else cout << "Unknown command.\n";
+        else if (input == "exit") {
+            break;
+        }
+        else if (!input.empty()) {
+            cout << "Unknown command.\n";
+        }
     }
 }
 
