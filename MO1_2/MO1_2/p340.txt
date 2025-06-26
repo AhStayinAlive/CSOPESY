@@ -2,3 +2,9 @@ Process name: p340
 Process ID: 340
 Logs:
 
+(06/27/2025 12:22:10AM) Core:2 "DECLARE var0 = 96"
+(06/27/2025 12:22:10AM) Core:2 "DECLARE var1 = 17"
+(06/27/2025 12:22:10AM) Core:2 "DECLARE var2 = 66"
+(06/27/2025 12:23:07AM) Core:1 "DECLARE var3 = 54"
+(06/27/2025 12:23:07AM) Core:1 "DECLARE var4 = 87"
+(06/27/2025 12:23:08AM) Core:1 "SUBTRACT result5 = 96 - 17"

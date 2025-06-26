@@ -2,3 +2,9 @@ Process name: p301
 Process ID: 301
 Logs:
 
+(06/27/2025 12:21:28AM) Core:3 "DECLARE var0 = 22"
+(06/27/2025 12:21:28AM) Core:3 "DECLARE var1 = 59"
+(06/27/2025 12:21:28AM) Core:3 "DECLARE var2 = 28"
+(06/27/2025 12:22:19AM) Core:1 "DECLARE var3 = 58"
+(06/27/2025 12:22:19AM) Core:1 "DECLARE var4 = 5"
+(06/27/2025 12:22:19AM) Core:1 "Hello from p301 [5]"

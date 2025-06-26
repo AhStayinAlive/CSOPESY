@@ -2,3 +2,8 @@ Process name: p324
 Process ID: 324
 Logs:
 
+(06/27/2025 12:21:52AM) Core:3 "DECLARE var0 = 15"
+(06/27/2025 12:21:52AM) Core:3 "DECLARE var1 = 60"
+(06/27/2025 12:21:52AM) Core:3 "DECLARE var2 = 53"
+(06/27/2025 12:22:47AM) Core:1 "DECLARE var3 = 24"
+(06/27/2025 12:22:47AM) Core:1 "DECLARE var4 = 10"

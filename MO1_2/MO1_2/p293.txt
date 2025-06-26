@@ -2,3 +2,17 @@ Process name: p293
 Process ID: 293
 Logs:
 
+(06/27/2025 12:21:17AM) Core:1 "DECLARE var0 = 60"
+(06/27/2025 12:21:18AM) Core:1 "DECLARE var1 = 38"
+(06/27/2025 12:21:18AM) Core:1 "DECLARE var2 = 47"
+(06/27/2025 12:22:07AM) Core:1 "DECLARE var3 = 54"
+(06/27/2025 12:22:08AM) Core:1 "DECLARE var4 = 81"
+(06/27/2025 12:22:08AM) Core:1 "Hello from p293 [5]"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:05AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:05AM) Core:2 "DECLARE var7 = 89"
+(06/27/2025 12:23:05AM) Core:2 "SUBTRACT result8 = 54 - 81"

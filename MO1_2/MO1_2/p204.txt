@@ -2,3 +2,20 @@ Process name: p204
 Process ID: 204
 Logs:
 
+(06/27/2025 12:19:32AM) Core:0 "DECLARE var0 = 71"
+(06/27/2025 12:19:33AM) Core:0 "DECLARE var1 = 59"
+(06/27/2025 12:19:33AM) Core:0 "DECLARE var2 = 72"
+(06/27/2025 12:20:06AM) Core:1 "DECLARE var3 = 14"
+(06/27/2025 12:20:06AM) Core:1 "DECLARE var4 = 18"
+(06/27/2025 12:20:06AM) Core:1 "Hello from p204 [5]"
+(06/27/2025 12:20:46AM) Core:2 "SUBTRACT result6 = 59 - 72"
+(06/27/2025 12:20:46AM) Core:2 "ADD result7 = 72 + 14"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:20:46AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:21:33AM) Core:0 "ADD result9 = 18 + 71"
+(06/27/2025 12:21:34AM) Core:0 "Hello from p204 [11]"
+(06/27/2025 12:22:27AM) Core:2 "ADD result12 = 72 + 14"

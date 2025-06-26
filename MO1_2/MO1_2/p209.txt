@@ -2,3 +2,21 @@ Process name: p209
 Process ID: 209
 Logs:
 
+(06/27/2025 12:19:39AM) Core:0 "DECLARE var0 = 13"
+(06/27/2025 12:19:39AM) Core:0 "DECLARE var1 = 40"
+(06/27/2025 12:19:39AM) Core:0 "DECLARE var2 = 16"
+(06/27/2025 12:20:13AM) Core:1 "DECLARE var3 = 84"
+(06/27/2025 12:20:13AM) Core:1 "DECLARE var4 = 66"
+(06/27/2025 12:20:13AM) Core:1 "DECLARE var5 = 85"
+(06/27/2025 12:20:55AM) Core:3 "ADD result6 = 40 + 16"
+(06/27/2025 12:20:55AM) Core:3 "ADD result7 = 16 + 84"
+(06/27/2025 12:20:55AM) Core:3 "DECLARE var8 = 49"
+(06/27/2025 12:21:44AM) Core:1 "DECLARE var10 = 68"
+(06/27/2025 12:22:39AM) Core:3 "Hello from p209 [12]"
+(06/27/2025 12:22:40AM) Core:3 "DECLARE var13 = 56"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 1"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 2"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 3"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 1"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 2"
+(06/27/2025 12:22:40AM) Core:3 "Loop iteration 3"

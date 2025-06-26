@@ -2,3 +2,6 @@ Process name: p352
 Process ID: 352
 Logs:
 
+(06/27/2025 12:22:23AM) Core:0 "DECLARE var0 = 68"
+(06/27/2025 12:22:23AM) Core:0 "DECLARE var1 = 33"
+(06/27/2025 12:22:23AM) Core:0 "DECLARE var2 = 79"

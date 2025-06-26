@@ -2,3 +2,9 @@ Process name: p305
 Process ID: 305
 Logs:
 
+(06/27/2025 12:21:32AM) Core:3 "DECLARE var0 = 38"
+(06/27/2025 12:21:32AM) Core:3 "DECLARE var1 = 74"
+(06/27/2025 12:21:32AM) Core:3 "DECLARE var2 = 81"
+(06/27/2025 12:22:23AM) Core:1 "DECLARE var3 = 24"
+(06/27/2025 12:22:23AM) Core:1 "DECLARE var4 = 53"
+(06/27/2025 12:22:23AM) Core:1 "Hello from p305 [5]"

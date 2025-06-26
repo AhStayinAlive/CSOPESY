@@ -2,3 +2,16 @@ Process name: p288
 Process ID: 288
 Logs:
 
+(06/27/2025 12:21:13AM) Core:2 "DECLARE var0 = 23"
+(06/27/2025 12:21:13AM) Core:2 "DECLARE var1 = 76"
+(06/27/2025 12:21:13AM) Core:2 "DECLARE var2 = 45"
+(06/27/2025 12:22:03AM) Core:2 "DECLARE var3 = 85"
+(06/27/2025 12:22:03AM) Core:2 "DECLARE var4 = 93"
+(06/27/2025 12:23:00AM) Core:2 "SUBTRACT result6 = 76 - 45"
+(06/27/2025 12:23:00AM) Core:2 "DECLARE var7 = 92"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:00AM) Core:2 "Loop iteration 3"

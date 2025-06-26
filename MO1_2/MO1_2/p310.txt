@@ -2,3 +2,9 @@ Process name: p310
 Process ID: 310
 Logs:
 
+(06/27/2025 12:21:36AM) Core:3 "DECLARE var0 = 85"
+(06/27/2025 12:21:36AM) Core:3 "DECLARE var1 = 35"
+(06/27/2025 12:21:37AM) Core:3 "DECLARE var2 = 27"
+(06/27/2025 12:22:30AM) Core:2 "DECLARE var3 = 58"
+(06/27/2025 12:22:30AM) Core:2 "DECLARE var4 = 86"
+(06/27/2025 12:22:30AM) Core:2 "ADD result5 = 85 + 35"

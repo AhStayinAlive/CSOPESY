@@ -2,3 +2,12 @@ Process name: p298
 Process ID: 298
 Logs:
 
+(06/27/2025 12:21:24AM) Core:2 "DECLARE var0 = 30"
+(06/27/2025 12:21:24AM) Core:2 "DECLARE var1 = 95"
+(06/27/2025 12:21:24AM) Core:2 "DECLARE var2 = 59"
+(06/27/2025 12:22:14AM) Core:2 "DECLARE var3 = 72"
+(06/27/2025 12:22:14AM) Core:2 "DECLARE var4 = 68"
+(06/27/2025 12:22:14AM) Core:2 "SUBTRACT result5 = 30 - 95"
+(06/27/2025 12:23:12AM) Core:1 "DECLARE var6 = 84"
+(06/27/2025 12:23:12AM) Core:1 "ADD result7 = 59 + 72"
+(06/27/2025 12:23:12AM) Core:1 "Hello from p298 [8]"

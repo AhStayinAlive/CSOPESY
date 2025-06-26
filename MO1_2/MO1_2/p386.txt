@@ -2,3 +2,6 @@ Process name: p386
 Process ID: 386
 Logs:
 
+(06/27/2025 12:23:04AM) Core:3 "DECLARE var0 = 12"
+(06/27/2025 12:23:04AM) Core:3 "DECLARE var1 = 79"
+(06/27/2025 12:23:04AM) Core:3 "DECLARE var2 = 39"

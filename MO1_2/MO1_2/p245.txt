@@ -2,3 +2,14 @@ Process name: p245
 Process ID: 245
 Logs:
 
+(06/27/2025 12:20:17AM) Core:1 "DECLARE var0 = 55"
+(06/27/2025 12:20:17AM) Core:1 "DECLARE var1 = 56"
+(06/27/2025 12:20:17AM) Core:1 "DECLARE var2 = 16"
+(06/27/2025 12:21:01AM) Core:3 "DECLARE var3 = 65"
+(06/27/2025 12:21:01AM) Core:3 "DECLARE var4 = 65"
+(06/27/2025 12:21:01AM) Core:3 "ADD result5 = 55 + 56"
+(06/27/2025 12:21:49AM) Core:2 "SUBTRACT result6 = 56 - 16"
+(06/27/2025 12:21:49AM) Core:2 "ADD result7 = 16 + 65"
+(06/27/2025 12:21:49AM) Core:2 "Hello from p245 [8]"
+(06/27/2025 12:22:44AM) Core:2 "ADD result9 = 65 + 55"
+(06/27/2025 12:22:45AM) Core:2 "DECLARE var11 = 26"

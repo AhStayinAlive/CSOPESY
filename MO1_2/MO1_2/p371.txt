@@ -2,3 +2,6 @@ Process name: p371
 Process ID: 371
 Logs:
 
+(06/27/2025 12:22:46AM) Core:0 "DECLARE var0 = 68"
+(06/27/2025 12:22:46AM) Core:0 "DECLARE var1 = 71"
+(06/27/2025 12:22:46AM) Core:0 "DECLARE var2 = 96"

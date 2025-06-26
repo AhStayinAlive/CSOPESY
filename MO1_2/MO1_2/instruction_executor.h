@@ -73,9 +73,8 @@ inline bool executeSingleInstruction(std::shared_ptr<Process>& proc, const Instr
             }
         }
 
-        (*proc->completedInstructions)++;
-        if (*proc->completedInstructions > proc->instructions.size()) {
-            *proc->completedInstructions = proc->instructions.size();
+        if (*proc->completedInstructions > static_cast<int>(proc->instructions.size())) {
+            *proc->completedInstructions = static_cast<int>(proc->instructions.size());
         }
         return true;
 

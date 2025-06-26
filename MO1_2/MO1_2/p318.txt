@@ -2,3 +2,17 @@ Process name: p318
 Process ID: 318
 Logs:
 
+(06/27/2025 12:21:44AM) Core:3 "DECLARE var0 = 98"
+(06/27/2025 12:21:45AM) Core:3 "DECLARE var1 = 32"
+(06/27/2025 12:21:45AM) Core:3 "DECLARE var2 = 96"
+(06/27/2025 12:22:40AM) Core:2 "DECLARE var3 = 8"
+(06/27/2025 12:22:40AM) Core:2 "DECLARE var4 = 4"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:22:40AM) Core:2 "Loop iteration 3"

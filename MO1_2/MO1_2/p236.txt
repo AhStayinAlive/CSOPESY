@@ -2,3 +2,23 @@ Process name: p236
 Process ID: 236
 Logs:
 
+(06/27/2025 12:20:08AM) Core:0 "DECLARE var0 = 32"
+(06/27/2025 12:20:08AM) Core:0 "DECLARE var1 = 54"
+(06/27/2025 12:20:08AM) Core:0 "DECLARE var2 = 59"
+(06/27/2025 12:20:48AM) Core:3 "DECLARE var3 = 93"
+(06/27/2025 12:20:48AM) Core:3 "DECLARE var4 = 52"
+(06/27/2025 12:20:48AM) Core:3 "SUBTRACT result5 = 32 - 54"
+(06/27/2025 12:21:35AM) Core:2 "DECLARE var6 = 25"
+(06/27/2025 12:21:36AM) Core:2 "ADD result7 = 59 + 93"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:21:36AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:22:28AM) Core:0 "Hello from p236 [9]"
+(06/27/2025 12:22:29AM) Core:0 "Hello from p236 [10]"
+(06/27/2025 12:22:29AM) Core:0 "ADD result11 = 54 + 59"

@@ -2,3 +2,9 @@ Process name: p336
 Process ID: 336
 Logs:
 
+(06/27/2025 12:22:05AM) Core:1 "DECLARE var0 = 57"
+(06/27/2025 12:22:05AM) Core:1 "DECLARE var1 = 74"
+(06/27/2025 12:22:06AM) Core:1 "DECLARE var2 = 81"
+(06/27/2025 12:23:02AM) Core:2 "DECLARE var3 = 21"
+(06/27/2025 12:23:02AM) Core:2 "DECLARE var4 = 90"
+(06/27/2025 12:23:03AM) Core:2 "SUBTRACT result5 = 57 - 74"

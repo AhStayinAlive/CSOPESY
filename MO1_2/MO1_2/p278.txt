@@ -2,3 +2,11 @@ Process name: p278
 Process ID: 278
 Logs:
 
+(06/27/2025 12:21:01AM) Core:2 "DECLARE var0 = 57"
+(06/27/2025 12:21:01AM) Core:2 "DECLARE var1 = 73"
+(06/27/2025 12:21:01AM) Core:2 "DECLARE var2 = 37"
+(06/27/2025 12:21:48AM) Core:1 "DECLARE var3 = 62"
+(06/27/2025 12:21:48AM) Core:1 "DECLARE var4 = 84"
+(06/27/2025 12:21:48AM) Core:1 "DECLARE var5 = 83"
+(06/27/2025 12:22:44AM) Core:0 "ADD result7 = 37 + 62"
+(06/27/2025 12:22:44AM) Core:0 "DECLARE var8 = 29"

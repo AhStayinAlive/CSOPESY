@@ -2,3 +2,22 @@ Process name: p240
 Process ID: 240
 Logs:
 
+(06/27/2025 12:20:11AM) Core:0 "DECLARE var0 = 12"
+(06/27/2025 12:20:12AM) Core:0 "DECLARE var1 = 99"
+(06/27/2025 12:20:12AM) Core:0 "DECLARE var2 = 99"
+(06/27/2025 12:20:54AM) Core:1 "DECLARE var3 = 87"
+(06/27/2025 12:20:54AM) Core:1 "DECLARE var4 = 28"
+(06/27/2025 12:20:54AM) Core:1 "SUBTRACT result5 = 12 - 99"
+(06/27/2025 12:21:41AM) Core:1 "DECLARE var6 = 83"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 3"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 3"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:21:41AM) Core:1 "Loop iteration 3"
+(06/27/2025 12:21:41AM) Core:1 "ADD result8 = 87 + 28"
+(06/27/2025 12:22:35AM) Core:1 "SUBTRACT result9 = 28 - 12"
+(06/27/2025 12:22:35AM) Core:1 "DECLARE var10 = 2"

@@ -2,3 +2,11 @@ Process name: p299
 Process ID: 299
 Logs:
 
+(06/27/2025 12:21:25AM) Core:1 "DECLARE var0 = 47"
+(06/27/2025 12:21:25AM) Core:1 "DECLARE var1 = 13"
+(06/27/2025 12:21:25AM) Core:1 "DECLARE var2 = 16"
+(06/27/2025 12:22:16AM) Core:3 "DECLARE var3 = 8"
+(06/27/2025 12:22:16AM) Core:3 "DECLARE var4 = 2"
+(06/27/2025 12:22:16AM) Core:3 "Hello from p299 [5]"
+(06/27/2025 12:23:14AM) Core:0 "ADD result6 = 13 + 16"
+(06/27/2025 12:23:14AM) Core:0 "Hello from p299 [7]"

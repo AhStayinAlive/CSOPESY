@@ -2,3 +2,9 @@ Process name: p307
 Process ID: 307
 Logs:
 
+(06/27/2025 12:21:34AM) Core:1 "DECLARE var0 = 32"
+(06/27/2025 12:21:34AM) Core:1 "DECLARE var1 = 94"
+(06/27/2025 12:21:34AM) Core:1 "DECLARE var2 = 60"
+(06/27/2025 12:22:26AM) Core:0 "DECLARE var3 = 89"
+(06/27/2025 12:22:26AM) Core:0 "DECLARE var4 = 87"
+(06/27/2025 12:22:27AM) Core:0 "SUBTRACT result5 = 32 - 94"

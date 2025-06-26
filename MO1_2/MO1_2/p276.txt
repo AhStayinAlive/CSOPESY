@@ -2,3 +2,10 @@ Process name: p276
 Process ID: 276
 Logs:
 
+(06/27/2025 12:20:58AM) Core:2 "DECLARE var0 = 22"
+(06/27/2025 12:20:58AM) Core:2 "DECLARE var1 = 28"
+(06/27/2025 12:20:59AM) Core:2 "DECLARE var2 = 87"
+(06/27/2025 12:21:46AM) Core:1 "DECLARE var3 = 39"
+(06/27/2025 12:21:46AM) Core:1 "DECLARE var4 = 15"
+(06/27/2025 12:21:46AM) Core:1 "Hello from p276 [5]"
+(06/27/2025 12:22:42AM) Core:3 "SUBTRACT result8 = 39 - 15"

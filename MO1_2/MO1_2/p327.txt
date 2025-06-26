@@ -2,3 +2,9 @@ Process name: p327
 Process ID: 327
 Logs:
 
+(06/27/2025 12:21:56AM) Core:3 "DECLARE var0 = 69"
+(06/27/2025 12:21:56AM) Core:3 "DECLARE var1 = 62"
+(06/27/2025 12:21:56AM) Core:3 "DECLARE var2 = 12"
+(06/27/2025 12:22:51AM) Core:3 "DECLARE var3 = 45"
+(06/27/2025 12:22:51AM) Core:3 "DECLARE var4 = 87"
+(06/27/2025 12:22:52AM) Core:3 "DECLARE var5 = 5"

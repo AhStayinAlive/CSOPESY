@@ -2,3 +2,6 @@ Process name: p365
 Process ID: 365
 Logs:
 
+(06/27/2025 12:22:40AM) Core:2 "DECLARE var0 = 41"
+(06/27/2025 12:22:40AM) Core:2 "DECLARE var1 = 41"
+(06/27/2025 12:22:40AM) Core:2 "DECLARE var2 = 1"

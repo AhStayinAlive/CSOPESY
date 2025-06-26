@@ -2,3 +2,15 @@ Process name: p251
 Process ID: 251
 Logs:
 
+(06/27/2025 12:20:24AM) Core:3 "DECLARE var0 = 59"
+(06/27/2025 12:20:24AM) Core:3 "DECLARE var1 = 18"
+(06/27/2025 12:20:24AM) Core:3 "DECLARE var2 = 10"
+(06/27/2025 12:21:09AM) Core:2 "DECLARE var3 = 51"
+(06/27/2025 12:21:09AM) Core:2 "DECLARE var4 = 27"
+(06/27/2025 12:21:09AM) Core:2 "ADD result5 = 59 + 18"
+(06/27/2025 12:21:59AM) Core:2 "ADD result6 = 18 + 10"
+(06/27/2025 12:21:59AM) Core:2 "ADD result7 = 10 + 51"
+(06/27/2025 12:21:59AM) Core:2 "DECLARE var8 = 67"
+(06/27/2025 12:22:54AM) Core:2 "ADD result9 = 27 + 59"
+(06/27/2025 12:22:54AM) Core:2 "DECLARE var10 = 93"
+(06/27/2025 12:22:54AM) Core:2 "Hello from p251 [11]"

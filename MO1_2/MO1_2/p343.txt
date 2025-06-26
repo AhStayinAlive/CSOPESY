@@ -2,3 +2,8 @@ Process name: p343
 Process ID: 343
 Logs:
 
+(06/27/2025 12:22:13AM) Core:1 "DECLARE var0 = 3"
+(06/27/2025 12:22:13AM) Core:1 "DECLARE var1 = 83"
+(06/27/2025 12:22:13AM) Core:1 "DECLARE var2 = 76"
+(06/27/2025 12:23:11AM) Core:2 "DECLARE var3 = 20"
+(06/27/2025 12:23:11AM) Core:2 "DECLARE var4 = 13"

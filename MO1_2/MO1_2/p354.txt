@@ -2,3 +2,6 @@ Process name: p354
 Process ID: 354
 Logs:
 
+(06/27/2025 12:22:27AM) Core:3 "DECLARE var0 = 71"
+(06/27/2025 12:22:27AM) Core:3 "DECLARE var1 = 77"
+(06/27/2025 12:22:27AM) Core:3 "DECLARE var2 = 5"

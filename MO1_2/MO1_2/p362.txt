@@ -2,3 +2,6 @@ Process name: p362
 Process ID: 362
 Logs:
 
+(06/27/2025 12:22:37AM) Core:3 "DECLARE var0 = 46"
+(06/27/2025 12:22:37AM) Core:3 "DECLARE var1 = 86"
+(06/27/2025 12:22:37AM) Core:3 "DECLARE var2 = 13"

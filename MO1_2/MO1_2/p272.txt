@@ -2,3 +2,12 @@ Process name: p272
 Process ID: 272
 Logs:
 
+(06/27/2025 12:20:52AM) Core:1 "DECLARE var0 = 24"
+(06/27/2025 12:20:52AM) Core:1 "DECLARE var1 = 27"
+(06/27/2025 12:20:52AM) Core:1 "DECLARE var2 = 27"
+(06/27/2025 12:21:39AM) Core:0 "DECLARE var3 = 27"
+(06/27/2025 12:21:39AM) Core:0 "DECLARE var4 = 19"
+(06/27/2025 12:21:40AM) Core:0 "SUBTRACT result5 = 24 - 27"
+(06/27/2025 12:22:34AM) Core:3 "SUBTRACT result6 = 27 - 27"
+(06/27/2025 12:22:34AM) Core:3 "SUBTRACT result7 = 27 - 27"
+(06/27/2025 12:22:34AM) Core:3 "Hello from p272 [8]"

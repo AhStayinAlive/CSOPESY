@@ -2,3 +2,22 @@ Process name: p300
 Process ID: 300
 Logs:
 
+(06/27/2025 12:21:26AM) Core:1 "DECLARE var0 = 62"
+(06/27/2025 12:21:26AM) Core:1 "DECLARE var1 = 67"
+(06/27/2025 12:21:27AM) Core:1 "DECLARE var2 = 6"
+(06/27/2025 12:22:17AM) Core:3 "DECLARE var3 = 13"
+(06/27/2025 12:22:17AM) Core:3 "DECLARE var4 = 84"
+(06/27/2025 12:23:16AM) Core:2 "Hello from p300 [6]"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:23:17AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:23:17AM) Core:2 "Hello from p300 [8]"

@@ -2,3 +2,20 @@ Process name: p320
 Process ID: 320
 Logs:
 
+(06/27/2025 12:21:46AM) Core:3 "DECLARE var0 = 23"
+(06/27/2025 12:21:46AM) Core:3 "DECLARE var1 = 42"
+(06/27/2025 12:21:47AM) Core:3 "DECLARE var2 = 7"
+(06/27/2025 12:22:42AM) Core:0 "DECLARE var3 = 43"
+(06/27/2025 12:22:42AM) Core:0 "DECLARE var4 = 73"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:42AM) Core:0 "Loop iteration 3"

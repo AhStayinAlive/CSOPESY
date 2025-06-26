@@ -2,3 +2,18 @@ Process name: p282
 Process ID: 282
 Logs:
 
+(06/27/2025 12:21:06AM) Core:0 "DECLARE var0 = 39"
+(06/27/2025 12:21:06AM) Core:0 "DECLARE var1 = 59"
+(06/27/2025 12:21:06AM) Core:0 "DECLARE var2 = 95"
+(06/27/2025 12:21:55AM) Core:0 "DECLARE var3 = 82"
+(06/27/2025 12:21:55AM) Core:0 "DECLARE var4 = 34"
+(06/27/2025 12:22:52AM) Core:1 "ADD result6 = 59 + 95"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 3"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 3"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 1"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 2"
+(06/27/2025 12:22:52AM) Core:1 "Loop iteration 3"

@@ -2,3 +2,8 @@ Process name: p346
 Process ID: 346
 Logs:
 
+(06/27/2025 12:22:16AM) Core:0 "DECLARE var0 = 99"
+(06/27/2025 12:22:17AM) Core:0 "DECLARE var1 = 62"
+(06/27/2025 12:22:17AM) Core:0 "DECLARE var2 = 35"
+(06/27/2025 12:23:14AM) Core:2 "DECLARE var3 = 10"
+(06/27/2025 12:23:14AM) Core:2 "DECLARE var4 = 13"

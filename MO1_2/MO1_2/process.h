@@ -20,7 +20,7 @@ struct Process {
     std::string startTime;
     std::string endTime;
     int totalInstructions;
-    int instructionPointer;
+    size_t instructionPointer;
     int coreAssigned;
     bool isRunning;
     bool isFinished;

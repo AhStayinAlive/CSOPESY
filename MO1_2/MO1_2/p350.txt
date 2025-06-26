@@ -2,3 +2,6 @@ Process name: p350
 Process ID: 350
 Logs:
 
+(06/27/2025 12:22:21AM) Core:0 "DECLARE var0 = 73"
+(06/27/2025 12:22:22AM) Core:0 "DECLARE var1 = 15"
+(06/27/2025 12:22:22AM) Core:0 "DECLARE var2 = 2"

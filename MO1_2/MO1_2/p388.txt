@@ -2,3 +2,6 @@ Process name: p388
 Process ID: 388
 Logs:
 
+(06/27/2025 12:23:05AM) Core:1 "DECLARE var0 = 79"
+(06/27/2025 12:23:06AM) Core:1 "DECLARE var1 = 64"
+(06/27/2025 12:23:06AM) Core:1 "DECLARE var2 = 91"

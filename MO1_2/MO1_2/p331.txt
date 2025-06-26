@@ -2,3 +2,9 @@ Process name: p331
 Process ID: 331
 Logs:
 
+(06/27/2025 12:22:00AM) Core:0 "DECLARE var0 = 13"
+(06/27/2025 12:22:01AM) Core:0 "DECLARE var1 = 86"
+(06/27/2025 12:22:01AM) Core:0 "DECLARE var2 = 33"
+(06/27/2025 12:22:57AM) Core:0 "DECLARE var3 = 8"
+(06/27/2025 12:22:57AM) Core:0 "DECLARE var4 = 92"
+(06/27/2025 12:22:57AM) Core:0 "Hello from p331 [5]"

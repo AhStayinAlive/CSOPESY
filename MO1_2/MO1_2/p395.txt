@@ -2,3 +2,6 @@ Process name: p395
 Process ID: 395
 Logs:
 
+(06/27/2025 12:23:14AM) Core:1 "DECLARE var0 = 78"
+(06/27/2025 12:23:14AM) Core:1 "DECLARE var1 = 49"
+(06/27/2025 12:23:14AM) Core:1 "DECLARE var2 = 73"

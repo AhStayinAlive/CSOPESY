@@ -2,3 +2,9 @@ Process name: p345
 Process ID: 345
 Logs:
 
+(06/27/2025 12:22:15AM) Core:2 "DECLARE var0 = 69"
+(06/27/2025 12:22:16AM) Core:2 "DECLARE var1 = 83"
+(06/27/2025 12:22:16AM) Core:2 "DECLARE var2 = 73"
+(06/27/2025 12:23:14AM) Core:2 "DECLARE var3 = 96"
+(06/27/2025 12:23:14AM) Core:2 "DECLARE var4 = 20"
+(06/27/2025 12:23:14AM) Core:2 "ADD result5 = 69 + 83"

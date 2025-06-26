@@ -2,3 +2,10 @@ Process name: p281
 Process ID: 281
 Logs:
 
+(06/27/2025 12:21:04AM) Core:1 "DECLARE var0 = 98"
+(06/27/2025 12:21:04AM) Core:1 "DECLARE var1 = 81"
+(06/27/2025 12:21:05AM) Core:1 "DECLARE var2 = 69"
+(06/27/2025 12:21:53AM) Core:0 "DECLARE var3 = 76"
+(06/27/2025 12:21:54AM) Core:0 "DECLARE var4 = 89"
+(06/27/2025 12:21:54AM) Core:0 "DECLARE var5 = 15"
+(06/27/2025 12:22:49AM) Core:3 "ADD result8 = 76 + 89"

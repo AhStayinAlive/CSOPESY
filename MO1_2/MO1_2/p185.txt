@@ -2,3 +2,17 @@ Process name: p185
 Process ID: 185
 Logs:
 
+(06/27/2025 12:19:09AM) Core:0 "DECLARE var0 = 4"
+(06/27/2025 12:19:09AM) Core:0 "DECLARE var1 = 64"
+(06/27/2025 12:19:10AM) Core:0 "DECLARE var2 = 91"
+(06/27/2025 12:19:42AM) Core:1 "DECLARE var3 = 72"
+(06/27/2025 12:19:42AM) Core:1 "DECLARE var4 = 97"
+(06/27/2025 12:20:16AM) Core:0 "SUBTRACT result6 = 64 - 91"
+(06/27/2025 12:20:16AM) Core:0 "Hello from p185 [7]"
+(06/27/2025 12:21:01AM) Core:2 "Hello from p185 [9]"
+(06/27/2025 12:21:01AM) Core:2 "ADD result10 = 4 + 64"
+(06/27/2025 12:21:50AM) Core:3 "SUBTRACT result12 = 91 - 72"
+(06/27/2025 12:21:51AM) Core:3 "ADD result14 = 97 + 4"
+(06/27/2025 12:22:46AM) Core:1 "Hello from p185 [15]"
+(06/27/2025 12:22:46AM) Core:1 "ADD result16 = 64 + 91"
+(06/27/2025 12:22:46AM) Core:1 "SUBTRACT result17 = 91 - 72"

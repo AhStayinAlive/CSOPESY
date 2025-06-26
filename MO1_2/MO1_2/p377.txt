@@ -2,3 +2,6 @@ Process name: p377
 Process ID: 377
 Logs:
 
+(06/27/2025 12:22:53AM) Core:0 "DECLARE var0 = 51"
+(06/27/2025 12:22:53AM) Core:0 "DECLARE var1 = 90"
+(06/27/2025 12:22:54AM) Core:0 "DECLARE var2 = 45"

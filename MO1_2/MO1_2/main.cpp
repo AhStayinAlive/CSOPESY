@@ -15,6 +15,7 @@
 using namespace std;
 
 std::vector<std::shared_ptr<Process>> allProcesses;
+std::mutex processQueueMutex;
 queue<shared_ptr<Process>> processQueue;
 bool emulatorRunning = true;
 Config config;
@@ -93,18 +94,110 @@ void simulateExecution(std::shared_ptr<Process> proc) {
 
 void dispatcher() {
     while (emulatorRunning) {
-        if (!processQueue.empty()) {
-            int core = getAvailableCore();
-            if (core != -1) {
+        int core = getAvailableCore();
+        if (core != -1 && !processQueue.empty()) {
+            if (config.scheduler == "FCFS") {
                 auto proc = processQueue.front();
                 processQueue.pop();
                 proc->coreAssigned = core;
-                thread(simulateExecution, proc).detach();
+
+                //cout << "[DISPATCH] " << proc->name << " dispatched to core " << core << " (FCFS)\n";
+                if (!proc) {
+                    cout << "[ERROR] scheduler: trying to push nullptr process!" << endl;
+                    continue;
+                }
+
+
+                thread([proc]() mutable {
+                    proc->isRunning = true;
+                    proc->startTime = getCurrentTimestamp();
+
+                    //cout << "[EXEC] " << proc->name << " started (FCFS)\n";
+
+                    while (proc->instructionPointer < proc->instructions.size()) {
+                        const auto& ins = proc->instructions[proc->instructionPointer];
+                        if (!executeSingleInstruction(proc, ins, proc->coreAssigned)) break;
+                        proc->instructionPointer++;
+                        (*proc->completedInstructions)++;
+                        this_thread::sleep_for(chrono::milliseconds(config.delayPerInstruction * 100));
+                    }
+
+                    proc->isRunning = false;
+                    proc->isFinished = true;
+                    proc->endTime = getCurrentTimestamp();
+
+                    //cout << "[FINISHED] " << proc->name << " finished at " << proc->endTime << " (FCFS)\n";
+
+                    }).detach();
+            }
+
+            else if (config.scheduler == "RR") {
+                std::shared_ptr<Process> proc;
+                {
+                    std::lock_guard<std::mutex> lock(processQueueMutex);
+                    if (processQueue.empty())
+                        continue;
+                    proc = processQueue.front();
+                    processQueue.pop();
+                }
+
+                if (!proc) {
+                    std::cout << "[DISPATCH] nullptr process in queue — skipping.\n";
+                    continue;
+                }
+
+                proc->coreAssigned = core;
+
+                //cout << "[DISPATCH] " << proc->name << " dispatched to core " << core << " (RR)\n";
+
+                std::thread([proc, core, quantum = config.quantumCycles]() mutable {
+                    proc->isRunning = true;
+                    if (proc->startTime.empty()) // only set start time the first time
+                        proc->startTime = getCurrentTimestamp();
+
+                    //cout << "[EXEC] " << proc->name << " starting at instruction "
+                        //<< proc->instructionPointer << " / " << proc->instructions.size() << " (RR)\n";
+
+                    int executed = 0;
+                    while (executed < quantum &&
+                        proc->instructionPointer < proc->instructions.size()) {
+                        const auto& ins = proc->instructions[proc->instructionPointer];
+                        if (!executeSingleInstruction(proc, ins, core)) break;
+                        proc->instructionPointer++;
+                        (*proc->completedInstructions)++;
+                        executed++;
+                        this_thread::sleep_for(std::chrono::milliseconds(config.delayPerInstruction * 100));
+                    }
+
+                    if (proc->instructionPointer > proc->instructions.size())
+                        proc->instructionPointer = proc->instructions.size();
+                    if (*proc->completedInstructions > proc->instructions.size())
+                        *proc->completedInstructions = proc->instructions.size();
+
+
+                    proc->isRunning = false;
+
+                    /*cout << "[EXEC DONE] " << proc->name << " executed " << executed
+                        << " instructions. Instruction pointer now at "
+                        << proc->instructionPointer << " / " << proc->instructions.size() << " (RR)\n";*/
+
+                    if (proc->instructionPointer < proc->instructions.size()) {
+                        std::lock_guard<std::mutex> lock(processQueueMutex);
+                        processQueue.push(proc);
+                    }
+                    else {
+                        proc->isFinished = true;
+                        proc->endTime = getCurrentTimestamp();
+                    }
+
+                    }).detach();
             }
         }
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
+
+
 
 void screenConsole(std::shared_ptr<Process> proc) {
     cout << "+--------------------------------------+\n";
@@ -192,7 +285,9 @@ atomic<bool> generatingProcesses(false);
 thread schedulerThread;
 
 int main() {
-    srand(time(0));
+    time_t t = time(0);
+    srand(static_cast<unsigned int>(t));
+
     printBanner();
 
     thread tickThread([] {
@@ -242,9 +337,10 @@ int main() {
 
             cout << "\nFinished processes:\n";
             for (auto& p : allProcesses)
-                if (p->isFinished)
+                if (p->isFinished) {
                     cout << p->name << " (" << p->endTime << ") Finished "
-                    << p->instructions.size() << " / " << p->instructions.size() << "\n";
+                        << *p->completedInstructions << " / " << p->instructions.size() << "\n";
+                }
 
         }
         else if (input.rfind("screen -s ", 0) == 0) {

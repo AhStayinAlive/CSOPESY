@@ -2,3 +2,16 @@ Process name: p180
 Process ID: 180
 Logs:
 
+(06/27/2025 12:19:03AM) Core:0 "DECLARE var0 = 30"
+(06/27/2025 12:19:03AM) Core:0 "DECLARE var1 = 36"
+(06/27/2025 12:19:03AM) Core:0 "DECLARE var2 = 40"
+(06/27/2025 12:19:35AM) Core:3 "DECLARE var3 = 37"
+(06/27/2025 12:19:35AM) Core:3 "DECLARE var4 = 17"
+(06/27/2025 12:20:09AM) Core:2 "SUBTRACT result6 = 36 - 40"
+(06/27/2025 12:20:09AM) Core:2 "SUBTRACT result7 = 40 - 37"
+(06/27/2025 12:20:09AM) Core:2 "SUBTRACT result8 = 37 - 17"
+(06/27/2025 12:20:50AM) Core:0 "DECLARE var11 = 50"
+(06/27/2025 12:21:37AM) Core:3 "Hello from p180 [12]"
+(06/27/2025 12:21:37AM) Core:3 "Hello from p180 [13]"
+(06/27/2025 12:22:32AM) Core:3 "ADD result16 = 36 + 40"
+(06/27/2025 12:22:32AM) Core:3 "SUBTRACT result17 = 40 - 37"

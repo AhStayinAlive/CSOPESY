@@ -2,3 +2,9 @@ Process name: p333
 Process ID: 333
 Logs:
 
+(06/27/2025 12:22:02AM) Core:0 "DECLARE var0 = 75"
+(06/27/2025 12:22:02AM) Core:0 "DECLARE var1 = 50"
+(06/27/2025 12:22:03AM) Core:0 "DECLARE var2 = 93"
+(06/27/2025 12:22:59AM) Core:1 "DECLARE var3 = 15"
+(06/27/2025 12:22:59AM) Core:1 "DECLARE var4 = 10"
+(06/27/2025 12:22:59AM) Core:1 "DECLARE var5 = 76"

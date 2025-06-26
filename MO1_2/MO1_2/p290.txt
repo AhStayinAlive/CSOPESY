@@ -2,3 +2,17 @@ Process name: p290
 Process ID: 290
 Logs:
 
+(06/27/2025 12:21:15AM) Core:2 "DECLARE var0 = 75"
+(06/27/2025 12:21:15AM) Core:2 "DECLARE var1 = 54"
+(06/27/2025 12:21:15AM) Core:2 "DECLARE var2 = 88"
+(06/27/2025 12:22:05AM) Core:3 "DECLARE var3 = 83"
+(06/27/2025 12:22:05AM) Core:3 "DECLARE var4 = 49"
+(06/27/2025 12:22:05AM) Core:3 "Hello from p290 [5]"
+(06/27/2025 12:23:02AM) Core:3 "DECLARE var6 = 34"
+(06/27/2025 12:23:02AM) Core:3 "Hello from p290 [7]"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 1"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 2"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 3"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 1"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 2"
+(06/27/2025 12:23:02AM) Core:3 "Loop iteration 3"

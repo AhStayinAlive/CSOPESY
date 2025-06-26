@@ -2,3 +2,16 @@ Process name: p268
 Process ID: 268
 Logs:
 
+(06/27/2025 12:20:46AM) Core:1 "DECLARE var0 = 36"
+(06/27/2025 12:20:46AM) Core:1 "DECLARE var1 = 19"
+(06/27/2025 12:20:46AM) Core:1 "DECLARE var2 = 97"
+(06/27/2025 12:21:34AM) Core:2 "DECLARE var3 = 51"
+(06/27/2025 12:21:34AM) Core:2 "DECLARE var4 = 9"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 1"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 2"
+(06/27/2025 12:21:34AM) Core:2 "Loop iteration 3"
+(06/27/2025 12:22:26AM) Core:0 "SUBTRACT result7 = 97 - 51"
+(06/27/2025 12:22:26AM) Core:0 "ADD result8 = 51 + 9"

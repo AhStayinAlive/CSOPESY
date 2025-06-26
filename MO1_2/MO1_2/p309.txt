@@ -2,3 +2,9 @@ Process name: p309
 Process ID: 309
 Logs:
 
+(06/27/2025 12:21:36AM) Core:3 "DECLARE var0 = 70"
+(06/27/2025 12:21:36AM) Core:3 "DECLARE var1 = 31"
+(06/27/2025 12:21:36AM) Core:3 "DECLARE var2 = 73"
+(06/27/2025 12:22:29AM) Core:3 "DECLARE var3 = 63"
+(06/27/2025 12:22:29AM) Core:3 "DECLARE var4 = 97"
+(06/27/2025 12:22:29AM) Core:3 "Hello from p309 [5]"

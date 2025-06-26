@@ -2,3 +2,11 @@ Process name: p270
 Process ID: 270
 Logs:
 
+(06/27/2025 12:20:49AM) Core:2 "DECLARE var0 = 14"
+(06/27/2025 12:20:49AM) Core:2 "DECLARE var1 = 83"
+(06/27/2025 12:20:49AM) Core:2 "DECLARE var2 = 63"
+(06/27/2025 12:21:36AM) Core:0 "DECLARE var3 = 31"
+(06/27/2025 12:21:36AM) Core:0 "DECLARE var4 = 97"
+(06/27/2025 12:21:36AM) Core:0 "SUBTRACT result5 = 14 - 83"
+(06/27/2025 12:22:30AM) Core:0 "DECLARE var6 = 38"
+(06/27/2025 12:22:30AM) Core:0 "SUBTRACT result8 = 31 - 97"

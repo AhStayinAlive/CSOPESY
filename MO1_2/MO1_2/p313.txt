@@ -2,3 +2,9 @@ Process name: p313
 Process ID: 313
 Logs:
 
+(06/27/2025 12:21:40AM) Core:0 "DECLARE var0 = 65"
+(06/27/2025 12:21:40AM) Core:0 "DECLARE var1 = 34"
+(06/27/2025 12:21:40AM) Core:0 "DECLARE var2 = 68"
+(06/27/2025 12:22:34AM) Core:1 "DECLARE var3 = 82"
+(06/27/2025 12:22:34AM) Core:1 "DECLARE var4 = 99"
+(06/27/2025 12:22:34AM) Core:1 "ADD result5 = 65 + 34"

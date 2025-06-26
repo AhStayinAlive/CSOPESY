@@ -2,3 +2,19 @@ Process name: p285
 Process ID: 285
 Logs:
 
+(06/27/2025 12:21:09AM) Core:3 "DECLARE var0 = 49"
+(06/27/2025 12:21:09AM) Core:3 "DECLARE var1 = 7"
+(06/27/2025 12:21:09AM) Core:3 "DECLARE var2 = 82"
+(06/27/2025 12:21:59AM) Core:3 "DECLARE var3 = 80"
+(06/27/2025 12:21:59AM) Core:3 "DECLARE var4 = 33"
+(06/27/2025 12:21:59AM) Core:3 "SUBTRACT result5 = 49 - 7"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:54AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:55AM) Core:0 "SUBTRACT result8 = 80 - 33"

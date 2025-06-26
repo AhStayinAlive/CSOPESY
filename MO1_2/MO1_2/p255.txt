@@ -2,3 +2,13 @@ Process name: p255
 Process ID: 255
 Logs:
 
+(06/27/2025 12:20:29AM) Core:0 "DECLARE var0 = 78"
+(06/27/2025 12:20:29AM) Core:0 "DECLARE var1 = 83"
+(06/27/2025 12:20:29AM) Core:0 "DECLARE var2 = 67"
+(06/27/2025 12:21:15AM) Core:1 "DECLARE var3 = 54"
+(06/27/2025 12:21:15AM) Core:1 "DECLARE var4 = 26"
+(06/27/2025 12:21:15AM) Core:1 "ADD result5 = 78 + 83"
+(06/27/2025 12:22:05AM) Core:0 "SUBTRACT result6 = 83 - 67"
+(06/27/2025 12:22:05AM) Core:0 "Hello from p255 [7]"
+(06/27/2025 12:23:03AM) Core:2 "Hello from p255 [9]"
+(06/27/2025 12:23:03AM) Core:2 "DECLARE var10 = 8"

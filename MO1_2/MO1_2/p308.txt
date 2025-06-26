@@ -2,3 +2,14 @@ Process name: p308
 Process ID: 308
 Logs:
 
+(06/27/2025 12:21:34AM) Core:3 "DECLARE var0 = 64"
+(06/27/2025 12:21:35AM) Core:3 "DECLARE var1 = 35"
+(06/27/2025 12:21:35AM) Core:3 "DECLARE var2 = 3"
+(06/27/2025 12:22:27AM) Core:0 "DECLARE var3 = 91"
+(06/27/2025 12:22:27AM) Core:0 "DECLARE var4 = 87"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 3"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 1"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 2"
+(06/27/2025 12:22:27AM) Core:0 "Loop iteration 3"

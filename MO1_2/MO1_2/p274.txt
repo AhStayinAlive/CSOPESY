@@ -2,3 +2,12 @@ Process name: p274
 Process ID: 274
 Logs:
 
+(06/27/2025 12:20:55AM) Core:0 "DECLARE var0 = 29"
+(06/27/2025 12:20:55AM) Core:0 "DECLARE var1 = 76"
+(06/27/2025 12:20:55AM) Core:0 "DECLARE var2 = 69"
+(06/27/2025 12:21:43AM) Core:0 "DECLARE var3 = 12"
+(06/27/2025 12:21:43AM) Core:0 "DECLARE var4 = 84"
+(06/27/2025 12:21:43AM) Core:0 "SUBTRACT result5 = 29 - 76"
+(06/27/2025 12:22:37AM) Core:3 "SUBTRACT result6 = 76 - 69"
+(06/27/2025 12:22:37AM) Core:3 "Hello from p274 [7]"
+(06/27/2025 12:22:37AM) Core:3 "Hello from p274 [8]"
