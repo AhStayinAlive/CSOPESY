@@ -23,6 +23,14 @@ int pNameCounter = 1;
 int cpuTickCounter = 0;
 mutex coreAssignMutex;
 
+bool requireInit(const std::string& command) {
+    if (!initialized) {
+        cout << "Command '" << command << "' requires initialization. Run `initialize` first.\n";
+        return false;
+    }
+    return true;
+}
+
 void printBanner() {
     cout << "  ____ _____   ____    ____  _____  _____  __    __\n";
     cout << " / ___/ ____| / __ \\  |  _ \\| ____|/ ____| \\ \\  / / \n";
@@ -61,27 +69,26 @@ void simulateExecution(shared_ptr<Process> proc) {
                     logToFile(proc->name, ins.arg1, proc->coreAssigned);
                 }
                 else if (ins.opcode == "DECLARE") {
-                    mem[ins.arg1] = static_cast<uint16_t>(std::stoi(ins.arg2));
+                    mem[ins.arg1] = static_cast<uint16_t>(stoi(ins.arg2));
                 }
                 else if (ins.opcode == "ADD") {
-                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(std::stoi(ins.arg2));
-                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(std::stoi(ins.arg3));
+                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(stoi(ins.arg2));
+                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(stoi(ins.arg3));
                     mem[ins.arg1] = left + right;
                 }
                 else if (ins.opcode == "SUBTRACT") {
-                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(std::stoi(ins.arg2));
-                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(std::stoi(ins.arg3));
+                    uint16_t left = mem.count(ins.arg2) ? mem[ins.arg2] : static_cast<uint16_t>(stoi(ins.arg2));
+                    uint16_t right = mem.count(ins.arg3) ? mem[ins.arg3] : static_cast<uint16_t>(stoi(ins.arg3));
                     mem[ins.arg1] = left - right;
                 }
                 else if (ins.opcode == "SLEEP") {
-                    this_thread::sleep_for(chrono::milliseconds(500 * std::stoi(ins.arg1)));
+                    this_thread::sleep_for(chrono::milliseconds(500 * stoi(ins.arg1)));
                 }
             }
-            catch (const std::exception& e) {
-                logToFile(proc->name, "Instruction error: " + std::string(e.what()), proc->coreAssigned);
-                break; // Optional: skip entire process if instruction is invalid
+            catch (const exception& e) {
+                logToFile(proc->name, "Instruction error: " + string(e.what()), proc->coreAssigned);
+                break;
             }
-
             this_thread::sleep_for(chrono::milliseconds(config.delayPerInstruction * 100));
             (*proc->completedInstructions)++;
         }
@@ -90,13 +97,12 @@ void simulateExecution(shared_ptr<Process> proc) {
         proc->isRunning = false;
         proc->isFinished = true;
     }
-    catch (const std::exception& e) {
-        logToFile(proc->name, "Process execution error: " + std::string(e.what()), proc->coreAssigned);
+    catch (const exception& e) {
+        logToFile(proc->name, "Process execution error: " + string(e.what()), proc->coreAssigned);
         proc->isRunning = false;
         proc->isFinished = true;
     }
 }
-
 
 void dispatcher() {
     while (emulatorRunning) {
@@ -119,13 +125,11 @@ void screenConsole(shared_ptr<Process> proc) {
     cout << "+--------------------------------------+\n";
     cout << "| Process Name : " << proc->name << "\n";
     cout << "| ID           : " << proc->pid << "\n";
-    cout << "| Logs:\n";
 
     ifstream logFile(proc->name + ".txt");
     string line;
     while (getline(logFile, line)) {
-        if (line.find("Hello world") != string::npos)
-            cout << line << "\n";
+        cout << line << "\n";
     }
 
     cout << "| Current instruction line: " << *proc->completedInstructions << "\n";
@@ -138,12 +142,9 @@ void screenConsole(shared_ptr<Process> proc) {
         getline(cin, input);
 
         if (input == "process-smi") {
-            cout << "\nProcess name: " << proc->name << "\nID: " << proc->pid << "\nLogs:\n";
-            ifstream logFile(proc->name + ".txt");
-            string line;
-            while (getline(logFile, line)) {
-                if (line.find("Hello world") != string::npos)
-                    cout << line << "\n";
+            ifstream log(proc->name + ".txt");
+            while (getline(log, line)) {
+                cout << line << "\n";
             }
             cout << "Current instruction line: " << *proc->completedInstructions << "\n";
             cout << "Lines of code: " << proc->instructions.size() << "\n";
@@ -178,19 +179,18 @@ int main() {
         if (input == "exit") {
             emulatorRunning = false;
             break;
-
         }
         else if (input == "initialize") {
             if (loadConfig("config.txt", config)) {
-                cout << "Configuration loaded.\n";
                 initialized = true;
+                cout << "Configuration loaded.\n";
             }
             else {
                 cout << "Failed to load config.txt.\n";
             }
-
         }
         else if (input == "screen -ls") {
+            if (!requireInit("screen -ls")) continue;
             int used = 0;
             for (auto& p : allProcesses)
                 if (p->isRunning && !p->isFinished) used++;
@@ -207,7 +207,6 @@ int main() {
                 }
             }
 
-
             cout << "\nFinished processes:\n";
             for (auto& p : allProcesses)
                 if (p->isFinished)
@@ -216,25 +215,32 @@ int main() {
 
         }
         else if (input.rfind("screen -s ", 0) == 0) {
+            if (!requireInit("screen -s")) continue;
             string name = input.substr(10);
-            bool exists = false;
+            shared_ptr<Process> proc = nullptr;
+
             for (auto& p : allProcesses) {
                 if (p->name == name) {
-                    cout << "Process already exists.\n";
-                    exists = true;
+                    proc = p;
                     break;
                 }
             }
-            if (!exists) {
+
+            if (!proc) {
                 system("CLS");
-                auto proc = generateRandomProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
+                proc = generateRandomProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
                 allProcesses.push_back(proc);
                 processQueue.push(proc);
-                cout << "Process " << name << " queued.\n";
-                screenConsole(proc);
+                cout << "Process " << name << " created and queued.\n";
             }
+            else {
+                cout << "Process " << name << " already exists. Opening screen...\n";
+            }
+
+            screenConsole(proc);
         }
         else if (input.rfind("screen -r ", 0) == 0) {
+            if (!requireInit("screen -r")) continue;
             string name = input.substr(10);
             bool found = false;
             for (auto& p : allProcesses) {
@@ -245,9 +251,9 @@ int main() {
                 }
             }
             if (!found) cout << "Process " << name << " not found.\n";
-
         }
         else if (input == "scheduler-start") {
+            if (!requireInit("scheduler-start")) continue;
             if (!generatingProcesses) {
                 generatingProcesses = true;
                 schedulerThread = thread([&] {
@@ -256,8 +262,6 @@ int main() {
                         shared_ptr<Process> proc;
                         while (true) {
                             candidateName = "p" + to_string(pNameCounter);
-
-                            // Check if name exists
                             bool exists = false;
                             for (auto& p : allProcesses) {
                                 if (p->name == candidateName) {
@@ -265,7 +269,6 @@ int main() {
                                     break;
                                 }
                             }
-
                             if (!exists) {
                                 proc = generateRandomProcess(candidateName, pidCounter++, config.minInstructions, config.maxInstructions);
                                 ++pNameCounter;
@@ -275,17 +278,14 @@ int main() {
                                 ++pNameCounter;
                             }
                         }
-
                         allProcesses.push_back(proc);
                         processQueue.push(proc);
                         this_thread::sleep_for(chrono::seconds(config.batchProcessFreq));
                     }
-
                     });
                 cout << "Scheduler started.\n";
             }
             else cout << "Scheduler already running.\n";
-
         }
         else if (input == "scheduler-stop") {
             if (generatingProcesses) {
@@ -294,7 +294,6 @@ int main() {
                 cout << "Scheduler stopped.\n";
             }
             else cout << "Scheduler is not running.\n";
-
         }
         else {
             cout << "Unrecognized command.\n";
