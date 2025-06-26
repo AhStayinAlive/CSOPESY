@@ -1,26 +1,42 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\",
+  "WorkspaceRootPath": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\utils.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -36,11 +52,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
               "RelativeDocumentMoniker": "MO1_2\\main.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
               "RelativeToolTip": "MO1_2\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAKAAAAAAAAAAAIAwwLwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-25T08:24:31.617Z",
               "IsPinned": true,
@@ -48,26 +64,78 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "config.txt",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt",
+              "RelativeDocumentMoniker": "MO1_2\\config.txt",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt",
+              "RelativeToolTip": "MO1_2\\config.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-06-26T10:49:45.224Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "utils.h",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h",
+              "RelativeDocumentMoniker": "MO1_2\\utils.h",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h",
+              "RelativeToolTip": "MO1_2\\utils.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-26T10:49:07.845Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "scheduler.h",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h",
+              "RelativeDocumentMoniker": "MO1_2\\scheduler.h",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h",
+              "RelativeToolTip": "MO1_2\\scheduler.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-26T10:49:00.533Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "config.h",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h",
+              "RelativeDocumentMoniker": "MO1_2\\config.h",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h",
+              "RelativeToolTip": "MO1_2\\config.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-26T10:48:40.852Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "process.h",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h",
               "RelativeDocumentMoniker": "MO1_2\\process.h",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h",
               "RelativeToolTip": "MO1_2\\process.h",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-06-25T08:46:52.791Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "scheduler.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
               "RelativeDocumentMoniker": "MO1_2\\scheduler.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
               "RelativeToolTip": "MO1_2\\scheduler.cpp",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAkwFsAAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAADcAAAAAAAAAAAAwwGMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-25T08:24:44.443Z",
               "EditorCaption": ""
@@ -76,22 +144,22 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "process.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
               "RelativeDocumentMoniker": "MO1_2\\process.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
               "RelativeToolTip": "MO1_2\\process.cpp",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAkwEsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAwwCkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-25T08:24:38.706Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "config.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
+              "DocumentMoniker": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
               "RelativeDocumentMoniker": "MO1_2\\config.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
+              "ToolTip": "C:\\Users\\hanna\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
               "RelativeToolTip": "MO1_2\\config.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",

@@ -121,7 +121,7 @@ void screenConsole(std::shared_ptr<Process> proc) {
         }
     }
     else {
-        cout << "| [Warning] Could not open log file.\n";
+        cout << "| No logs yet. Process has not started executing.\n";
     }
 
     cout << "| Current instruction line: " << *proc->completedInstructions << "\n";
@@ -158,7 +158,7 @@ void screenConsole(std::shared_ptr<Process> proc) {
                 log.close();
             }
             else {
-                cout << "[Error] Unable to open log file.\n";
+                cout << "| No logs yet. Process has not started executing.\n";
             }
 
             cout << "Current instruction line: " << *proc->completedInstructions << "\n";
@@ -253,7 +253,9 @@ int main() {
             shared_ptr<Process> proc = nullptr;
 
             for (auto& p : allProcesses) {
-                if (p->name == name) {
+                string existingName = p->name;
+                std::transform(existingName.begin(), existingName.end(), existingName.begin(), ::tolower);
+                if (existingName == name) {
                     proc = p;
                     break;
                 }

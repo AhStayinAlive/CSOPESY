@@ -10,8 +10,8 @@
 struct Instruction {
     std::string opcode;
     std::string arg1, arg2, arg3;
-    std::vector<Instruction> subInstructions;  // Used for FOR loops
-    int loopCount = 0;                          // Optional: in case FOR loop count is needed
+    std::vector<Instruction> subInstructions; 
+    int loopCount = 0;                         
 };
 
 struct Process {
@@ -29,7 +29,7 @@ struct Process {
     std::vector<Instruction> instructions;
     std::vector<std::string> logs;
 
-    std::map<std::string, unsigned short> memory;  // For variable handling (used in main.cpp)
+    std::map<std::string, unsigned short> memory;  
 };
 
 extern std::vector<std::shared_ptr<Process>> allProcesses;
