@@ -10,10 +10,13 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <algorithm>
 #include "config.h"
 
 static std::vector<std::shared_ptr<Process>> allProcesses;
 static std::unordered_map<std::string, std::shared_ptr<Process>> processMap;
+static int pidCounter = 1000;
+static int uniqueProcessCounter = 1;
 
 std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions) {
     auto proc = std::make_shared<Process>();
@@ -23,8 +26,10 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->coreAssigned = -1;
     proc->isRunning = false;
     proc->isFinished = false;
+    proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
 
+    // Initialize random number generation
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
@@ -33,58 +38,98 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     std::uniform_int_distribution<> sleepTime(100, 500);
     std::uniform_int_distribution<> loopCountDist(2, 4);
 
-    int numInstructions = instructionCount(gen);
-    proc->totalInstructions = numInstructions;
+    try {
+        int numInstructions = instructionCount(gen);
+        proc->totalInstructions = numInstructions;
 
-    for (int i = 0; i < 5; ++i) {
-        proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(i), valueDist(gen)));
-    }
+        // Always start with 5 DECLARE instructions to establish variables
+        for (int i = 0; i < 5; ++i) {
+            std::string varName = "var" + std::to_string(i);
+            int value = valueDist(gen);
+            proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
+        }
 
-    for (int i = 5; i < numInstructions; ++i) {
-        int op = opcodePicker(gen);
-        switch (op) {
-        case 0:
-            proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(i), valueDist(gen)));
-            break;
-        case 1:
-            proc->instructions.push_back(std::make_shared<AddInstruction>(
-                "sum" + std::to_string(i), "var" + std::to_string(i % 5), "var" + std::to_string((i + 1) % 5)));
-            break;
-        case 2:
-            proc->instructions.push_back(std::make_shared<SubtractInstruction>(
-                "diff" + std::to_string(i), "var" + std::to_string(i % 5), "var" + std::to_string((i + 1) % 5)));
-            break;
-        case 3:
-            proc->instructions.push_back(std::make_shared<PrintInstruction>("Message from " + name + " @" + std::to_string(i)));
-            break;
-        case 4:
-            proc->instructions.push_back(std::make_shared<SleepInstruction>(sleepTime(gen)));
-            break;
-        case 5: {
-            int loopCount = loopCountDist(gen);
-            std::vector<std::shared_ptr<Instruction>> subInsts;
-            for (int j = 0; j < 3; ++j) {
-                subInsts.push_back(std::make_shared<PrintInstruction>("Loop " + std::to_string(j + 1)));
+        // Generate remaining instructions
+        for (int i = 5; i < numInstructions; ++i) {
+            int op = opcodePicker(gen);
+
+            switch (op) {
+            case 0: { // Additional DECLARE
+                std::string varName = "var" + std::to_string(i);
+                int value = valueDist(gen);
+                proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
+                break;
             }
-            proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInsts));
-            break;
+            case 1: { // ADD
+                std::string result = "sum" + std::to_string(i);
+                std::string lhs = "var" + std::to_string(i % 5);
+                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                proc->instructions.push_back(std::make_shared<AddInstruction>(result, lhs, rhs));
+                break;
+            }
+            case 2: { // SUBTRACT
+                std::string result = "diff" + std::to_string(i);
+                std::string lhs = "var" + std::to_string(i % 5);
+                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                proc->instructions.push_back(std::make_shared<SubtractInstruction>(result, lhs, rhs));
+                break;
+            }
+            case 3: { // PRINT
+                std::string message = "Hello from " + name + " [instruction " + std::to_string(i) + "]";
+                proc->instructions.push_back(std::make_shared<PrintInstruction>(message));
+                break;
+            }
+            case 4: { // SLEEP
+                int duration = sleepTime(gen);
+                proc->instructions.push_back(std::make_shared<SleepInstruction>(duration));
+                break;
+            }
+            case 5: { // FOR loop
+                int loopCount = loopCountDist(gen);
+                std::vector<std::shared_ptr<Instruction>> subInstructions;
+
+                // Create 3 PRINT instructions for the loop body
+                for (int j = 0; j < 3; ++j) {
+                    std::string loopMessage = "Loop iteration " + std::to_string(j + 1) + " in " + name;
+                    subInstructions.push_back(std::make_shared<PrintInstruction>(loopMessage));
+                }
+
+                proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInstructions));
+                break;
+            }
+            }
         }
-        }
+
+        // Log process creation
+        proc->logs.push_back("Process " + name + " created with " + std::to_string(numInstructions) + " instructions");
+    }
+    catch (const std::exception& e) {
+        proc->logs.push_back("Process generation failed: " + std::string(e.what()));
+        proc->totalInstructions = 0; // Mark as failed
     }
 
-    allProcesses.push_back(proc);
-    processMap[name] = proc;
     return proc;
 }
 
 std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns) {
-    static int id = 1;
-    return createProcess("P" + std::to_string(id++), id, minIns, maxIns);
+    std::string processName;
+
+    // Generate unique process name
+    do {
+        processName = "process_" + std::to_string(uniqueProcessCounter++);
+    } while (processMap.find(processName) != processMap.end());
+
+    return createProcess(processName, pidCounter++, minIns, maxIns);
 }
 
 std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
-    static int pid = 1000;
-    return createProcess(name, pid++, Config::getInstance().minInstructions, Config::getInstance().maxInstructions);
+    // Check if process already exists
+    if (processMap.find(name) != processMap.end()) {
+        return processMap[name];
+    }
+
+    const auto& config = Config::getInstance();
+    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
 }
 
 std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
@@ -92,11 +137,75 @@ std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
     return (it != processMap.end()) ? it->second : nullptr;
 }
 
+std::shared_ptr<Process> ProcessManager::findByPid(int pid) {
+    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
+        [pid](const std::shared_ptr<Process>& p) { return p->pid == pid; });
+    return (it != allProcesses.end()) ? *it : nullptr;
+}
+
 void ProcessManager::addProcess(std::shared_ptr<Process> proc) {
-    allProcesses.push_back(proc);
-    processMap[proc->name] = proc;
+    if (!proc) return;
+
+    // Check if process already exists in the list
+    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
+        [&proc](const std::shared_ptr<Process>& p) { return p->name == proc->name; });
+
+    if (it == allProcesses.end()) {
+        allProcesses.push_back(proc);
+        processMap[proc->name] = proc;
+    }
 }
 
 std::vector<std::shared_ptr<Process>> ProcessManager::getAllProcesses() {
     return allProcesses;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getRunningProcesses() {
+    std::vector<std::shared_ptr<Process>> running;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(running),
+        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; });
+    return running;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getFinishedProcesses() {
+    std::vector<std::shared_ptr<Process>> finished;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(finished),
+        [](const std::shared_ptr<Process>& p) { return p->isFinished; });
+    return finished;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getWaitingProcesses() {
+    std::vector<std::shared_ptr<Process>> waiting;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(waiting),
+        [](const std::shared_ptr<Process>& p) { return !p->isRunning && !p->isFinished; });
+    return waiting;
+}
+
+int ProcessManager::getProcessCount() {
+    return static_cast<int>(allProcesses.size());
+}
+
+int ProcessManager::getRunningProcessCount() {
+    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
+        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; }));
+}
+
+int ProcessManager::getFinishedProcessCount() {
+    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
+        [](const std::shared_ptr<Process>& p) { return p->isFinished; }));
+}
+
+double ProcessManager::getCpuUtilization() {
+    int numCPU = Config::getInstance().numCPU;
+    if (numCPU == 0) return 0.0;
+
+    int running = getRunningProcessCount();
+    return (static_cast<double>(running) / numCPU) * 100.0;
+}
+
+void ProcessManager::clearAllProcesses() {
+    allProcesses.clear();
+    processMap.clear();
+    pidCounter = 1000;
+    uniqueProcessCounter = 1;
 }

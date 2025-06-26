@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include <sstream>
+#include <iomanip>
 
 CLIManager::CLIManager() : schedulerThread(), generating(false) {}
 
@@ -62,6 +63,7 @@ void CLIManager::handleCommand(const std::string& input) {
         if (!proc) {
             proc = ProcessManager::createNamedProcess(name);
             ProcessManager::addProcess(proc);
+            addProcess(proc); // Add to scheduler queue
             std::cout << "Created and queued process " << name << "\n";
         }
         ConsoleView::show(proc);
@@ -91,6 +93,7 @@ void CLIManager::handleCommand(const std::string& input) {
                     while (generating) {
                         auto proc = ProcessManager::createUniqueNamedProcess(config.minInstructions, config.maxInstructions);
                         ProcessManager::addProcess(proc);
+                        addProcess(proc); // Add to scheduler queue
                         std::this_thread::sleep_for(std::chrono::seconds(config.batchProcessFreq));
                     }
                 }
@@ -104,7 +107,6 @@ void CLIManager::handleCommand(const std::string& input) {
             std::cout << "Already generating processes.\n";
         }
     }
-
 
     else if (cmd == "scheduler-stop") {
         if (generating) {
@@ -133,6 +135,7 @@ void CLIManager::handleCommand(const std::string& input) {
 void CLIManager::stopScheduler() {
     generating = false;
     if (schedulerThread.joinable()) schedulerThread.join();
+    stopScheduler(); // Stop the main scheduler
 }
 
 void CLIManager::showHelp() const {
@@ -157,37 +160,77 @@ std::vector<std::string> CLIManager::tokenize(const std::string& input) const {
 
 void CLIManager::showProcessList() const {
     const auto& all = ProcessManager::getAllProcesses();
+
+    // Calculate CPU utilization
     int running = 0;
-    for (auto& p : all) {
-        if (p->isRunning && !p->isFinished) running++;
+    int finished = 0;
+    int waiting = 0;
+
+    for (const auto& p : all) {
+        if (p->isRunning && !p->isFinished) {
+            running++;
+        }
+        else if (p->isFinished) {
+            finished++;
+        }
+        else {
+            waiting++;
+        }
     }
 
-    // Fix: Add safety check for division by zero
     int numCPU = Config::getInstance().numCPU;
     if (numCPU == 0) {
         std::cout << "Error: numCPU is 0. Please check your config.txt file.\n";
         return;
     }
 
-    std::cout << "CPU utilization: " << (running * 100 / numCPU) << "%\n";
+    // Calculate utilization as percentage
+    double utilization = (static_cast<double>(running) / numCPU) * 100.0;
+
+    std::cout << std::fixed << std::setprecision(1);
+    std::cout << "CPU utilization: " << std::min(utilization, 100.0) << "%\n";
     std::cout << "Cores used: " << running << "\n";
-    std::cout << "Cores available: " << numCPU - running << "\n\n";
+    std::cout << "Cores available: " << std::max(0, numCPU - running) << "\n";
+    std::cout << "Total processes: " << all.size() << "\n";
+    std::cout << "Running: " << running << " | Waiting: " << waiting << " | Finished: " << finished << "\n\n";
 
     std::cout << "Running processes:\n";
-    for (auto& p : all) {
-        if (p->isRunning && !p->isFinished) {
-            std::cout << p->name << " | Core " << p->coreAssigned
-                << " | " << *(p->completedInstructions)
-                << "/" << p->instructions.size() << "\n";
+    if (running == 0) {
+        std::cout << "  [No running processes]\n";
+    }
+    else {
+        for (const auto& p : all) {
+            if (p->isRunning && !p->isFinished) {
+                std::cout << "  " << p->name << " (PID:" << p->pid << ") | Core " << p->coreAssigned
+                    << " | " << *p->completedInstructions << "/" << p->instructions.size()
+                    << " | Started: " << p->startTime << "\n";
+            }
+        }
+    }
+
+    std::cout << "\nWaiting processes:\n";
+    if (waiting == 0) {
+        std::cout << "  [No waiting processes]\n";
+    }
+    else {
+        for (const auto& p : all) {
+            if (!p->isRunning && !p->isFinished) {
+                std::cout << "  " << p->name << " (PID:" << p->pid << ") | "
+                    << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
+            }
         }
     }
 
     std::cout << "\nFinished processes:\n";
-    for (auto& p : all) {
-        if (p->isFinished) {
-            std::cout << p->name << " | Ended: " << p->endTime << "\n";
+    if (finished == 0) {
+        std::cout << "  [No finished processes]\n";
+    }
+    else {
+        for (const auto& p : all) {
+            if (p->isFinished) {
+                std::cout << "  " << p->name << " (PID:" << p->pid << ") | Finished: " << p->endTime
+                    << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
+            }
         }
     }
 }
-
-
