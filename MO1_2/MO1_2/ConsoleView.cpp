@@ -4,7 +4,8 @@
 #include <fstream>
 #include <thread>
 #include <chrono>
-
+#include <iomanip>
+#include <iostream>
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -37,15 +38,17 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
     std::cout << "| Instructions : " << *proc->completedInstructions << " / " << proc->instructions.size() << "\n";
     std::cout << "+--------------------------------------+\n";
 
-    std::cout << "\nLogs:\n";
+    std::cout << "\nInstruction Logs:\n";
     if (proc->logs.empty()) {
-        std::cout << "[No logs available]\n";
+        std::cout << "  [No logs available]\n";
     }
     else {
+        int logNum = 1;
         for (const auto& log : proc->logs) {
-            std::cout << log << "\n";
+            std::cout << "  [" << std::setw(2) << logNum++ << "] " << log << "\n";
         }
     }
+
 
     std::cout << "\nStatus: ";
     if (proc->isFinished) {

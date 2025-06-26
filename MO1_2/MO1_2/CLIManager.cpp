@@ -42,15 +42,23 @@ void CLIManager::run() {
 }
 
 void CLIManager::handleCommand(const std::string& input) {
+    static bool initialized = false;
+
     auto tokens = tokenize(input);
     if (tokens.empty()) return;
 
     const std::string& cmd = tokens[0];
 
+    if (cmd != "initialize" && !initialized) {
+        std::cout << "Please run 'initialize' first.\n";
+        return;
+    }
+
     if (cmd == "initialize") {
         if (Config::getInstance().loadFromFile("config.txt")) {
             std::cout << "Configuration loaded.\n";
             startScheduler(Config::getInstance());
+            initialized = true;
         }
         else {
             std::cout << "Failed to load config.txt.\n";
@@ -65,6 +73,14 @@ void CLIManager::handleCommand(const std::string& input) {
             ProcessManager::addProcess(proc);
             addProcess(proc); // Add to scheduler queue
             std::cout << "Created and queued process " << name << "\n";
+        }
+        else {
+            std::cout << "Opening existing process " << name << "\n";
+            std::cout << "---- Logs for process: " << name << " ----\n";
+            for (const auto& log : proc->logs) {
+                std::cout << log << "\n";
+            }
+            std::cout << "----------------------------------------\n";
         }
         ConsoleView::show(proc);
     }
@@ -82,6 +98,20 @@ void CLIManager::handleCommand(const std::string& input) {
 
     else if (cmd == "screen" && tokens.size() == 2 && tokens[1] == "-ls") {
         showProcessList();
+    }
+
+    else if (cmd == "process-smi" && tokens.size() == 2) {
+        std::string name = tokens[1];
+        auto proc = ProcessManager::findByName(name);
+        if (!proc) {
+            std::cout << "Process '" << name << "' not found.\n";
+            return;
+        }
+        std::cout << "---- Logs for process: " << name << " ----\n";
+        for (const auto& log : proc->logs) {
+            std::cout << log << "\n";
+        }
+        std::cout << "----------------------------------------\n";
     }
 
     else if (cmd == "scheduler-start") {
@@ -142,6 +172,7 @@ void CLIManager::showHelp() const {
     std::cout << "Available commands:\n"
         << "  initialize         - Load config.txt and start scheduler\n"
         << "  screen -s [name]   - Create or open a process\n"
+		<< "  process-smi [name] - Show logs for a specific process\n"
         << "  screen -r [name]   - Resume and inspect a process\n"
         << "  screen -ls         - Show running and finished processes\n"
         << "  scheduler-start    - Begin periodic batch process generation\n"

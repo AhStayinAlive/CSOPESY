@@ -3,7 +3,7 @@
 
 #include <memory>
 
-class Process; // Forward declaration only
+struct Process; // Forward declaration only
 
 class Instruction {
 public:

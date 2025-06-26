@@ -1,7 +1,17 @@
-#include "scheduler.h"
+﻿#include "scheduler.h"
 #include "utils.h"
 #include "config.h"
 #include "ProcessManager.h"
+#include "instruction.h"
+#include "AddInstruction.h"
+#include "SubtractInstruction.h"
+#include "DeclareInstruction.h"
+#include "SleepInstruction.h"
+#include "PrintInstruction.h"
+#include "ForInstruction.h"
+#include <sstream>
+
+#include <iomanip>
 #include <queue>
 #include <thread>
 #include <vector>
@@ -20,7 +30,7 @@ static std::condition_variable schedulerCV;
 static std::atomic<bool> schedulerRunning{ false };
 static std::atomic<bool> shouldStop{ false };
 static std::vector<std::thread> cpuWorkers;
-static std::vector<std::atomic<bool>> coreAvailable;
+static std::vector<std::shared_ptr<std::atomic<bool>>> coreAvailable;
 
 // Scheduler configuration
 static SchedulerType currentSchedulerType = SchedulerType::FCFS;
@@ -44,7 +54,47 @@ bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Ins
     try {
         instruction->execute(proc, coreId);
         (*proc->completedInstructions)++;
+
+        std::string timestamp = getCurrentTimestamp();
+        std::ostringstream logEntry;
+        logEntry << "[" << timestamp << "] "
+            << "Core " << coreId
+            << " | PID " << proc->pid
+            << " | ";
+
+        if (auto add = dynamic_cast<AddInstruction*>(instruction.get())) {
+            int lhs = std::stoi(add->arg1);
+            int rhs = std::stoi(add->arg2);
+            int result = lhs + rhs;
+            logEntry << "ADD: " << lhs << " + " << rhs << " = " << result
+                << " → " << add->resultVar;
+        }
+        else if (auto sub = dynamic_cast<SubtractInstruction*>(instruction.get())) {
+            int lhs = std::stoi(sub->arg1);
+            int rhs = std::stoi(sub->arg2);
+            int result = lhs - rhs;
+            logEntry << "SUBTRACT: " << lhs << " - " << rhs << " = " << result
+                << " → " << sub->resultVar;
+        }
+        else if (auto loop = dynamic_cast<ForInstruction*>(instruction.get())) {
+            logEntry << "FOR Loop ×" << loop->getIterations();
+        }
+        else if (auto sleep = dynamic_cast<SleepInstruction*>(instruction.get())) {
+            logEntry << "SLEEP: " << sleep->getDuration() << " ms";
+        }
+        else if (auto print = dynamic_cast<PrintInstruction*>(instruction.get())) {
+            logEntry << "PRINT: \"" << print->getMessage() << "\"";
+        }
+        else {
+            logEntry << "Executed unknown instruction type";
+        }
+
+        std::string finalLog = logEntry.str();
+        logToFile(proc->name, finalLog, coreId);
+        proc->logs.push_back(finalLog);
+
         return true;
+
     }
     catch (const std::exception& e) {
         logToFile(proc->name, "Error executing instruction: " + std::string(e.what()), coreId);
@@ -99,7 +149,7 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
     }
 
     proc->isRunning = false;
-    coreAvailable[coreId] = true;
+    *coreAvailable[coreId] = true;
 }
 
 void cpuWorker(int coreId, int delayMs) {
@@ -127,7 +177,7 @@ void cpuWorker(int coreId, int delayMs) {
             readyQueue.pop();
             proc->coreAssigned = coreId;
             proc->isRunning = true;
-            coreAvailable[coreId] = false;
+            *coreAvailable[coreId] = false;
         }
 
         // Set start time if this is the first execution
@@ -180,8 +230,9 @@ void startScheduler(const Config& config) {
     // Initialize core availability tracking
     coreAvailable.clear();
     coreAvailable.resize(config.numCPU);
+    coreAvailable.resize(config.numCPU);
     for (int i = 0; i < config.numCPU; ++i) {
-        coreAvailable[i] = true;
+        coreAvailable[i] = std::make_shared<std::atomic<bool>>(true);
     }
 
     // Start CPU worker threads
@@ -253,7 +304,7 @@ void generateReport() {
     file << "CSOPESY CPU Utilization Report\n";
     file << "Generated: " << getCurrentTimestamp() << "\n\n";
 
-    // System information
+    // System configuration
     file << "System Configuration:\n";
     file << "  CPU Cores: " << Config::getInstance().numCPU << "\n";
     file << "  Scheduler: " << Config::getInstance().scheduler << "\n";
@@ -262,7 +313,7 @@ void generateReport() {
     }
     file << "  Delay per Instruction: " << Config::getInstance().delayPerInstruction << "ms\n\n";
 
-    // Utilization statistics
+    // Utilization stats
     double utilization = ProcessManager::getCpuUtilization();
     file << "CPU Utilization Statistics:\n";
     file << "  Current Utilization: " << std::fixed << std::setprecision(2) << utilization << "%\n";
@@ -274,8 +325,29 @@ void generateReport() {
     // Core usage
     file << "Core Usage:\n";
     for (int i = 0; i < Config::getInstance().numCPU; ++i) {
-        std::string status = coreAvailable[i] ? "Available" : "Busy";
+        std::string status = (*coreAvailable[i]) ? "Available" : "Busy";
         file << "  Core " << i << ": " << status;
 
-        // Find process running on this core
-        for (const auto& proc : run
+        // Find the process assigned to this core
+        for (const auto& proc : runningProcesses) {
+            if (proc->coreAssigned == i) {
+                file << " | Running: " << proc->name << " (PID: " << proc->pid << ")";
+                break;
+            }
+        }
+        file << "\n";
+    }
+
+    file << "\nFinished Processes:\n";
+    if (finishedProcesses.empty()) {
+        file << "  [None]\n";
+    }
+    else {
+        for (const auto& proc : finishedProcesses) {
+            file << "  " << proc->name << " (PID: " << proc->pid << ") - Completed at " << proc->endTime << "\n";
+        }
+    }
+
+    file.close();
+    std::cout << "Report generated: csopesy-log.txt\n";
+}
