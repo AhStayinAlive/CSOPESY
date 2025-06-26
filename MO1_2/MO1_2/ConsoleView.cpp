@@ -49,19 +49,19 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
 
     std::cout << "\nStatus: ";
     if (proc->isFinished) {
-        if (*proc->completedInstructions == proc->instructions.size()) {
-            std::cout << "✅ Finished successfully.\n";
+        if (*proc->completedInstructions == static_cast<int>(proc->instructions.size())) {
+            std::cout << "[OK] Finished successfully.\n";
         }
         else {
-            std::cout << "⚠️  Terminated early due to error at instruction "
+            std::cout << "[ERROR] Terminated early due to error at instruction "
                 << proc->instructionPointer + 1 << ".\n";
         }
     }
     else if (proc->isRunning) {
-        std::cout << "⏳ Currently running.\n";
+        std::cout << "[RUNNING] Currently running.\n";
     }
     else {
-        std::cout << "🕒 Queued or waiting.\n";
+        std::cout << "[WAITING] Queued or waiting.\n";
     }
 
     std::cout << "\nPress [Enter] to exit this view...";

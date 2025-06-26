@@ -1,10 +1,13 @@
 #pragma once
 #include "instruction.h"
+#include "process.h"
+#include <memory>
 
 class SleepInstruction : public Instruction {
-    int sleepMs;
+private:
+    int duration;  // Duration in milliseconds
 
 public:
-    explicit SleepInstruction(int ms);
+    SleepInstruction(int ms);
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 };

@@ -162,9 +162,16 @@ void CLIManager::showProcessList() const {
         if (p->isRunning && !p->isFinished) running++;
     }
 
-    std::cout << "CPU utilization: " << (running * 100 / Config::getInstance().numCPU) << "%\n";
+    // Fix: Add safety check for division by zero
+    int numCPU = Config::getInstance().numCPU;
+    if (numCPU == 0) {
+        std::cout << "Error: numCPU is 0. Please check your config.txt file.\n";
+        return;
+    }
+
+    std::cout << "CPU utilization: " << (running * 100 / numCPU) << "%\n";
     std::cout << "Cores used: " << running << "\n";
-    std::cout << "Cores available: " << Config::getInstance().numCPU - running << "\n\n";
+    std::cout << "Cores available: " << numCPU - running << "\n\n";
 
     std::cout << "Running processes:\n";
     for (auto& p : all) {
@@ -182,3 +189,5 @@ void CLIManager::showProcessList() const {
         }
     }
 }
+
+

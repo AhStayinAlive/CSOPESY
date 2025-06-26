@@ -1,40 +1,37 @@
+// process.h
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include <string>
-#include <atomic>
-#include <memory>
 #include <vector>
-#include <map>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <atomic>
 
-struct Instruction {
-    std::string opcode;
-    std::string arg1, arg2, arg3;
-    std::vector<Instruction> subInstructions;  // Used for FOR loops
-    int loopCount = 0;                          // Optional: in case FOR loop count is needed
-};
+class Instruction;
 
 struct Process {
     int pid;
     std::string name;
-    std::string startTime;
-    std::string endTime;
-    int totalInstructions;
     int instructionPointer;
     int coreAssigned;
     bool isRunning;
     bool isFinished;
-    bool isDetached = false;
-    std::shared_ptr<std::atomic<int>> completedInstructions;
-    std::vector<Instruction> instructions;
+    bool isDetached;
+    std::string startTime;
+    std::string endTime;
+    std::vector<std::shared_ptr<Instruction>> instructions;
+    std::unordered_map<std::string, uint16_t> memory;
     std::vector<std::string> logs;
+    std::shared_ptr<std::atomic<int>> completedInstructions;
+    int totalInstructions;
+    int wakeupTick = 0;
 
-    std::map<std::string, unsigned short> memory;  // For variable handling (used in main.cpp)
+    int getWakeupTick() const { return wakeupTick; }
+    void setWakeupTick(int tick) { wakeupTick = tick; }
 };
 
-extern std::vector<std::shared_ptr<Process>> allProcesses;
-
-
+// Function declaration
 std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns);
 
-#endif
+#endif // PROCESS_H

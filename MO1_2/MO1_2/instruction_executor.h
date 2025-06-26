@@ -1,30 +1,44 @@
-﻿#pragma once
-#ifndef INSTRUCTION_EXECUTOR_H
-#define INSTRUCTION_EXECUTOR_H
-
-#include "instruction.h"
+﻿// instruction_executor.cpp
 #include "process.h"
-#include "utils.h"
-#include <sstream>
+#include "Instruction.h"
+#include <stdexcept>
+#include <iostream>
 
-// Just runs the instruction
-inline bool executeSingleInstruction(std::shared_ptr<Process>& proc, std::shared_ptr<Instruction>& ins, int coreId = -1) {
+bool executeSingleInstruction(std::shared_ptr<Process> proc,
+    std::shared_ptr<Instruction> instruction,
+    int coreId) {
     try {
-        ins->execute(proc, coreId);
+        // Execute the instruction
+        instruction->execute(proc, coreId);
+
+        // Increment completed instructions counter
         (*proc->completedInstructions)++;
-        if (*proc->completedInstructions > proc->instructions.size()) {
-            *proc->completedInstructions = proc->instructions.size();
-        }
+
         return true;
     }
     catch (const std::exception& e) {
-        std::ostringstream errMsg;
-        errMsg << "[Error] Failed at instruction " << proc->instructionPointer
-            << ": " << e.what();
-        logToFile(proc->name, errMsg.str(), coreId);
-        proc->logs.push_back(errMsg.str());
+        // Log the error
+        std::string errorMsg = "Error executing instruction: " + std::string(e.what());
+        proc->logs.push_back(errorMsg);
+
+        // Mark process as finished due to error
+        proc->isFinished = true;
+        proc->isRunning = false;
+
+        std::cerr << "Process " << proc->name << " encountered error: " << e.what() << std::endl;
+
+        return false;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        std::string errorMsg = "Unknown error executing instruction";
+        proc->logs.push_back(errorMsg);
+
+        proc->isFinished = true;
+        proc->isRunning = false;
+
+        std::cerr << "Process " << proc->name << " encountered unknown error" << std::endl;
+
         return false;
     }
 }
-
-#endif // INSTRUCTION_EXECUTOR_H

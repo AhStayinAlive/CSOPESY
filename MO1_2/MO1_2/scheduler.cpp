@@ -18,10 +18,12 @@ static std::mutex mtx;
 static std::condition_variable cv;
 bool stop = false;
 bool running = false;
-static Config globalConfig;
 SchedulerType schedulerType = SchedulerType::FCFS;
 int cpuTick = 0;
 int timeQuantum = 3;
+
+// Add the missing global variable
+std::vector<std::shared_ptr<Process>> allProcesses;
 
 // Sleep queue for delayed requeueing
 static auto cmp = [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
@@ -32,7 +34,7 @@ static std::priority_queue<std::shared_ptr<Process>, std::vector<std::shared_ptr
 void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delay) {
     int quantumRemaining = timeQuantum;
 
-    while (proc->instructionPointer < proc->instructions.size()) {
+    while (proc->instructionPointer < static_cast<int>(proc->instructions.size())) {
         // Check for wake-up tick skip
         if (proc->getWakeupTick() > cpuTick) {
             std::lock_guard<std::mutex> lock(mtx);
@@ -70,6 +72,8 @@ void cpuWorker(int coreId, int delay) {
                 return !readyQueue.empty() || !sleepQueue.empty() || stop;
                 });
 
+            if (stop) break; // Add this check to properly exit
+
             // Wake up sleeping processes
             while (!sleepQueue.empty() && sleepQueue.top()->getWakeupTick() <= cpuTick) {
                 readyQueue.push(sleepQueue.top());
@@ -89,9 +93,18 @@ void cpuWorker(int coreId, int delay) {
 }
 
 void startScheduler(const Config& config) {
-    globalConfig = config;
+    // Use the passed config parameter directly instead of copying
     running = true;
     stop = false;
+
+    // Set scheduler type based on config
+    if (config.scheduler == "RR") {
+        schedulerType = SchedulerType::ROUND_ROBIN;
+        timeQuantum = config.quantumCycles;
+    }
+    else {
+        schedulerType = SchedulerType::FCFS;
+    }
 
     for (int i = 0; i < config.numCPU; ++i)
         std::thread(cpuWorker, i, config.delayPerInstruction * 100).detach();

@@ -1,14 +1,14 @@
+
+// DeclareInstruction.h
 #pragma once
-#include "Instruction.h"
+#include "instruction.h"
 #include <string>
 
 class DeclareInstruction : public Instruction {
-private:
     std::string varName;
-    uint16_t value;
+    int value;
 
 public:
-    DeclareInstruction(const std::string& var, uint16_t val);  // <--- make sure this line exists
-
-    void execute(std::shared_ptr<Process> proc, int coreId) override;
+    DeclareInstruction(const std::string& name, int val);
+    void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 };
