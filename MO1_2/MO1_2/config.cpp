@@ -1,21 +1,35 @@
 #include "config.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
-bool loadConfig(const std::string& filename, Config& config) {
+Config& Config::getInstance() {
+    static Config instance;
+    return instance;
+}
+
+bool Config::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
-    if (!file) return false;
+    if (!file.is_open()) return false;
 
-    std::string key;
-    while (file >> key) {
-        if (key == "num-cpu") file >> config.numCPU;
-        else if (key == "scheduler") file >> config.scheduler;
-        else if (key == "quantum-cycles") file >> config.quantumCycles;
-        else if (key == "batch-process-freq") file >> config.batchProcessFreq;
-        else if (key == "min-ins") file >> config.minInstructions;
-        else if (key == "max-ins") file >> config.maxInstructions;
-        else if (key == "delays-per-exec") file >> config.delayPerInstruction;
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string key;
+        if (std::getline(iss, key, '=')) {
+            std::string value;
+            if (std::getline(iss, value)) {
+                if (key == "numCPU") numCPU = std::stoi(value);
+                else if (key == "scheduler") scheduler = value;
+                else if (key == "quantumCycles") quantumCycles = std::stoi(value);
+                else if (key == "batchProcessFreq") batchProcessFreq = std::stoi(value);
+                else if (key == "minInstructions") minInstructions = std::stoi(value);
+                else if (key == "maxInstructions") maxInstructions = std::stoi(value);
+                else if (key == "delayPerInstruction") delayPerInstruction = std::stoi(value);
+            }
+        }
     }
 
+    file.close();
     return true;
 }

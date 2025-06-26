@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "utils.h"
 #include "config.h"
+#include "instruction_executor.h"
 #include <queue>
 #include <thread>
 #include <vector>
@@ -10,7 +11,7 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
-#include "instruction_executor.h"
+#include <functional>
 
 static std::queue<std::shared_ptr<Process>> readyQueue;
 static std::mutex mtx;
@@ -18,14 +19,45 @@ static std::condition_variable cv;
 bool stop = false;
 bool running = false;
 static Config globalConfig;
+SchedulerType schedulerType = SchedulerType::FCFS;
+int cpuTick = 0;
+int timeQuantum = 3;
 
-void executeInstructions(std::shared_ptr<Process>& proc, const std::vector<Instruction>& instructions, int coreId, int delay) {
-    for (size_t i = 0; i < instructions.size(); ++i) {
-        proc->instructionPointer = i;  // track current instruction index
-        if (!executeSingleInstruction(proc, instructions[i], coreId)) break;
+// Sleep queue for delayed requeueing
+static auto cmp = [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
+    return a->getWakeupTick() > b->getWakeupTick();
+    };
+static std::priority_queue<std::shared_ptr<Process>, std::vector<std::shared_ptr<Process>>, decltype(cmp)> sleepQueue(cmp);
+
+void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delay) {
+    int quantumRemaining = timeQuantum;
+
+    while (proc->instructionPointer < proc->instructions.size()) {
+        // Check for wake-up tick skip
+        if (proc->getWakeupTick() > cpuTick) {
+            std::lock_guard<std::mutex> lock(mtx);
+            sleepQueue.push(proc);
+            return;
+        }
+
+        if (!executeSingleInstruction(proc, proc->instructions[proc->instructionPointer], coreId)) break;
+        proc->instructionPointer++;
+        cpuTick++;
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
+        if (schedulerType == SchedulerType::ROUND_ROBIN) {
+            quantumRemaining--;
+            if (quantumRemaining == 0) {
+                std::lock_guard<std::mutex> lock(mtx);
+                readyQueue.push(proc);
+                return; // Preempt and yield
+            }
+        }
     }
 
+    proc->endTime = getCurrentTimestamp();
+    proc->isRunning = false;
+    proc->isFinished = true;
 }
 
 void cpuWorker(int coreId, int delay) {
@@ -34,20 +66,25 @@ void cpuWorker(int coreId, int delay) {
 
         {
             std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(lock, [] { return !readyQueue.empty() || stop; });
-            if (readyQueue.empty() && stop) break;
+            cv.wait(lock, [] {
+                return !readyQueue.empty() || !sleepQueue.empty() || stop;
+                });
+
+            // Wake up sleeping processes
+            while (!sleepQueue.empty() && sleepQueue.top()->getWakeupTick() <= cpuTick) {
+                readyQueue.push(sleepQueue.top());
+                sleepQueue.pop();
+            }
+
+            if (readyQueue.empty()) continue;
+
             proc = readyQueue.front(); readyQueue.pop();
             proc->coreAssigned = coreId;
             proc->isRunning = true;
         }
 
         proc->startTime = getCurrentTimestamp();
-
-        executeInstructions(proc, proc->instructions, coreId, delay);
-
-        proc->endTime = getCurrentTimestamp();
-        proc->isRunning = false;
-        proc->isFinished = true;
+        executeInstructions(proc, coreId, delay);
     }
 }
 
@@ -75,7 +112,6 @@ void addProcess(std::shared_ptr<Process> p) {
         allProcesses.push_back(p);
         readyQueue.push(p);
     }
-
     cv.notify_one();
 }
 
