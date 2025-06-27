@@ -50,15 +50,12 @@ void ConsoleView::show(const std::shared_ptr<Process>& proc) {
                 }
             }
 
-            std::cout << "\nCurrent instruction line: " << proc->instructionPointer + 1 << std::endl;
+            std::cout << "\nCurrent instruction line: " << (proc->isFinished ? static_cast<int>(proc->instructions.size()) : proc->instructionPointer + 1) << std::endl;
             std::cout << "Lines of code: " << proc->instructions.size() << std::endl;
 
             if (proc->isFinished) {
                 std::cout << "\nFinished!" << std::endl;
             }
-
-            std::cout << "\nPress [Enter] to continue...";
-            std::cin.get();
         }
         else if (!input.empty()) {
             std::cout << "Unknown command: " << input << ". Available commands: process-smi, exit\n";
@@ -70,7 +67,7 @@ void ConsoleView::show(const std::shared_ptr<Process>& proc) {
 
 void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
     std::cout << "+--------------------------------------+\n";
-    std::cout << "|         PROCESS CONSOLE VIEW        |\n";
+    std::cout << "|         PROCESS CONSOLE VIEW         |\n";
     std::cout << "+--------------------------------------+\n";
     std::cout << "| Process Name : " << proc->name << "\n";
     std::cout << "| PID          : " << proc->pid << "\n";
@@ -91,7 +88,7 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
         }
     }
 
-    std::cout << "\nCurrent instruction line: " << proc->instructionPointer + 1 << "\n";
+    std::cout << "\nCurrent instruction line: " << (proc->isFinished ? static_cast<int>(proc->instructions.size()) : proc->instructionPointer + 1) << "\n";
     std::cout << "Lines of code: " << proc->instructions.size() << "\n";
 
     std::cout << "\nStatus: ";

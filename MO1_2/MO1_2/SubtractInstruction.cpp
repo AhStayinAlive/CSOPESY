@@ -27,8 +27,7 @@ void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     logEntry << "[" << getCurrentTimestamp() << "] "
         << "Core " << coreId
         << " | PID " << proc->pid
-        << " | SUBTRACT: " << val1 << " - " << val2 << " = " << result
-        << " → " << resultVar;
+        << " | SUBTRACT: " << val1 << " - " << val2 << " = " << result;
 
     std::string finalLog = logEntry.str();
     proc->logs.push_back(finalLog);
