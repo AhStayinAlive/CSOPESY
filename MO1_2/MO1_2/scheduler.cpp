@@ -187,7 +187,7 @@ void startScheduler(const Config& config) {
     std::string sched = config.scheduler;
     std::transform(sched.begin(), sched.end(), sched.begin(), ::toupper);
 
-    if (sched == "RR" || sched == "ROUND_ROBIN") {
+    if (sched == "RR" || sched == "rr") {
         schedulerType = SchedulerType::ROUND_ROBIN;
     }
     else {

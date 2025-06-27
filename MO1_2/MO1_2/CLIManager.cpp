@@ -59,10 +59,10 @@ void CLIManager::handleCommand(const std::string& input) {
             std::cout << "Configuration loaded.\n";
 
             auto& config = Config::getInstance();
-            if (config.scheduler == "FCFS") {
+            if (config.scheduler == "FCFS" || config.scheduler == "fcfs") {
                 schedulerType = SchedulerType::FCFS;
             }
-            else if (config.scheduler == "RR") {
+            else if (config.scheduler == "RR" || config.scheduler == "rr") {
                 schedulerType = SchedulerType::ROUND_ROBIN;
             }
             else {
@@ -87,10 +87,14 @@ void CLIManager::handleCommand(const std::string& input) {
             ProcessManager::addProcess(proc);
             addProcess(proc);
             std::cout << "Created and queued process " << name << "\n";
+            ConsoleView::show(proc);
         }
 
-        // Enter the process console - this will handle the interactive loop
-        ConsoleView::show(proc);
+        else {
+            std::cout << name << " already exists." << "\n";
+        }
+        
+        
     }
 
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-r") {
