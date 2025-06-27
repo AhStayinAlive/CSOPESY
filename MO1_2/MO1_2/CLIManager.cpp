@@ -77,6 +77,8 @@ void CLIManager::handleCommand(const std::string& input) {
         }
     }
 
+    // Only showing the relevant part of handleCommand method that needs to be updated:
+
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-s") {
         std::string name = tokens[2];
         auto proc = ProcessManager::findByName(name);
@@ -86,14 +88,8 @@ void CLIManager::handleCommand(const std::string& input) {
             addProcess(proc);
             std::cout << "Created and queued process " << name << "\n";
         }
-        else {
-            std::cout << "Opening existing process " << name << "\n";
-            std::cout << "---- Logs for process: " << name << " ----\n";
-            for (const auto& log : proc->logs) {
-                std::cout << log << "\n";
-            }
-            std::cout << "----------------------------------------\n";
-        }
+
+        // Enter the process console - this will handle the interactive loop
         ConsoleView::show(proc);
     }
 
@@ -104,7 +100,7 @@ void CLIManager::handleCommand(const std::string& input) {
             ConsoleView::show(proc);
         }
         else {
-            std::cout << "Process " << name << " not found.\n";
+            std::cout << "Process " << name << " not found or already finished.\n";
         }
     }
 
