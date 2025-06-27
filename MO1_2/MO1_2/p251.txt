@@ -14,3 +14,6 @@ Logs:
 (06/27/2025 12:22:54AM) Core:2 "ADD result9 = 27 + 59"
 (06/27/2025 12:22:54AM) Core:2 "DECLARE var10 = 93"
 (06/27/2025 12:22:54AM) Core:2 "Hello from p251 [11]"
+(06/27/2025 04:39:44PM) Core:0 "DECLARE var0 = 51"
+(06/27/2025 04:39:45PM) Core:0 "DECLARE var1 = 52"
+(06/27/2025 04:39:45PM) Core:0 "DECLARE var2 = 2"

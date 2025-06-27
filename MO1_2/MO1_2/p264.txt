@@ -23,3 +23,6 @@ Logs:
 (06/27/2025 12:22:18AM) Core:1 "Loop iteration 2"
 (06/27/2025 12:22:18AM) Core:1 "Loop iteration 3"
 (06/27/2025 12:22:18AM) Core:1 "Hello from p264 [8]"
+(06/27/2025 04:39:59PM) Core:0 "DECLARE var0 = 76"
+(06/27/2025 04:39:59PM) Core:0 "DECLARE var1 = 13"
+(06/27/2025 04:39:59PM) Core:0 "DECLARE var2 = 80"

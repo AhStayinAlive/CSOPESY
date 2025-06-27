@@ -10,3 +10,6 @@ Logs:
 (06/27/2025 12:21:47AM) Core:0 "ADD result5 = 53 + 3"
 (06/27/2025 12:22:43AM) Core:3 "ADD result7 = 33 + 44"
 (06/27/2025 12:22:43AM) Core:3 "SUBTRACT result8 = 44 - 13"
+(06/27/2025 04:40:13PM) Core:2 "DECLARE var0 = 56"
+(06/27/2025 04:40:13PM) Core:2 "DECLARE var1 = 56"
+(06/27/2025 04:40:14PM) Core:2 "DECLARE var2 = 37"

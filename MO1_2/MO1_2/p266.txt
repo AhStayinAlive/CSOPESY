@@ -24,3 +24,6 @@ Logs:
 (06/27/2025 12:22:23AM) Core:2 "Loop iteration 2"
 (06/27/2025 12:22:23AM) Core:2 "Loop iteration 3"
 (06/27/2025 12:22:23AM) Core:2 "DECLARE var8 = 21"
+(06/27/2025 04:40:01PM) Core:0 "DECLARE var0 = 93"
+(06/27/2025 04:40:01PM) Core:0 "DECLARE var1 = 65"
+(06/27/2025 04:40:01PM) Core:0 "DECLARE var2 = 19"

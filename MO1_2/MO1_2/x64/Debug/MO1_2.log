@@ -4,6 +4,7 @@ C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\MO1_2\main.
 C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\MO1_2\main.cpp(175,79): warning C4267:         [
 C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\MO1_2\main.cpp(175,79): warning C4267:             _Ty=int
 C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\MO1_2\main.cpp(175,79): warning C4267:         ]
+C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\MO1_2\main.cpp(437,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
   scheduler.cpp
   Generating Code...
   MO1_2.vcxproj -> C:\Users\Shanette\Downloads\CSST Y3-T3\CSOPESY\MO1\git\CSOPESY\MO1_2\x64\Debug\MO1_2.exe

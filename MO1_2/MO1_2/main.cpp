@@ -96,7 +96,7 @@ void dispatcher() {
     while (emulatorRunning) {
         int core = getAvailableCore();
         if (core != -1 && !processQueue.empty()) {
-            if (config.scheduler == "FCFS") {
+            if (config.scheduler == "FCFS" || config.scheduler == "fcfs") {
                 auto proc = processQueue.front();
                 processQueue.pop();
                 proc->coreAssigned = core;
@@ -131,7 +131,7 @@ void dispatcher() {
                     }).detach();
             }
 
-            else if (config.scheduler == "RR") {
+            else if (config.scheduler == "RR" || config.scheduler == "rr") {
                 std::shared_ptr<Process> proc;
                 {
                     std::lock_guard<std::mutex> lock(processQueueMutex);
@@ -425,6 +425,42 @@ int main() {
                 cout << "Scheduler stopped.\n";
             }
             else cout << "Scheduler is not running.\n";
+        }
+        else if (input == "report-util") {
+            std::ofstream report("csopesy-log.txt");
+
+            if (!report) {
+                std::cout << "Failed to write report.\n";
+                continue;
+            }
+
+            int usedCores = std::count_if(allProcesses.begin(), allProcesses.end(),
+                [](auto p) { return p->isRunning && !p->isFinished; });
+
+            report << "CSOPESY Emulator Report\n\n";
+            report << "CPU utilization: " << (config.numCPU == 0 ? 0 : (usedCores * 100 / config.numCPU)) << "%\n";
+            report << "Cores used: " << usedCores << "\n";
+            report << "Cores available: " << config.numCPU - usedCores << "\n";
+            report << "-------------------------------------------\n";
+
+            report << "\nRunning processes:\n";
+            for (auto& p : allProcesses) {
+                if (p->isRunning && !p->isFinished) {
+                    report << p->name << " (" << p->startTime << ") Core: " << p->coreAssigned
+                        << " " << p->instructionPointer << " / " << p->totalInstructions << "\n";
+                }
+            }
+
+            report << "\n\nFinished processes:\n";
+            for (auto& p : allProcesses) {
+                if (p->isFinished) {
+                    report << p->name << " (" << p->startTime << ") Finished "
+                        << p->totalInstructions << " / " << p->totalInstructions << "\n";
+                }
+            }
+
+            report.close();
+            std::cout << "Report generated at csopesy-log.txt!\n";
         }
         else {
             cout << "Unrecognized command.\n";

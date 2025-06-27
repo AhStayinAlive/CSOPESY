@@ -11,3 +11,6 @@ Logs:
 (06/27/2025 12:21:55AM) Core:0 "Hello from p248 [7]"
 (06/27/2025 12:21:55AM) Core:0 "Hello from p248 [8]"
 (06/27/2025 12:22:52AM) Core:0 "DECLARE var11 = 44"
+(06/27/2025 04:39:40PM) Core:1 "DECLARE var0 = 71"
+(06/27/2025 04:39:40PM) Core:1 "DECLARE var1 = 68"
+(06/27/2025 04:39:40PM) Core:1 "DECLARE var2 = 32"

@@ -11,3 +11,6 @@ Logs:
 (06/27/2025 12:22:37AM) Core:3 "SUBTRACT result6 = 76 - 69"
 (06/27/2025 12:22:37AM) Core:3 "Hello from p274 [7]"
 (06/27/2025 12:22:37AM) Core:3 "Hello from p274 [8]"
+(06/27/2025 04:40:09PM) Core:3 "DECLARE var0 = 53"
+(06/27/2025 04:40:09PM) Core:3 "DECLARE var1 = 31"
+(06/27/2025 04:40:10PM) Core:3 "DECLARE var2 = 33"

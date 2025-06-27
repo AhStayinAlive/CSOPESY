@@ -15,3 +15,6 @@ Logs:
 (06/27/2025 12:22:36AM) Core:0 "Loop iteration 2"
 (06/27/2025 12:22:36AM) Core:0 "Loop iteration 3"
 (06/27/2025 12:22:36AM) Core:0 "SUBTRACT result8 = 73 - 92"
+(06/27/2025 04:40:08PM) Core:2 "DECLARE var0 = 72"
+(06/27/2025 04:40:08PM) Core:2 "DECLARE var1 = 40"
+(06/27/2025 04:40:08PM) Core:2 "DECLARE var2 = 4"
