@@ -33,7 +33,7 @@ static std::vector<std::thread> cpuWorkers;
 static std::vector<std::shared_ptr<std::atomic<bool>>> coreAvailable;
 
 // Scheduler configuration
-static SchedulerType currentSchedulerType = SchedulerType::FCFS;
+SchedulerType schedulerType = SchedulerType::ROUND_ROBIN;
 static int timeQuantum = 3;
 static std::atomic<int> globalCpuTick{ 0 };
 
@@ -93,7 +93,7 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
 
         // Check for preemption in Round Robin
-        if (currentSchedulerType == SchedulerType::ROUND_ROBIN) {
+        if (schedulerType == SchedulerType::ROUND_ROBIN) {
             quantumRemaining--;
             if (quantumRemaining <= 0) {
                 shouldPreempt = true;
@@ -184,12 +184,14 @@ void startScheduler(const Config& config) {
     schedulerRunning = true;
 
     // Set scheduler type
-    if (config.scheduler == "RR") {
-        currentSchedulerType = SchedulerType::ROUND_ROBIN;
-        timeQuantum = config.quantumCycles;
+    std::string sched = config.scheduler;
+    std::transform(sched.begin(), sched.end(), sched.begin(), ::toupper);
+
+    if (sched == "RR" || sched == "ROUND_ROBIN") {
+        schedulerType = SchedulerType::ROUND_ROBIN;
     }
     else {
-        currentSchedulerType = SchedulerType::FCFS;
+        schedulerType = SchedulerType::FCFS;
     }
 
     // Initialize core availability tracking
@@ -216,7 +218,7 @@ void startScheduler(const Config& config) {
     utilizationThread.detach();
 
     std::cout << "Scheduler started with " << config.numCPU << " cores using "
-        << (currentSchedulerType == SchedulerType::FCFS ? "FCFS" : "Round Robin")
+        << (schedulerType == SchedulerType::FCFS ? "FCFS" : "Round Robin")
         << " scheduling.\n";
 }
 
@@ -273,7 +275,7 @@ void generateReport() {
     file << "System Configuration:\n";
     file << "  CPU Cores: " << Config::getInstance().numCPU << "\n";
     file << "  Scheduler: " << Config::getInstance().scheduler << "\n";
-    if (currentSchedulerType == SchedulerType::ROUND_ROBIN) {
+    if (schedulerType == SchedulerType::ROUND_ROBIN) {
         file << "  Time Quantum: " << timeQuantum << " cycles\n";
     }
     file << "  Delay per Instruction: " << Config::getInstance().delayPerInstruction << "ms\n\n";

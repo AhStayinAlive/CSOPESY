@@ -1,15 +1,21 @@
-// SubtractInstruction.h
-#pragma once
+#ifndef SUBTRACTINSTRUCTION_H
+#define SUBTRACTINSTRUCTION_H
+
 #include "instruction.h"
 #include <string>
+#include <memory>
 
 class SubtractInstruction : public Instruction {
-    std::string resultName, lhs, rhs;
-
 public:
+    std::string resultVar;
     std::string arg1;
     std::string arg2;
-    std::string resultVar;
-    SubtractInstruction(const std::string& res, const std::string& l, const std::string& r);
+
+    // Constructor
+    SubtractInstruction(const std::string& result, const std::string& lhs, const std::string& rhs);
+
+    // Override execute method
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 };
+
+#endif // SUBTRACTINSTRUCTION_H

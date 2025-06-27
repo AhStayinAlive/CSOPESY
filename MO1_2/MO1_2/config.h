@@ -17,7 +17,7 @@ public:
 
     // Configuration parameters with default values
     int numCPU = 4;
-    std::string scheduler = "FCFS";
+    std::string scheduler = "ROUND_ROBIN";
     int quantumCycles = 5;
     int batchProcessFreq = 1;
     int minInstructions = 1000;

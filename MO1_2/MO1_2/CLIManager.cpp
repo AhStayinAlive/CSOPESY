@@ -1,4 +1,4 @@
-#include "CLIManager.h"
+﻿#include "CLIManager.h"
 #include "config.h"
 #include "ProcessManager.h"
 #include "ConsoleView.h"
@@ -57,7 +57,19 @@ void CLIManager::handleCommand(const std::string& input) {
     if (cmd == "initialize") {
         if (Config::getInstance().loadFromFile("config.txt")) {
             std::cout << "Configuration loaded.\n";
-            startScheduler(Config::getInstance());
+
+            auto& config = Config::getInstance();
+            if (config.scheduler == "FCFS") {
+                schedulerType = SchedulerType::FCFS;
+            }
+            else if (config.scheduler == "RR") {
+                schedulerType = SchedulerType::ROUND_ROBIN;
+            }
+            else {
+                std::cerr << "Unknown scheduler type in config: " << config.scheduler << ", defaulting to FCFS.\n";
+                schedulerType = SchedulerType::FCFS;
+            }
+
             initialized = true;
         }
         else {
@@ -71,7 +83,7 @@ void CLIManager::handleCommand(const std::string& input) {
         if (!proc) {
             proc = ProcessManager::createNamedProcess(name);
             ProcessManager::addProcess(proc);
-            addProcess(proc); // Add to scheduler queue
+            addProcess(proc);
             std::cout << "Created and queued process " << name << "\n";
         }
         else {
@@ -88,7 +100,7 @@ void CLIManager::handleCommand(const std::string& input) {
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-r") {
         std::string name = tokens[2];
         auto proc = ProcessManager::findByName(name);
-        if (proc && !proc->isFinished) {  // Block access to finished processes
+        if (proc && !proc->isFinished) {
             ConsoleView::show(proc);
         }
         else {
@@ -117,13 +129,14 @@ void CLIManager::handleCommand(const std::string& input) {
     else if (cmd == "scheduler-start") {
         if (!generating) {
             generating = true;
+            startScheduler(Config::getInstance());
             schedulerThread = std::thread([&] {
                 try {
                     auto& config = Config::getInstance();
                     while (generating) {
                         auto proc = ProcessManager::createUniqueNamedProcess(config.minInstructions, config.maxInstructions);
                         ProcessManager::addProcess(proc);
-                        addProcess(proc); // Add to scheduler queue
+                        addProcess(proc);
                         std::this_thread::sleep_for(std::chrono::seconds(config.batchProcessFreq));
                     }
                 }
@@ -132,9 +145,6 @@ void CLIManager::handleCommand(const std::string& input) {
                 }
                 });
             std::cout << "Batch process generation started.\n";
-        }
-        else {
-            std::cout << "Already generating processes.\n";
         }
     }
 
@@ -149,7 +159,6 @@ void CLIManager::handleCommand(const std::string& input) {
         }
     }
 
-    // CHANGED: renamed 'report' to 'report-util'
     else if (cmd == "report-util") {
         generateReport();
     }
@@ -166,19 +175,19 @@ void CLIManager::handleCommand(const std::string& input) {
 void CLIManager::stopScheduler() {
     generating = false;
     if (schedulerThread.joinable()) schedulerThread.join();
-    ::stopScheduler(); // Stop the main scheduler (fixed function call)
+    ::stopScheduler();
 }
 
 void CLIManager::showHelp() const {
     std::cout << "Available commands:\n"
-        << "  initialize         - Load config.txt and start scheduler\n"
+        << "  initialize         - Load config.txt and prepare scheduler\n"
         << "  screen -s [name]   - Create or open a process\n"
         << "  process-smi [name] - Show logs for a specific process\n"
         << "  screen -r [name]   - Resume and inspect a process\n"
         << "  screen -ls         - Show running and finished processes\n"
         << "  scheduler-start    - Begin periodic batch process generation\n"
         << "  scheduler-stop     - Stop batch process generation\n"
-        << "  report-util        - Generate utilization report\n"  // CHANGED: updated help text
+        << "  report-util        - Generate utilization report\n"
         << "  exit               - Exit the CLI\n";
 }
 
@@ -192,22 +201,12 @@ std::vector<std::string> CLIManager::tokenize(const std::string& input) const {
 
 void CLIManager::showProcessList() const {
     const auto& all = ProcessManager::getAllProcesses();
-
-    // Calculate CPU utilization
-    int running = 0;
-    int finished = 0;
-    int waiting = 0;
+    int running = 0, finished = 0, waiting = 0;
 
     for (const auto& p : all) {
-        if (p->isRunning && !p->isFinished) {
-            running++;
-        }
-        else if (p->isFinished) {
-            finished++;
-        }
-        else {
-            waiting++;
-        }
+        if (p->isRunning && !p->isFinished) running++;
+        else if (p->isFinished) finished++;
+        else waiting++;
     }
 
     int numCPU = Config::getInstance().numCPU;
@@ -216,9 +215,7 @@ void CLIManager::showProcessList() const {
         return;
     }
 
-    // Calculate utilization as percentage
     double utilization = (static_cast<double>(running) / numCPU) * 100.0;
-
     std::cout << std::fixed << std::setprecision(1);
     std::cout << "CPU utilization: " << std::min(utilization, 100.0) << "%\n";
     std::cout << "Cores used: " << running << "\n";
@@ -227,42 +224,27 @@ void CLIManager::showProcessList() const {
     std::cout << "Running: " << running << " | Waiting: " << waiting << " | Finished: " << finished << "\n\n";
 
     std::cout << "Running processes:\n";
-    if (running == 0) {
-        std::cout << "  [No running processes]\n";
-    }
-    else {
-        for (const auto& p : all) {
-            if (p->isRunning && !p->isFinished) {
-                std::cout << "  " << p->name << " (PID:" << p->pid << ") | Core " << p->coreAssigned
-                    << " | " << *p->completedInstructions << "/" << p->instructions.size()
-                    << " | Started: " << p->startTime << "\n";
-            }
+    for (const auto& p : all) {
+        if (p->isRunning && !p->isFinished) {
+            std::cout << "  " << p->name << " (PID:" << p->pid << ") | Core " << p->coreAssigned
+                << " | " << *p->completedInstructions << "/" << p->instructions.size()
+                << " | Started: " << p->startTime << "\n";
         }
     }
 
     std::cout << "\nWaiting processes:\n";
-    if (waiting == 0) {
-        std::cout << "  [No waiting processes]\n";
-    }
-    else {
-        for (const auto& p : all) {
-            if (!p->isRunning && !p->isFinished) {
-                std::cout << "  " << p->name << " (PID:" << p->pid << ") | "
-                    << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
-            }
+    for (const auto& p : all) {
+        if (!p->isRunning && !p->isFinished) {
+            std::cout << "  " << p->name << " (PID:" << p->pid << ") | "
+                << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
         }
     }
 
     std::cout << "\nFinished processes:\n";
-    if (finished == 0) {
-        std::cout << "  [No finished processes]\n";
-    }
-    else {
-        for (const auto& p : all) {
-            if (p->isFinished) {
-                std::cout << "  " << p->name << " (PID:" << p->pid << ") | Finished: " << p->endTime
-                    << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
-            }
+    for (const auto& p : all) {
+        if (p->isFinished) {
+            std::cout << "  " << p->name << " (PID:" << p->pid << ") | Finished: " << p->endTime
+                << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
         }
     }
 }
