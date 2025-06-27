@@ -88,7 +88,7 @@ void CLIManager::handleCommand(const std::string& input) {
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-r") {
         std::string name = tokens[2];
         auto proc = ProcessManager::findByName(name);
-        if (proc) {
+        if (proc && !proc->isFinished) {  // Block access to finished processes
             ConsoleView::show(proc);
         }
         else {
@@ -149,7 +149,8 @@ void CLIManager::handleCommand(const std::string& input) {
         }
     }
 
-    else if (cmd == "report") {
+    // CHANGED: renamed 'report' to 'report-util'
+    else if (cmd == "report-util") {
         generateReport();
     }
 
@@ -165,19 +166,19 @@ void CLIManager::handleCommand(const std::string& input) {
 void CLIManager::stopScheduler() {
     generating = false;
     if (schedulerThread.joinable()) schedulerThread.join();
-    stopScheduler(); // Stop the main scheduler
+    ::stopScheduler(); // Stop the main scheduler (fixed function call)
 }
 
 void CLIManager::showHelp() const {
     std::cout << "Available commands:\n"
         << "  initialize         - Load config.txt and start scheduler\n"
         << "  screen -s [name]   - Create or open a process\n"
-		<< "  process-smi [name] - Show logs for a specific process\n"
+        << "  process-smi [name] - Show logs for a specific process\n"
         << "  screen -r [name]   - Resume and inspect a process\n"
         << "  screen -ls         - Show running and finished processes\n"
         << "  scheduler-start    - Begin periodic batch process generation\n"
         << "  scheduler-stop     - Stop batch process generation\n"
-        << "  report             - Generate utilization report\n"
+        << "  report-util        - Generate utilization report\n"  // CHANGED: updated help text
         << "  exit               - Exit the CLI\n";
 }
 

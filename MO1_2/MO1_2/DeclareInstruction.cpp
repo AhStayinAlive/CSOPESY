@@ -1,12 +1,24 @@
-// DeclareInstruction.cpp
 #include "DeclareInstruction.h"
-#include "utils.h"
 #include "process.h"
-DeclareInstruction::DeclareInstruction(const std::string& name, int val)
-    : varName(name), value(val) {
+#include "utils.h"
+#include <algorithm>
+#include <sstream>
+#include <cstdint>
+
+
+DeclareInstruction::DeclareInstruction(const std::string& varName, int val)
+    : variableName(varName), value(static_cast<uint16_t>(std::clamp(val, 0, 65535))) {
 }
 
 void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    proc->memory[varName] = static_cast<uint16_t>(value);
-    logToFile(proc->name, "DECLARE " + varName + " = " + std::to_string(value), coreId);
+    proc->memory[variableName] = value;
+
+    std::ostringstream logEntry;
+    logEntry << "[" << getCurrentTimestamp() << "] "
+        << "Core " << coreId
+        << " | PID " << proc->pid
+        << " | DECLARE: " << variableName << " = " << value;
+
+    proc->logs.push_back(logEntry.str());
+    logToFile(proc->name, logEntry.str(), coreId);
 }

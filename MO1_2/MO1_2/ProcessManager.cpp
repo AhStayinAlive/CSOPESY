@@ -29,7 +29,6 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
 
-    // Initialize random number generation
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
@@ -42,70 +41,64 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
         int numInstructions = instructionCount(gen);
         proc->totalInstructions = numInstructions;
 
-        // Always start with 5 DECLARE instructions to establish variables
         for (int i = 0; i < 5; ++i) {
             std::string varName = "var" + std::to_string(i);
             int value = valueDist(gen);
             proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
         }
 
-        // Generate remaining instructions
         for (int i = 5; i < numInstructions; ++i) {
             int op = opcodePicker(gen);
 
             switch (op) {
-            case 0: { // Additional DECLARE
+            case 0: {
                 std::string varName = "var" + std::to_string(i);
                 int value = valueDist(gen);
                 proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
                 break;
             }
-            case 1: { // ADD
+            case 1: {
                 std::string result = "sum" + std::to_string(i);
                 std::string lhs = "var" + std::to_string(i % 5);
                 std::string rhs = "var" + std::to_string((i + 1) % 5);
                 proc->instructions.push_back(std::make_shared<AddInstruction>(result, lhs, rhs));
                 break;
             }
-            case 2: { // SUBTRACT
+            case 2: {
                 std::string result = "diff" + std::to_string(i);
                 std::string lhs = "var" + std::to_string(i % 5);
                 std::string rhs = "var" + std::to_string((i + 1) % 5);
                 proc->instructions.push_back(std::make_shared<SubtractInstruction>(result, lhs, rhs));
                 break;
             }
-            case 3: { // PRINT
+            case 3: {
                 std::string message = "Hello from " + name + " [instruction " + std::to_string(i) + "]";
                 proc->instructions.push_back(std::make_shared<PrintInstruction>(message));
                 break;
             }
-            case 4: { // SLEEP
+            case 4: {
                 int duration = sleepTime(gen);
                 proc->instructions.push_back(std::make_shared<SleepInstruction>(duration));
                 break;
             }
-            case 5: { // FOR loop
+            case 5: {
                 int loopCount = loopCountDist(gen);
                 std::vector<std::shared_ptr<Instruction>> subInstructions;
-
-                // Create 3 PRINT instructions for the loop body
                 for (int j = 0; j < 3; ++j) {
                     std::string loopMessage = "Loop iteration " + std::to_string(j + 1) + " in " + name;
                     subInstructions.push_back(std::make_shared<PrintInstruction>(loopMessage));
                 }
-
                 proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInstructions));
                 break;
             }
             }
         }
 
-        // Log process creation
         proc->logs.push_back("Process " + name + " created with " + std::to_string(numInstructions) + " instructions");
     }
     catch (const std::exception& e) {
         proc->logs.push_back("Process generation failed: " + std::string(e.what()));
-        proc->totalInstructions = 0; // Mark as failed
+        proc->totalInstructions = 0;
     }
 
     return proc;
@@ -113,21 +106,16 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
 
 std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns) {
     std::string processName;
-
-    // Generate unique process name
     do {
         processName = "process_" + std::to_string(uniqueProcessCounter++);
     } while (processMap.find(processName) != processMap.end());
-
     return createProcess(processName, pidCounter++, minIns, maxIns);
 }
 
 std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
-    // Check if process already exists
     if (processMap.find(name) != processMap.end()) {
         return processMap[name];
     }
-
     const auto& config = Config::getInstance();
     return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
 }
@@ -145,11 +133,8 @@ std::shared_ptr<Process> ProcessManager::findByPid(int pid) {
 
 void ProcessManager::addProcess(std::shared_ptr<Process> proc) {
     if (!proc) return;
-
-    // Check if process already exists in the list
     auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
         [&proc](const std::shared_ptr<Process>& p) { return p->name == proc->name; });
-
     if (it == allProcesses.end()) {
         allProcesses.push_back(proc);
         processMap[proc->name] = proc;
@@ -198,7 +183,6 @@ int ProcessManager::getFinishedProcessCount() {
 double ProcessManager::getCpuUtilization() {
     int numCPU = Config::getInstance().numCPU;
     if (numCPU == 0) return 0.0;
-
     int running = getRunningProcessCount();
     return (static_cast<double>(running) / numCPU) * 100.0;
 }

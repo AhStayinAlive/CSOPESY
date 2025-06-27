@@ -55,53 +55,18 @@ bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Ins
         instruction->execute(proc, coreId);
         (*proc->completedInstructions)++;
 
-        std::string timestamp = getCurrentTimestamp();
-        std::ostringstream logEntry;
-        logEntry << "[" << timestamp << "] "
-            << "Core " << coreId
-            << " | PID " << proc->pid
-            << " | ";
-
-        if (auto add = dynamic_cast<AddInstruction*>(instruction.get())) {
-            int lhs = std::stoi(add->arg1);
-            int rhs = std::stoi(add->arg2);
-            int result = lhs + rhs;
-            logEntry << "ADD: " << lhs << " + " << rhs << " = " << result
-                << " → " << add->resultVar;
-        }
-        else if (auto sub = dynamic_cast<SubtractInstruction*>(instruction.get())) {
-            int lhs = std::stoi(sub->arg1);
-            int rhs = std::stoi(sub->arg2);
-            int result = lhs - rhs;
-            logEntry << "SUBTRACT: " << lhs << " - " << rhs << " = " << result
-                << " → " << sub->resultVar;
-        }
-        else if (auto loop = dynamic_cast<ForInstruction*>(instruction.get())) {
-            logEntry << "FOR Loop ×" << loop->getIterations();
-        }
-        else if (auto sleep = dynamic_cast<SleepInstruction*>(instruction.get())) {
-            logEntry << "SLEEP: " << sleep->getDuration() << " ms";
-        }
-        else if (auto print = dynamic_cast<PrintInstruction*>(instruction.get())) {
-            logEntry << "PRINT: \"" << print->getMessage() << "\"";
-        }
-        else {
-            logEntry << "Executed unknown instruction type";
-        }
-
-        std::string finalLog = logEntry.str();
-        logToFile(proc->name, finalLog, coreId);
-        proc->logs.push_back(finalLog);
-
+        // Don't duplicate logging here since each instruction already logs itself
+        // This was causing the "Executed unknown instruction type" messages
         return true;
 
     }
     catch (const std::exception& e) {
-        logToFile(proc->name, "Error executing instruction: " + std::string(e.what()), coreId);
+        std::string errorMsg = "Error executing instruction: " + std::string(e.what());
+        logToFile(proc->name, errorMsg, coreId);
+        proc->logs.push_back(errorMsg);
         return false;
     }
 }
-
 void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs) {
     int quantumRemaining = timeQuantum;
     bool shouldPreempt = false;

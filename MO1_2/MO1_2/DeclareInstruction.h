@@ -1,14 +1,22 @@
+#ifndef DECLAREINSTRUCTION_H
+#define DECLAREINSTRUCTION_H
 
-// DeclareInstruction.h
-#pragma once
 #include "instruction.h"
 #include <string>
+#include <memory>
+#include <cstdint>
 
 class DeclareInstruction : public Instruction {
-    std::string varName;
-    int value;
+private:
+    std::string variableName;
+    uint16_t value;
 
 public:
-    DeclareInstruction(const std::string& name, int val);
+    DeclareInstruction(const std::string& varName, int val);
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
+
+    std::string getVariableName() const { return variableName; }
+    uint16_t getValue() const { return value; }
 };
+
+#endif // DECLAREINSTRUCTION_H

@@ -1,4 +1,4 @@
-#ifndef INSTRUCTION_H
+﻿#ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
 #include <memory>
