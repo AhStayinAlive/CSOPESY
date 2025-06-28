@@ -10,9 +10,10 @@ class DeclareInstruction : public Instruction {
 private:
     std::string variableName;
     uint16_t value;
+    std::string logPrefix = "";
 
 public:
-    DeclareInstruction(const std::string& varName, int val);
+    DeclareInstruction(const std::string& varName, int val, const std::string& logPrefix="");
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 
     std::string getVariableName() const { return variableName; }

@@ -49,57 +49,109 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
         }
 
-        int i = 0;
+        int count = 0;
 
         while (proc->instructions.size() < numInstructions) {
             int op = opcodePicker(gen);
             switch (op) {
             case 0: {
-                std::string varName = "var" + std::to_string(i);
+                std::string varName = "var" + std::to_string(count);
                 int value = valueDist(gen);
                 proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
+                count++;
                 break;
             }
             case 1: {
-                std::string result = "sum" + std::to_string(i);
-                std::string lhs = "var" + std::to_string(i % 5);
-                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                std::string result = "sum" + std::to_string(count);
+                std::string lhs = "var" + std::to_string(count % 5);
+                std::string rhs = "var" + std::to_string((count + 1) % 5);
                 proc->instructions.push_back(std::make_shared<AddInstruction>(result, lhs, rhs));
+                count++;
                 break;
             }
             case 2: {
-                std::string result = "diff" + std::to_string(i);
-                std::string lhs = "var" + std::to_string(i % 5);
-                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                std::string result = "diff" + std::to_string(count);
+                std::string lhs = "var" + std::to_string(count % 5);
+                std::string rhs = "var" + std::to_string((count + 1) % 5);
                 proc->instructions.push_back(std::make_shared<SubtractInstruction>(result, lhs, rhs));
+                count++;
                 break;
             }
             case 3: {
-                std::string message = "Hello from " + name + " [instruction " + std::to_string(i) + "]";
+                std::string message = "Hello from " + name ;
                 proc->instructions.push_back(std::make_shared<PrintInstruction>(message));
+                count++;
                 break;
             }
             case 4: {
                 int duration = sleepTime(gen);
                 proc->instructions.push_back(std::make_shared<SleepInstruction>(duration));
+                count++;
                 break;
             }
             case 5: {
                 int loopCount = loopCountDist(gen);
-                for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
+                /*for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
                     for (int j = 0; j < 3 && proc->instructions.size() < maxInstructions; ++j) {
                         std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
                         proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
                     }
+                }*/
+
+                for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
+                    for (int j = 0; j < 2 && proc->instructions.size() < maxInstructions; ++j) {
+                        for (int k = 0; k < 1 && proc->instructions.size() < maxInstructions; ++k) {
+                            int subOp = opcodePicker(gen);  // pick like at top level
+                            std::string loopMsg =
+                                "FOR (outer " + std::to_string(i + 1) +
+                                ", mid " + std::to_string(j + 1) +
+                                ", inner " + std::to_string(k + 1) + ") ";
+                            switch (subOp) {
+                            case 0: {
+                                std::string varName = "var" + std::to_string(count);
+                                int value = valueDist(gen);
+                                proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value, loopMsg));
+                                count++;
+                                break;
+                            }
+                            case 1: {
+                                std::string result = "sum" + std::to_string(count);
+                                std::string lhs = "var" + std::to_string(count % 5);
+                                std::string rhs = "var" + std::to_string((count + 1) % 5);
+                                proc->instructions.push_back(std::make_shared<AddInstruction>(result, lhs, rhs, loopMsg));
+                                count++;
+                                break;
+                            }
+                            case 2: {
+                                std::string result = "diff" + std::to_string(count);
+                                std::string lhs = "var" + std::to_string(count % 5);
+                                std::string rhs = "var" + std::to_string((count + 1) % 5);
+                                proc->instructions.push_back(std::make_shared<SubtractInstruction>(result, lhs, rhs, loopMsg));
+                                count++;
+                                break;
+                            }
+                            case 3: {
+                                std::string message = "Hello from " + name ;
+                                proc->instructions.push_back(std::make_shared<PrintInstruction>(message, loopMsg));
+                                count++;
+                                break;
+                            }
+                            case 4: {
+                                int duration = sleepTime(gen);
+                                proc->instructions.push_back(std::make_shared<SleepInstruction>(duration, loopMsg));
+                                count++;
+                                break;
+                            }
+                            }
+                        }
+                    }
+                    
                 }
                 break;
             }
             }
-
-            i++;
+            
         }
-
-        proc->logs.push_back("Process " + name + " created with " + std::to_string(numInstructions) + " instructions");
     }
     catch (const std::exception& e) {
         proc->logs.push_back("Process generation failed: " + std::string(e.what()));

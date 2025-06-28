@@ -21,8 +21,11 @@ void printBanner() {
     std::cout << " \\____|____/  \\____/  | |   |_____||____/    |__|\n";
     std::cout << "-------------------------------------------------------------\n";
     std::cout << "Welcome to CSOPESY Emulator!\n";
-    std::cout << "Developers: \nDel Gallego, Neil Patrick\n\n";
-    std::cout << "Last updated: 01-18-2024\n";
+    std::cout << "\nDevelopers:\n";
+    std::cout << "Hanna Angela D. De Los Santos\n";
+    std::cout << "Joseph Dean T. Enriquez\n";
+    std::cout << "Shanette Giane G. Presas\n";
+    std::cout << "Jersey K. To\n";
     std::cout << "-------------------------------------------------------------\n";
 }
 

@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <sstream>
 
-AddInstruction::AddInstruction(const std::string& result, const std::string& lhs, const std::string& rhs)
-    : resultVar(result), arg1(lhs), arg2(rhs) {
+AddInstruction::AddInstruction(const std::string& result, const std::string& lhs, const std::string& rhs, const std::string& logPrefix)
+    : resultVar(result), arg1(lhs), arg2(rhs), logPrefix(logPrefix) {
 }
 
 
@@ -32,10 +32,21 @@ void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
     // Create log entry
     std::ostringstream logEntry;
-    logEntry << "[" << getCurrentTimestamp() << "] "
-        << "Core " << coreId
-        << " | PID " << proc->pid
-        << " | ADD: " << val1 << " + " << val2 << " = " << result;
+    if (logPrefix != "") {
+        logEntry << "[" << getCurrentTimestamp() << "] "
+            << "Core " << coreId
+            << " | PID " << proc->pid
+            << " | " << logPrefix
+            << " | ADD: " << val1 << " + " << val2 << " = " << result;
+    }
+    else {
+        logEntry << "[" << getCurrentTimestamp() << "] "
+            << "Core " << coreId
+            << " | PID " << proc->pid
+            << " | ADD: " << val1 << " + " << val2 << " = " << result;
+    }
+
+    
 
     std::string finalLog = logEntry.str();
     proc->logs.push_back(finalLog);

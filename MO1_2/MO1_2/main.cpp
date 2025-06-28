@@ -4,9 +4,9 @@
 
 int main() {
     Config& config = Config::getInstance();
-    if (!config.loadFromFile("config.txt")) {
+    /*if (!config.loadFromFile("config.txt")) {
         std::cerr << "Failed to load config. Using defaults.\n";
-    }
+    }*/
 
 
     CLIManager cli;

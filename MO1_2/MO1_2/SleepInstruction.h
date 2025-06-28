@@ -6,9 +6,11 @@
 class SleepInstruction : public Instruction {
 private:
     int duration;  // Duration in milliseconds
+    
 
 public:
-    SleepInstruction(int ms);
+    std::string logPrefix = "";
+    SleepInstruction(int ms, const std::string& logPrefix = "");
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 
     int getDuration() const { return duration; }

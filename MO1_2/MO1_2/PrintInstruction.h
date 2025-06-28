@@ -10,13 +10,14 @@ private:
     std::string message;         // Static text part
     std::string variableName;    // Optional variable name
     bool hasVariable = false;    // Indicates if variable should be appended
+    std::string logPrefix = "";
 
 public:
     // Constructor for static message
-    PrintInstruction(const std::string& msg);
+    PrintInstruction(const std::string& msg, const std::string& logPrefix = "");
 
     // Constructor for message + variable
-    PrintInstruction(const std::string& textPart, const std::string& varName);
+    //PrintInstruction(const std::string& textPart, const std::string& varName, const std::string& logPrefix = "");
 
     void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
 

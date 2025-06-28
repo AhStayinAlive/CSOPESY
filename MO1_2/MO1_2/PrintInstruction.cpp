@@ -5,13 +5,13 @@
 #include <sstream>
 #include <cstdint>
 
-PrintInstruction::PrintInstruction(const std::string& msg)
-    : message(msg), hasVariable(false) {
+PrintInstruction::PrintInstruction(const std::string& msg, const std::string& logPrefix)
+    : message(msg), hasVariable(false), logPrefix(logPrefix) {
 }
 
-PrintInstruction::PrintInstruction(const std::string& textPart, const std::string& varName)
-    : message(textPart), variableName(varName), hasVariable(true) {
-}
+//PrintInstruction::PrintInstruction(const std::string& textPart, const std::string& varName, const std::string& logPrefix)
+//    : message(textPart), variableName(varName), hasVariable(true), logPrefix(logPrefix) {
+//}
 
 void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
@@ -27,14 +27,25 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         output += std::to_string(varValue);
     }
 
-    // ❌ Remove this line:
-    // std::cout << output << std::endl;
-
     std::ostringstream logEntry;
-    logEntry << "[" << getCurrentTimestamp() << "] "
-        << "Core " << coreId
-        << " | PID " << proc->pid
-        << " | PRINT: \"" << output << "\"";
+
+    if (logPrefix != "") {
+        logEntry << "[" << getCurrentTimestamp() << "] "
+            << "Core " << coreId
+            << " | PID " << proc->pid
+            << " | " << logPrefix
+            << " | PRINT: \"" << output << "\"";
+    }
+
+    else {
+        logEntry << "[" << getCurrentTimestamp() << "] "
+            << "Core " << coreId
+            << " | PID " << proc->pid
+            << " | PRINT: \"" << output << "\"";
+    }
+    
+
+    
 
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), coreId);
