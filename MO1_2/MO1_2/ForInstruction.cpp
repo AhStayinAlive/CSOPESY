@@ -1,5 +1,3 @@
-
-// ForInstruction.cpp
 #include "ForInstruction.h"
 #include "utils.h"
 #include "process.h"
@@ -11,7 +9,7 @@ ForInstruction::ForInstruction(int count, const std::vector<std::shared_ptr<Inst
 void ForInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string nestingStr = "";
     for (int i = 0; i < nestingLevel; i++) {
-        nestingStr += "  "; // Indent based on nesting level
+        nestingStr += "  ";
     }
 
     for (int i = 0; i < iterations; ++i) {
