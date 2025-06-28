@@ -9,9 +9,6 @@ PrintInstruction::PrintInstruction(const std::string& msg, const std::string& lo
     : message(msg), hasVariable(false), logPrefix(logPrefix) {
 }
 
-//PrintInstruction::PrintInstruction(const std::string& textPart, const std::string& varName, const std::string& logPrefix)
-//    : message(textPart), variableName(varName), hasVariable(true), logPrefix(logPrefix) {
-//}
 
 void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
@@ -22,7 +19,7 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             varValue = proc->memory[variableName];
         }
         else {
-            proc->memory[variableName] = 0;  // auto-declare if missing
+            proc->memory[variableName] = 0;
         }
         output += std::to_string(varValue);
     }
