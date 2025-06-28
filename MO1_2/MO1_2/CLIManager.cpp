@@ -80,7 +80,6 @@ void CLIManager::handleCommand(const std::string& input) {
         }
     }
 
-    // Only showing the relevant part of handleCommand method that needs to be updated:
 
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-s") {
         std::string name = tokens[2];
