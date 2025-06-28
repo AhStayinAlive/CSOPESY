@@ -13,7 +13,7 @@ PrintInstruction::PrintInstruction(const std::string& textPart, const std::strin
     : message(textPart), variableName(varName), hasVariable(true) {
 }
 
-void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId, int currentDepth) {
     std::string output = message;
 
     if (hasVariable) {
@@ -34,8 +34,10 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     logEntry << "[" << getCurrentTimestamp() << "] "
         << "Core " << coreId
         << " | PID " << proc->pid
-        << " | PRINT: \"" << output << "\"";
+        << " | " << std::string(currentDepth * 2, ' ')
+        << message;
 
-    proc->logs.push_back(logEntry.str());
-    logToFile(proc->name, logEntry.str(), coreId);
+    std::string finalLog = logEntry.str();
+    proc->logs.push_back(finalLog);
+    logToFile(proc->name, finalLog, coreId);
 }

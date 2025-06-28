@@ -10,7 +10,7 @@ DeclareInstruction::DeclareInstruction(const std::string& varName, int val)
     : variableName(varName), value(static_cast<uint16_t>(std::clamp(val, 0, 65535))) {
 }
 
-void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId, int depth) {
     proc->memory[variableName] = value;
 
     std::ostringstream logEntry;

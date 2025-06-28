@@ -52,7 +52,7 @@ static std::priority_queue<std::shared_ptr<Process>,
 
 bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Instruction> instruction, int coreId) {
     try {
-        instruction->execute(proc, coreId);
+        instruction->execute(proc, coreId, 0);
         (*proc->completedInstructions)++;
 
         // Don't duplicate logging here since each instruction already logs itself

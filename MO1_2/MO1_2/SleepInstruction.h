@@ -9,7 +9,7 @@ private:
 
 public:
     SleepInstruction(int ms);
-    void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
+    void execute(std::shared_ptr<Process> proc, int coreId = -1, int currentDepth = 0) override;
 
     int getDuration() const { return duration; }
 };

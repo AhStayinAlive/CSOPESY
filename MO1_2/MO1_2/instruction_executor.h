@@ -9,7 +9,7 @@ bool executeSingleInstruction(std::shared_ptr<Process> proc,
     int coreId) {
     try {
         // Execute the instruction
-        instruction->execute(proc, coreId);
+        instruction->execute(proc, coreId, 0);
 
         // Increment completed instructions counter
         (*proc->completedInstructions)++;

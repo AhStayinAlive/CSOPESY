@@ -9,6 +9,7 @@
 #include <sstream>
 #include <vector>
 #include <memory>
+#include <functional>
 #include <unordered_map>
 #include <algorithm>
 #include "config.h"
@@ -38,6 +39,7 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     std::uniform_int_distribution<> loopCountDist(2, 4);
 
 
+
     try {
         int numInstructions = instructionCount(gen);
         
@@ -50,6 +52,53 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
         }
 
         int i = 0;
+
+        std::function<std::vector<std::shared_ptr<Instruction>>(int, int)> generateRandomSubInstructions;
+
+        generateRandomSubInstructions = [&](int currentDepth, int maxDepth) -> std::vector<std::shared_ptr<Instruction>> {
+            std::vector<std::shared_ptr<Instruction>> subInstrs;
+            std::uniform_int_distribution<> subOpcodePicker(0, (currentDepth < maxDepth ? 5 : 4));  // Allow nested FOR if not max depth
+            std::uniform_int_distribution<> subInstrCountDist(1, 3); // 1 to 3 subinstructions
+            int numSubInstr = subInstrCountDist(gen);
+
+            for (int j = 0; j < numSubInstr; ++j) {
+                int subOp = subOpcodePicker(gen);
+                switch (subOp) {
+                case 0: { // DECLARE
+                    std::string varName = "loopVar_" + std::to_string(currentDepth) + "_" + std::to_string(j);
+                    int val = valueDist(gen);
+                    subInstrs.push_back(std::make_shared<DeclareInstruction>(varName, val));
+                    break;
+                }
+                case 1: { // ADD
+                    subInstrs.push_back(std::make_shared<AddInstruction>("res", "var0", "var1"));
+                    break;
+                }
+                case 2: { // SUBTRACT
+                    subInstrs.push_back(std::make_shared<SubtractInstruction>("res", "var0", "var1"));
+                    break;
+                }
+                case 3: { // PRINT
+                    subInstrs.push_back(std::make_shared<PrintInstruction>("Nested print at depth " + std::to_string(currentDepth)));
+                    break;
+                }
+                case 4: { // SLEEP
+                    int ms = sleepTime(gen);
+                    subInstrs.push_back(std::make_shared<SleepInstruction>(ms));
+                    break;
+                }
+                case 5: { // Nested FOR
+                    int nestedLoopCount = loopCountDist(gen);
+                    auto nestedSubInstrs = generateRandomSubInstructions(currentDepth + 1, maxDepth);
+                    subInstrs.push_back(std::make_shared<ForInstruction>(nestedLoopCount, nestedSubInstrs));
+                    break;
+                }
+                }
+            }
+
+            return subInstrs;
+            };
+
 
         while (proc->instructions.size() < numInstructions) {
             int op = opcodePicker(gen);
@@ -86,20 +135,16 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             }
             case 5: {
                 int loopCount = loopCountDist(gen);
-                for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
-                    for (int j = 0; j < 3 && proc->instructions.size() < maxInstructions; ++j) {
-                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
-                        proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
-                    }
-                }
+                auto subInstructions = generateRandomSubInstructions(1, 3); // currentDepth=1, maxDepth=3
+                proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInstructions));
                 break;
             }
+
+
             }
 
             i++;
         }
-
-        proc->logs.push_back("Process " + name + " created with " + std::to_string(numInstructions) + " instructions");
     }
     catch (const std::exception& e) {
         proc->logs.push_back("Process generation failed: " + std::string(e.what()));
@@ -198,3 +243,6 @@ void ProcessManager::clearAllProcesses() {
     pidCounter = 1000;
     uniqueProcessCounter = 1;
 }
+
+
+

@@ -10,7 +10,7 @@ AddInstruction::AddInstruction(const std::string& result, const std::string& lhs
 }
 
 
-void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId, int depth) {
     // Auto-declare missing variables with value 0
     if (proc->memory.find(arg1) == proc->memory.end()) {
         proc->memory[arg1] = 0;

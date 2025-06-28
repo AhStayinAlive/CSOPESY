@@ -10,7 +10,7 @@ SubtractInstruction::SubtractInstruction(const std::string& result, const std::s
     : resultVar(result), arg1(lhs), arg2(rhs) {
 }
 
-void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId, int depth) {
     // Auto-declare missing variables
     if (proc->memory.find(arg1) == proc->memory.end()) proc->memory[arg1] = 0;
     if (proc->memory.find(arg2) == proc->memory.end()) proc->memory[arg2] = 0;

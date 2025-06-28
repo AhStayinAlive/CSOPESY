@@ -12,5 +12,5 @@ public:
     std::string arg2;
 
     AddInstruction(const std::string& result, const std::string& lhs, const std::string& rhs);
-    void execute(std::shared_ptr<Process> proc, int coreId) override;
+    void execute(std::shared_ptr<Process> proc, int coreId, int currentDepth = 0) override;
 };

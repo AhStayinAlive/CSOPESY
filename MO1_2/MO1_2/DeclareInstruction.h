@@ -13,7 +13,7 @@ private:
 
 public:
     DeclareInstruction(const std::string& varName, int val);
-    void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
+    void execute(std::shared_ptr<Process> proc, int coreId = -1, int currentDepth = 0) override;
 
     std::string getVariableName() const { return variableName; }
     uint16_t getValue() const { return value; }

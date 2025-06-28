@@ -10,7 +10,7 @@
 
 SleepInstruction::SleepInstruction(int ms) : duration(ms) {}
 
-void SleepInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+void SleepInstruction::execute(std::shared_ptr<Process> proc, int coreId, int depth) {
     // Simple implementation - just sleep for the specified duration
     std::this_thread::sleep_for(std::chrono::milliseconds(duration));
 
