@@ -22,3 +22,11 @@ HOW TO RUN:
 9. Input command "report-util" to save the log of a process in a text file.
 10. Input command "scheduler-stop" to stop the scheduler.
 11. Input command "exit" to exit the program.
+
+How to Open and Build in Visual Studio
+1. Open Visual Studio 2022 (or any modern version).
+2. Go to File → Open → Project/Solution... if it’s a .sln file.
+3. Browse to your project’s root directory and open it.
+4. Set the build configuration to Debug or Release.
+5. Click Build → Build All.
+6. Press Ctrl+F5 (or Debug → Start Without Debugging) to run the emulator.
