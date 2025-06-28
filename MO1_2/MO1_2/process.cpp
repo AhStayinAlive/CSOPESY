@@ -74,16 +74,15 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
                 proc->instructions.push_back(std::make_shared<SleepInstruction>(ms));
                 break;
             }
-            case 5: { // FOR loop with 3 PRINT subinstructions
+            case 5: {
                 int loopCount = loopCountDist(gen);
-                std::vector<std::shared_ptr<Instruction>> subInstrs;
-
-                for (int j = 0; j < 3; ++j) {
-                    std::string msg = "Loop iteration " + std::to_string(j + 1);
-                    subInstrs.push_back(std::make_shared<PrintInstruction>(msg));
+                for (int i = 0; i < loopCount; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ") in " + name;
+                        proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
+                    }
                 }
-
-                proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInstrs));
+                proc->totalInstructions = static_cast<int>(proc->instructions.size());
                 break;
             }
             }

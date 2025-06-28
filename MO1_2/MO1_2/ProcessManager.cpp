@@ -83,12 +83,18 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             }
             case 5: {
                 int loopCount = loopCountDist(gen);
-                std::vector<std::shared_ptr<Instruction>> subInstructions;
-                for (int j = 0; j < 3; ++j) {
-                    std::string loopMessage = "Loop iteration " + std::to_string(j + 1) + " in " + name;
-                    subInstructions.push_back(std::make_shared<PrintInstruction>(loopMessage));
+                for (int i = 0; i < loopCount; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+                        if (proc->instructions.size() >= maxInstructions) {
+                            break; // Stop adding more instructions once max is reached
+                        }
+                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
+                        proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
+                    }
+                    if (proc->instructions.size() >= maxInstructions) {
+                        break;
+                    }
                 }
-                proc->instructions.push_back(std::make_shared<ForInstruction>(loopCount, subInstructions));
                 break;
             }
             }

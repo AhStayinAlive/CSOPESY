@@ -20,5 +20,5 @@ void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         << " | DECLARE: " << variableName << " = " << value;
 
     proc->logs.push_back(logEntry.str());
-    logToFile(proc->name, logEntry.str(), coreId);
+    logToFile(proc->name, logEntry.str(), proc->coreAssigned);
 }

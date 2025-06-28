@@ -14,14 +14,9 @@ void ForInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         nestingStr += "  "; // Indent based on nesting level
     }
 
-    logToFile(proc->name, nestingStr + "FOR loop level " + std::to_string(nestingLevel) +
-        " starting (" + std::to_string(iterations) + " iterations)", coreId);
-
     for (int i = 0; i < iterations; ++i) {
         for (auto& instruction : subInstructions) {
-            instruction->execute(proc, coreId);
+            instruction->execute(proc, proc->coreAssigned);
         }
     }
-
-    logToFile(proc->name, nestingStr + "FOR loop level " + std::to_string(nestingLevel) + " completed", coreId);
 }

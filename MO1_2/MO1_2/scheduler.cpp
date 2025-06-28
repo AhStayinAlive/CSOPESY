@@ -62,7 +62,7 @@ bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Ins
     }
     catch (const std::exception& e) {
         std::string errorMsg = "Error executing instruction: " + std::string(e.what());
-        logToFile(proc->name, errorMsg, coreId);
+        logToFile(proc->name, errorMsg, proc->coreAssigned);
         proc->logs.push_back(errorMsg);
         return false;
     }
@@ -110,7 +110,7 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
     if (proc->instructionPointer >= static_cast<int>(proc->instructions.size())) {
         proc->endTime = getCurrentTimestamp();
         proc->isFinished = true;
-        logToFile(proc->name, "Process completed successfully", coreId);
+        logToFile(proc->name, "Process completed successfully", proc->coreAssigned);
     }
 
     proc->isRunning = false;
@@ -188,6 +188,7 @@ void startScheduler(const Config& config) {
     std::transform(sched.begin(), sched.end(), sched.begin(), ::toupper);
 
     if (sched == "RR" || sched == "rr") {
+        timeQuantum = config.quantumCycles;
         schedulerType = SchedulerType::ROUND_ROBIN;
     }
     else {

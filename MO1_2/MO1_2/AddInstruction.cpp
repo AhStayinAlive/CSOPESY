@@ -39,5 +39,5 @@ void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
     std::string finalLog = logEntry.str();
     proc->logs.push_back(finalLog);
-    logToFile(proc->name, finalLog, coreId);
+    logToFile(proc->name, finalLog, proc->coreAssigned);
 }
