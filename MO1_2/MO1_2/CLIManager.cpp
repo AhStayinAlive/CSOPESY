@@ -139,7 +139,7 @@ void CLIManager::handleCommand(const std::string& input) {
                         auto proc = ProcessManager::createUniqueNamedProcess(config.minInstructions, config.maxInstructions);
                         ProcessManager::addProcess(proc);
                         addProcess(proc);
-                        std::this_thread::sleep_for(std::chrono::seconds(config.batchProcessFreq));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(config.batchProcessFreq));
                     }
                 }
                 catch (const std::exception& e) {
