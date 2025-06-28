@@ -21,22 +21,19 @@ void ConsoleView::clearScreen() {
 }
 
 void ConsoleView::show(const std::shared_ptr<Process>& proc) {
-    // Enter the process console loop
     std::string input;
 
     while (true) {
         clearScreen();
         displayProcessScreen(proc);
 
-        // Show process console prompt - change to match mockup format
         std::cout << "\n" << proc->name << ":\\> ";
         std::getline(std::cin, input);
 
         if (input == "exit") {
-            break; // Return to main menu
+            break; 
         }
         else if (input == "process-smi") {
-            // Display the same process information (as shown in mockup, process-smi shows same info)
             clearScreen();
             std::cout << "Process name: " << proc->name << std::endl;
             std::cout << "ID: " << proc->pid << std::endl;
@@ -77,7 +74,6 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
     std::cout << "| Instructions : " << *proc->completedInstructions << " / " << proc->instructions.size() << "\n";
     std::cout << "+--------------------------------------+\n";
 
-    // Show logs in the main process view
     std::cout << "\nLogs:\n";
     if (proc->logs.empty()) {
         std::cout << "  [No logs available]\n";
