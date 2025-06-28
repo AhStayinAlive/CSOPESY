@@ -5,17 +5,14 @@
 
 class Config {
 private:
-    Config() = default; // Private constructor for singleton
+    Config() = default;
 
 public:
-    // Singleton instance getter
     static Config& getInstance();
 
-    // Delete copy constructor and assignment operator
     Config(const Config&) = delete;
     Config& operator=(const Config&) = delete;
 
-    // Configuration parameters with default values
     int numCPU = 4;
     std::string scheduler = "ROUND_ROBIN";
     int quantumCycles = 5;
