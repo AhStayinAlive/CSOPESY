@@ -1,4 +1,3 @@
-// SleepInstruction.cpp
 #include "SleepInstruction.h"
 #include "process.h"
 #include "utils.h"
@@ -11,7 +10,6 @@
 SleepInstruction::SleepInstruction(int ms, const std::string& logPrefix) : duration(ms), logPrefix(logPrefix) {}
 
 void SleepInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Simple implementation - just sleep for the specified duration
     std::this_thread::sleep_for(std::chrono::milliseconds(duration));
 
     std::ostringstream logEntry;
