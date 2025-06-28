@@ -7,9 +7,9 @@
 
 class PrintInstruction : public Instruction {
 private:
-    std::string message;         // Static text part
-    std::string variableName;    // Optional variable name
-    bool hasVariable = false;    // Indicates if variable should be appended
+    std::string message;         
+    std::string variableName;    
+    bool hasVariable = false;    
     std::string logPrefix = "";
 
 public:
@@ -26,4 +26,4 @@ public:
     bool getHasVariable() const { return hasVariable; }
 };
 
-#endif // PRINTINSTRUCTION_H
+#endif
