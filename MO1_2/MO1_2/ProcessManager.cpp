@@ -43,12 +43,6 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
         
         proc->totalInstructions = numInstructions;
 
-        for (int i = 0; i < 5; ++i) {
-            std::string varName = "var" + std::to_string(i);
-            int value = valueDist(gen);
-            proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
-        }
-
         int count = 0;
 
         while (proc->instructions.size() < numInstructions) {
