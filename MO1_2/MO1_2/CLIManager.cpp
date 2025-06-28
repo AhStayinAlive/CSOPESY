@@ -128,7 +128,7 @@ void CLIManager::handleCommand(const std::string& input) {
         std::cout << "----------------------------------------\n";
     }
 
-    else if (cmd == "scheduler-start") {
+    else if (cmd == "scheduler-start" || cmd == "scheduler-test") {
         if (!generating) {
             generating = true;
             startScheduler(Config::getInstance());
