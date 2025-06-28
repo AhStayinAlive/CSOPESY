@@ -1,0 +1,8 @@
+(06/27/2025 10:04:09PM) Core:2 "[(06/27/2025 10:04:09PM)] Core 2 | PID 1584 | DECLARE: var0 = 16"
+(06/27/2025 10:04:09PM) Core:2 "[(06/27/2025 10:04:09PM)] Core 2 | PID 1584 | DECLARE: var1 = 70"
+(06/27/2025 10:04:09PM) Core:2 "[(06/27/2025 10:04:09PM)] Core 2 | PID 1584 | DECLARE: var2 = 10"
+(06/27/2025 10:04:09PM) Core:2 "[(06/27/2025 10:04:09PM)] Core 2 | PID 1584 | DECLARE: var3 = 68"
+(06/27/2025 10:04:09PM) Core:2 "[(06/27/2025 10:04:09PM)] Core 2 | PID 1584 | DECLARE: var4 = 33"
+(06/27/2025 10:04:10PM) Core:2 "SLEEP for 435ms"
+(06/27/2025 10:04:10PM) Core:2 "[(06/27/2025 10:04:10PM)] Core 2 | PID 1584 | PRINT: "Hello from process_584 [instruction 6]""
+(06/27/2025 10:04:10PM) Core:2 "Process completed successfully"

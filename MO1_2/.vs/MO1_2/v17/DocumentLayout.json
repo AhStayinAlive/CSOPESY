@@ -1,26 +1,113 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\",
+  "WorkspaceRootPath": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\PrintInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\AddInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\Instruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\Instruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\Downloads\\CSST Y3-T3\\CSOPESY\\MO1\\git\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\process.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\utils.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\scheduler.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8E03F3EE-9C39-4EDD-BDA5-8A89D6E16A58}|MO1_2\\MO1_2.vcxproj|solutionrelative:MO1_2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ConsoleView.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\ConsoleView.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\AddInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\DeclareInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\SubtractInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\SleepInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\ForInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\DeclareInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\PrintInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\SubtractInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\SleepInstruction.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\ForInstruction.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ProcessManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\ProcessManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\CLIManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\CLIManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MO1_2\\instruction_executor.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,73 +117,354 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 14,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 12,
               "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
               "RelativeDocumentMoniker": "MO1_2\\main.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\main.cpp",
               "RelativeToolTip": "MO1_2\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-25T08:24:31.617Z",
-              "IsPinned": true,
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ConsoleView.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ConsoleView.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\ConsoleView.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ConsoleView.cpp",
+              "RelativeToolTip": "MO1_2\\ConsoleView.cpp",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAQwDgAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T09:00:07.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AddInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\AddInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\AddInstruction.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:50:02.248Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "DeclareInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\DeclareInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\DeclareInstruction.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:49:54.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "SubtractInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\SubtractInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\SubtractInstruction.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:49:35.951Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SleepInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\SleepInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\SleepInstruction.cpp",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAwAAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:49:09.24Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ForInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\ForInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.h",
+              "RelativeToolTip": "MO1_2\\ForInstruction.h",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABAAAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:42:01.351Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "DeclareInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\DeclareInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\DeclareInstruction.h",
+              "RelativeToolTip": "MO1_2\\DeclareInstruction.h",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA8AAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:37:51.691Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "PrintInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\PrintInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.h",
+              "RelativeToolTip": "MO1_2\\PrintInstruction.h",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABQAAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:21:59.598Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "process.h",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
-              "RelativeDocumentMoniker": "MO1_2\\process.h",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.h",
-              "RelativeToolTip": "MO1_2\\process.h",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAAcAAAAAAAAAA==",
+              "Title": "AddInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\AddInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\AddInstruction.h",
+              "RelativeToolTip": "MO1_2\\AddInstruction.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-06-25T08:46:52.791Z",
+              "WhenOpened": "2025-06-28T08:36:29.152Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SubtractInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\SubtractInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SubtractInstruction.h",
+              "RelativeToolTip": "MO1_2\\SubtractInstruction.h",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABIAAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:35:38.961Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "instruction_executor.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\Downloads\\CSST Y3-T3\\CSOPESY\\MO1\\git\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\Downloads\\CSST Y3-T3\\CSOPESY\\MO1\\git\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "ToolTip": "C:\\Users\\Shanette\\Downloads\\CSST Y3-T3\\CSOPESY\\MO1\\git\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "RelativeToolTip": "..\\..\\..\\..\\Downloads\\CSST Y3-T3\\CSOPESY\\MO1\\git\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:27:29.054Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "SleepInstruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\SleepInstruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\SleepInstruction.h",
+              "RelativeToolTip": "MO1_2\\SleepInstruction.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:25:53.901Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ForInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\ForInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ForInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\ForInstruction.cpp",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:24:26.166Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PrintInstruction.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\PrintInstruction.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\PrintInstruction.cpp",
+              "RelativeToolTip": "MO1_2\\PrintInstruction.cpp",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T08:22:01.649Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "scheduler.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\scheduler.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
-              "RelativeToolTip": "MO1_2\\scheduler.cpp",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAkwFsAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:44.443Z",
+              "Title": "Instruction.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\Instruction.h",
+              "RelativeDocumentMoniker": "MO1_2\\Instruction.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\Instruction.h",
+              "RelativeToolTip": "MO1_2\\Instruction.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T08:20:45.053Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ProcessManager.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ProcessManager.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\ProcessManager.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\ProcessManager.cpp",
+              "RelativeToolTip": "MO1_2\\ProcessManager.cpp",
+              "ViewState": "AgIAAJMAAAAAAAAAAAAowJkAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T07:19:48.07Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "CLIManager.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\CLIManager.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\CLIManager.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\CLIManager.cpp",
+              "RelativeToolTip": "MO1_2\\CLIManager.cpp",
+              "ViewState": "AgIAAJcAAAAAAAAAAAAAAFgAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-28T07:19:12.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "instruction_executor.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "RelativeDocumentMoniker": "MO1_2\\instruction_executor.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\instruction_executor.h",
+              "RelativeToolTip": "MO1_2\\instruction_executor.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-27T12:55:01.002Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "process.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\process.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
-              "RelativeToolTip": "MO1_2\\process.cpp",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAkwEsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:38.706Z",
-              "EditorCaption": ""
+              "Title": "config.txt",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt",
+              "RelativeDocumentMoniker": "MO1_2\\config.txt",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.txt",
+              "RelativeToolTip": "MO1_2\\config.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-06-27T12:47:36.226Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "config.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h",
+              "RelativeDocumentMoniker": "MO1_2\\config.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.h",
+              "RelativeToolTip": "MO1_2\\config.h",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-27T12:40:29.405Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "utils.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h",
+              "RelativeDocumentMoniker": "MO1_2\\utils.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\utils.h",
+              "RelativeToolTip": "MO1_2\\utils.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-27T12:40:17.724Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "scheduler.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h",
+              "RelativeDocumentMoniker": "MO1_2\\scheduler.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.h",
+              "RelativeToolTip": "MO1_2\\scheduler.h",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-27T12:39:52.523Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "process.h",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h",
+              "RelativeDocumentMoniker": "MO1_2\\process.h",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.h",
+              "RelativeToolTip": "MO1_2\\process.h",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAAACwAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-25T08:46:52.791Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "config.cpp",
-              "DocumentMoniker": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
-              "RelativeDocumentMoniker": "MO1_2\\config.cpp",
-              "ToolTip": "C:\\Users\\stayi\\Downloads\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
-              "RelativeToolTip": "MO1_2\\config.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Title": "scheduler.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\scheduler.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\scheduler.cpp",
+              "RelativeToolTip": "MO1_2\\scheduler.cpp",
+              "ViewState": "AgIAACoAAAAAAAAAAAAEwDYAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-06-25T08:24:25.964Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T08:24:44.443Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "process.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\process.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\process.cpp",
+              "RelativeToolTip": "MO1_2\\process.cpp",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAIwF4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-25T08:24:38.706Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "config.cpp",
+              "DocumentMoniker": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
+              "RelativeDocumentMoniker": "MO1_2\\config.cpp",
+              "ToolTip": "C:\\Users\\Shanette\\source\\repos\\CSOPESY\\MO1_2\\MO1_2\\config.cpp",
+              "RelativeToolTip": "MO1_2\\config.cpp",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-25T08:24:25.964Z"
             }
           ]
         }

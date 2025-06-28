@@ -1,0 +1,8 @@
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | DECLARE: var0 = 38"
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | DECLARE: var1 = 7"
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | DECLARE: var2 = 58"
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | DECLARE: var3 = 48"
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | DECLARE: var4 = 61"
+(06/27/2025 10:09:19PM) Core:1 "[(06/27/2025 10:09:19PM)] Core 1 | PID 1891 | PRINT: "Hello from process_891 [instruction 5]""
+(06/27/2025 10:09:19PM) Core:1 "SLEEP for 191ms"
+(06/27/2025 10:09:20PM) Core:1 "Process completed successfully"

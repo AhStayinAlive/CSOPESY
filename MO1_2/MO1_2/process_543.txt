@@ -1,0 +1,8 @@
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | DECLARE: var0 = 37"
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | DECLARE: var1 = 20"
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | DECLARE: var2 = 89"
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | DECLARE: var3 = 46"
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | DECLARE: var4 = 80"
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | PRINT: "Hello from process_543 [instruction 5]""
+(06/27/2025 10:03:28PM) Core:1 "[(06/27/2025 10:03:28PM)] Core 1 | PID 1543 | SUBTRACT: 20 - 89 = 0 ? diff6"
+(06/27/2025 10:03:28PM) Core:1 "Process completed successfully"

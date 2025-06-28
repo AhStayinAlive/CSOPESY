@@ -1,0 +1,7 @@
+(06/27/2025 10:03:41PM) Core:2 "[(06/27/2025 10:03:41PM)] Core 2 | PID 1556 | DECLARE: var0 = 8"
+(06/27/2025 10:03:41PM) Core:2 "[(06/27/2025 10:03:41PM)] Core 2 | PID 1556 | DECLARE: var1 = 76"
+(06/27/2025 10:03:41PM) Core:2 "[(06/27/2025 10:03:41PM)] Core 2 | PID 1556 | DECLARE: var2 = 38"
+(06/27/2025 10:03:41PM) Core:2 "[(06/27/2025 10:03:41PM)] Core 2 | PID 1556 | DECLARE: var3 = 12"
+(06/27/2025 10:03:41PM) Core:2 "[(06/27/2025 10:03:41PM)] Core 2 | PID 1556 | DECLARE: var4 = 9"
+(06/27/2025 10:03:42PM) Core:2 "SLEEP for 308ms"
+(06/27/2025 10:03:42PM) Core:2 "Process completed successfully"

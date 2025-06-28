@@ -1,0 +1,7 @@
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | DECLARE: var0 = 73"
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | DECLARE: var1 = 30"
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | DECLARE: var2 = 82"
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | DECLARE: var3 = 17"
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | DECLARE: var4 = 28"
+(06/27/2025 10:07:01PM) Core:3 "[(06/27/2025 10:07:01PM)] Core 3 | PID 1754 | PRINT: "Hello from process_754 [instruction 5]""
+(06/27/2025 10:07:01PM) Core:3 "Process completed successfully"

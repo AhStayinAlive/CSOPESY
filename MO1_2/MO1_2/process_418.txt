@@ -1,0 +1,6 @@
+(06/27/2025 10:01:22PM) Core:3 "[(06/27/2025 10:01:22PM)] Core 3 | PID 1418 | DECLARE: var0 = 17"
+(06/27/2025 10:01:22PM) Core:3 "[(06/27/2025 10:01:22PM)] Core 3 | PID 1418 | DECLARE: var1 = 63"
+(06/27/2025 10:01:22PM) Core:3 "[(06/27/2025 10:01:22PM)] Core 3 | PID 1418 | DECLARE: var2 = 40"
+(06/27/2025 10:01:22PM) Core:3 "[(06/27/2025 10:01:22PM)] Core 3 | PID 1418 | DECLARE: var3 = 37"
+(06/27/2025 10:01:22PM) Core:3 "[(06/27/2025 10:01:22PM)] Core 3 | PID 1418 | DECLARE: var4 = 20"
+(06/27/2025 10:01:22PM) Core:3 "Process completed successfully"

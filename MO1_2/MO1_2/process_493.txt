@@ -1,0 +1,8 @@
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | DECLARE: var0 = 43"
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | DECLARE: var1 = 47"
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | DECLARE: var2 = 76"
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | DECLARE: var3 = 67"
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | DECLARE: var4 = 4"
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | PRINT: "Hello from process_493 [instruction 5]""
+(06/27/2025 10:02:38PM) Core:0 "[(06/27/2025 10:02:38PM)] Core 0 | PID 1493 | PRINT: "Hello from process_493 [instruction 6]""
+(06/27/2025 10:02:38PM) Core:0 "Process completed successfully"

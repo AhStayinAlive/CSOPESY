@@ -1,0 +1,7 @@
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | DECLARE: var0 = 33"
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | DECLARE: var1 = 6"
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | DECLARE: var2 = 42"
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | DECLARE: var3 = 100"
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | DECLARE: var4 = 48"
+(06/27/2025 10:11:20PM) Core:1 "[(06/27/2025 10:11:20PM)] Core 1 | PID 2011 | PRINT: "Hello from process_1011 [instruction 5]""
+(06/27/2025 10:11:21PM) Core:1 "Process completed successfully"

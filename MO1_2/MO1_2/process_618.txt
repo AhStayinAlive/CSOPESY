@@ -1,0 +1,8 @@
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | DECLARE: var0 = 41"
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | DECLARE: var1 = 3"
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | DECLARE: var2 = 92"
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | DECLARE: var3 = 20"
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | DECLARE: var4 = 45"
+(06/27/2025 10:04:44PM) Core:3 "[(06/27/2025 10:04:44PM)] Core 3 | PID 1618 | PRINT: "Hello from process_618 [instruction 5]""
+(06/27/2025 10:04:44PM) Core:3 "SLEEP for 139ms"
+(06/27/2025 10:04:44PM) Core:3 "Process completed successfully"

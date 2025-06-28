@@ -1,0 +1,8 @@
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | DECLARE: var0 = 7"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | DECLARE: var1 = 50"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | DECLARE: var2 = 43"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | DECLARE: var3 = 84"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | DECLARE: var4 = 23"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | SUBTRACT: 7 - 50 = 0 ? diff5"
+(06/27/2025 10:11:06PM) Core:0 "[(06/27/2025 10:11:06PM)] Core 0 | PID 1997 | PRINT: "Hello from process_997 [instruction 6]""
+(06/27/2025 10:11:06PM) Core:0 "Process completed successfully"
