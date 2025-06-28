@@ -11,7 +11,6 @@ AddInstruction::AddInstruction(const std::string& result, const std::string& lhs
 
 
 void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Auto-declare missing variables with value 0
     if (proc->memory.find(arg1) == proc->memory.end()) {
         proc->memory[arg1] = 0;
     }
@@ -19,18 +18,14 @@ void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         proc->memory[arg2] = 0;
     }
 
-    // Get values from memory (not parsing as integers)
     uint16_t val1 = proc->memory[arg1];
     uint16_t val2 = proc->memory[arg2];
 
-    // Perform addition with overflow protection
     uint32_t temp = static_cast<uint32_t>(val1) + static_cast<uint32_t>(val2);
     uint16_t result = static_cast<uint16_t>(std::min(temp, static_cast<uint32_t>(65535)));
 
-    // Store result
     proc->memory[resultVar] = result;
 
-    // Create log entry
     std::ostringstream logEntry;
     if (logPrefix != "") {
         logEntry << "[" << getCurrentTimestamp() << "] "
