@@ -37,8 +37,10 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     std::uniform_int_distribution<> sleepTime(100, 500);
     std::uniform_int_distribution<> loopCountDist(2, 4);
 
+
     try {
         int numInstructions = instructionCount(gen);
+        
         proc->totalInstructions = numInstructions;
 
         for (int i = 0; i < 5; ++i) {
@@ -47,9 +49,10 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
         }
 
-        for (int i = 5; i < numInstructions; ++i) {
-            int op = opcodePicker(gen);
+        int i = 0;
 
+        while (proc->instructions.size() < numInstructions) {
+            int op = opcodePicker(gen);
             switch (op) {
             case 0: {
                 std::string varName = "var" + std::to_string(i);
@@ -83,21 +86,17 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             }
             case 5: {
                 int loopCount = loopCountDist(gen);
-                for (int i = 0; i < loopCount; ++i) {
-                    for (int j = 0; j < 3; ++j) {
-                        if (proc->instructions.size() >= maxInstructions) {
-                            break; // Stop adding more instructions once max is reached
-                        }
+                for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
+                    for (int j = 0; j < 3 && proc->instructions.size() < maxInstructions; ++j) {
                         std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
                         proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
-                    }
-                    if (proc->instructions.size() >= maxInstructions) {
-                        break;
                     }
                 }
                 break;
             }
             }
+
+            i++;
         }
 
         proc->logs.push_back("Process " + name + " created with " + std::to_string(numInstructions) + " instructions");

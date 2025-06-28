@@ -78,11 +78,16 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
                 int loopCount = loopCountDist(gen);
                 for (int i = 0; i < loopCount; ++i) {
                     for (int j = 0; j < 3; ++j) {
-                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ") in " + name;
+                        if (proc->instructions.size() >= maxIns) {
+                            break; // Stop adding more instructions once max is reached
+                        }
+                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
                         proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
                     }
+                    if (proc->instructions.size() >= maxIns) {
+                        break;
+                    }
                 }
-                proc->totalInstructions = static_cast<int>(proc->instructions.size());
                 break;
             }
             }
