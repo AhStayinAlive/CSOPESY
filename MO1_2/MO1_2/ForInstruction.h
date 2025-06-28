@@ -1,4 +1,3 @@
-// ForInstruction.h
 #ifndef FORINSTRUCTION_H
 #define FORINSTRUCTION_H
 
@@ -10,7 +9,7 @@ class ForInstruction : public Instruction {
 private:
     int iterations;
     std::vector<std::shared_ptr<Instruction>> subInstructions;
-    int nestingLevel; // Track nesting depth
+    int nestingLevel;
 
 public:
     ForInstruction(int count, const std::vector<std::shared_ptr<Instruction>>& instructions, int nesting = 1);
