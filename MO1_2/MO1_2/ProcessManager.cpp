@@ -91,12 +91,6 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
             }
             case 5: {
                 int loopCount = loopCountDist(gen);
-                /*for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
-                    for (int j = 0; j < 3 && proc->instructions.size() < maxInstructions; ++j) {
-                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
-                        proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
-                    }
-                }*/
 
                 for (int i = 0; i < loopCount && proc->instructions.size() < maxInstructions; ++i) {
                     for (int j = 0; j < 2 && proc->instructions.size() < maxInstructions; ++j) {
