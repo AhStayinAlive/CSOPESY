@@ -1,20 +1,62 @@
-
-// scheduler.h
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
 #include "process.h"
+#include "config.h"
 #include <memory>
 #include <vector>
-
-class Config;
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
 
 enum class SchedulerType {
     FCFS,
     ROUND_ROBIN
 };
 
-// Global variables
+class ProcessScheduler {
+private:
+    std::queue<std::shared_ptr<Process>> readyQueue;
+    mutable std::mutex queueMutex;
+    std::condition_variable queueCV;
+
+    std::atomic<bool> running{ false };
+    std::atomic<bool> shouldStop{ false };
+    std::atomic<int> quantumCycle{ 0 };
+
+    std::vector<std::thread> workerThreads;
+    std::vector<bool> coreAvailable;
+
+    SchedulerType schedulerType = SchedulerType::ROUND_ROBIN;
+    int timeQuantum = 3;
+    int delayPerInstruction = 100;
+    int numCPU = 4;
+
+    void schedulerLoop();
+    void cpuWorker(int coreId);
+    bool tryAllocateMemory(std::shared_ptr<Process> process);
+    void executeProcess(std::shared_ptr<Process> process, int coreId);
+    void deallocateProcessMemory(std::shared_ptr<Process> process);
+
+public:
+    ProcessScheduler() = default;
+    ~ProcessScheduler();
+
+    void start(const Config& config);
+    void stop();
+    void addProcess(std::shared_ptr<Process> process);
+
+    bool isRunning() const { return running.load(); }
+    int getCurrentCycle() const { return quantumCycle.load(); }
+    size_t getReadyQueueSize() const;
+
+    void generateReport();
+    void printStatus() const;
+};
+
+// Global variables used externally
 extern std::vector<std::shared_ptr<Process>> allProcesses;
 extern bool stop;
 extern bool running;
@@ -22,29 +64,10 @@ extern SchedulerType schedulerType;
 extern int cpuTick;
 extern int timeQuantum;
 
-// Function declarations
+// Global helper functions (exposed to CLIManager or main.cpp)
 void startScheduler(const Config& config);
 void stopScheduler();
 void addProcess(std::shared_ptr<Process> p);
 void generateReport();
-void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delay);
-void cpuWorker(int coreId, int delay);
 
 #endif // SCHEDULER_H
-
-// ========================================
-
-// instruction_executor.h
-#ifndef INSTRUCTION_EXECUTOR_H
-#define INSTRUCTION_EXECUTOR_H
-
-#include "process.h"
-#include <memory>
-
-class Instruction;
-
-bool executeSingleInstruction(std::shared_ptr<Process> proc,
-    std::shared_ptr<Instruction> instruction,
-    int coreId);
-
-#endif // INSTRUCTION_EXECUTOR_H

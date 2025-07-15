@@ -1,321 +1,294 @@
 ﻿#include "scheduler.h"
-#include "utils.h"
-#include "config.h"
+#include "MemoryManager.h"               // ✅ Updated from FlatMemoryAllocator
 #include "ProcessManager.h"
+#include "config.h"
+#include "utils.h"
 #include "instruction.h"
-#include "AddInstruction.h"
-#include "SubtractInstruction.h"
-#include "DeclareInstruction.h"
-#include "SleepInstruction.h"
-#include "PrintInstruction.h"
-#include "ForInstruction.h"
-#include <sstream>
 
-#include <iomanip>
-#include <queue>
-#include <thread>
-#include <vector>
-#include <mutex>
-#include <condition_variable>
-#include <atomic>
 #include <iostream>
-#include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
-// Global scheduler state
-static std::queue<std::shared_ptr<Process>> readyQueue;
-static std::mutex schedulerMutex;
-static std::condition_variable schedulerCV;
-static std::atomic<bool> schedulerRunning{ false };
-static std::atomic<bool> shouldStop{ false };
-static std::vector<std::thread> cpuWorkers;
-static std::vector<std::shared_ptr<std::atomic<bool>>> coreAvailable;
-
-// Scheduler configuration
+// Global variables
+std::vector<std::shared_ptr<Process>> allProcesses;
+bool stop = false;
+bool running = false;
 SchedulerType schedulerType = SchedulerType::ROUND_ROBIN;
-static int timeQuantum = 3;
-static std::atomic<int> globalCpuTick{ 0 };
+int cpuTick = 0;
+int timeQuantum = 3;
 
-// CPU utilization tracking
-static std::mutex utilizationMutex;
-static std::chrono::steady_clock::time_point lastUtilizationUpdate;
-static double currentUtilization = 0.0;
+// Global scheduler instance
+static ProcessScheduler globalScheduler;
 
-// Sleep queue for processes with wake-up times
-static auto sleepCmp = [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
-    return a->getWakeupTick() > b->getWakeupTick();
-    };
-static std::priority_queue<std::shared_ptr<Process>,
-    std::vector<std::shared_ptr<Process>>,
-    decltype(sleepCmp)> sleepQueue(sleepCmp);
-
-bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Instruction> instruction, int coreId) {
-    try {
-        instruction->execute(proc, coreId);
-        (*proc->completedInstructions)++;
-
-        // Don't duplicate logging here since each instruction already logs itself
-        // This was causing the "Executed unknown instruction type" messages
-        return true;
-
-    }
-    catch (const std::exception& e) {
-        std::string errorMsg = "Error executing instruction: " + std::string(e.what());
-        logToFile(proc->name, errorMsg, proc->coreAssigned);
-        proc->logs.push_back(errorMsg);
-        return false;
-    }
-}
-void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs) {
-    int quantumRemaining = timeQuantum;
-    bool shouldPreempt = false;
-
-    while (proc->instructionPointer < static_cast<int>(proc->instructions.size()) && !shouldPreempt) {
-        // Check if process should sleep
-        if (proc->getWakeupTick() > globalCpuTick.load()) {
-            std::lock_guard<std::mutex> lock(schedulerMutex);
-            sleepQueue.push(proc);
-            proc->isRunning = false;
-            return;
-        }
-
-        // Execute instruction
-        if (!executeSingleInstruction(proc, proc->instructions[proc->instructionPointer], coreId)) {
-            proc->logs.push_back("Execution failed at instruction " + std::to_string(proc->instructionPointer + 1));
-            break;
-        }
-
-        proc->instructionPointer++;
-        globalCpuTick++;
-
-        // Add execution delay
-        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
-
-        // Check for preemption in Round Robin
-        if (schedulerType == SchedulerType::ROUND_ROBIN) {
-            quantumRemaining--;
-            if (quantumRemaining <= 0) {
-                shouldPreempt = true;
-                // Re-queue the process if not finished
-                if (proc->instructionPointer < static_cast<int>(proc->instructions.size())) {
-                    std::lock_guard<std::mutex> lock(schedulerMutex);
-                    readyQueue.push(proc);
-                }
-            }
-        }
-    }
-
-    // Process completed or failed
-    if (proc->instructionPointer >= static_cast<int>(proc->instructions.size())) {
-        proc->endTime = getCurrentTimestamp();
-        proc->isFinished = true;
-        logToFile(proc->name, "Process completed successfully", proc->coreAssigned);
-    }
-
-    proc->isRunning = false;
-    *coreAvailable[coreId] = true;
+ProcessScheduler::~ProcessScheduler() {
+    stop();
 }
 
-void cpuWorker(int coreId, int delayMs) {
-    while (!shouldStop.load()) {
-        std::shared_ptr<Process> proc;
-
-        {
-            std::unique_lock<std::mutex> lock(schedulerMutex);
-            schedulerCV.wait(lock, [&] {
-                // Wake up sleeping processes
-                while (!sleepQueue.empty() && sleepQueue.top()->getWakeupTick() <= globalCpuTick.load()) {
-                    auto wakeProc = sleepQueue.top();
-                    sleepQueue.pop();
-                    readyQueue.push(wakeProc);
-                }
-
-                return !readyQueue.empty() || shouldStop.load();
-                });
-
-            if (shouldStop.load()) break;
-
-            if (readyQueue.empty()) continue;
-
-            proc = readyQueue.front();
-            readyQueue.pop();
-            proc->coreAssigned = coreId;
-            proc->isRunning = true;
-            *coreAvailable[coreId] = false;
-        }
-
-        // Set start time if this is the first execution
-        if (proc->startTime.empty()) {
-            proc->startTime = getCurrentTimestamp();
-        }
-
-        // Execute the process
-        executeInstructions(proc, coreId, delayMs);
-    }
-}
-
-void updateCpuUtilization() {
-    auto now = std::chrono::steady_clock::now();
-
-    {
-        std::lock_guard<std::mutex> lock(utilizationMutex);
-        int runningProcesses = ProcessManager::getRunningProcessCount();
-        int totalCores = Config::getInstance().numCPU;
-
-        if (totalCores > 0) {
-            currentUtilization = (static_cast<double>(runningProcesses) / totalCores) * 100.0;
-        }
-        else {
-            currentUtilization = 0.0;
-        }
-
-        lastUtilizationUpdate = now;
-    }
-}
-
-void startScheduler(const Config& config) {
-    if (schedulerRunning.load()) {
+void ProcessScheduler::start(const Config& config) {
+    if (running.load()) {
         std::cout << "Scheduler is already running.\n";
         return;
     }
 
-    shouldStop = false;
-    schedulerRunning = true;
+    numCPU = config.numCPU;
+    timeQuantum = config.quantumCycles;
+    delayPerInstruction = config.delayPerInstruction;
 
-    // Set scheduler type
     std::string sched = config.scheduler;
     std::transform(sched.begin(), sched.end(), sched.begin(), ::toupper);
 
-    if (sched == "RR" || sched == "rr") {
-        timeQuantum = config.quantumCycles;
-        schedulerType = SchedulerType::ROUND_ROBIN;
-    }
-    else {
-        schedulerType = SchedulerType::FCFS;
-    }
+    schedulerType = (sched == "RR" || sched == "ROUND_ROBIN")
+        ? SchedulerType::ROUND_ROBIN
+        : SchedulerType::FCFS;
 
-    // Initialize core availability tracking
-    coreAvailable.clear();
-    coreAvailable.resize(config.numCPU);
-    coreAvailable.resize(config.numCPU);
-    for (int i = 0; i < config.numCPU; ++i) {
-        coreAvailable[i] = std::make_shared<std::atomic<bool>>(true);
+    coreAvailable.assign(numCPU, true);
+    shouldStop = false;
+    running = true;
+    quantumCycle = 0;
+
+    workerThreads.clear();
+    for (int i = 0; i < numCPU; ++i) {
+        workerThreads.emplace_back(&ProcessScheduler::cpuWorker, this, i);
     }
+    workerThreads.emplace_back(&ProcessScheduler::schedulerLoop, this);
 
-    // Start CPU worker threads
-    cpuWorkers.clear();
-    for (int i = 0; i < config.numCPU; ++i) {
-        cpuWorkers.emplace_back(cpuWorker, i, config.delayPerInstruction);
-    }
-
-    // Start utilization tracking thread
-    std::thread utilizationThread([]() {
-        while (schedulerRunning.load()) {
-            updateCpuUtilization();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-        });
-    utilizationThread.detach();
-
-    std::cout << "Scheduler started with " << config.numCPU << " cores using "
+    std::cout << "ProcessScheduler started with " << numCPU << " cores using "
         << (schedulerType == SchedulerType::FCFS ? "FCFS" : "Round Robin")
         << " scheduling.\n";
 }
 
-void stopScheduler() {
-    if (!schedulerRunning.load()) {
-        return;
-    }
+void ProcessScheduler::stop() {
+    if (!running.load()) return;
 
     shouldStop = true;
-    schedulerRunning = false;
+    running = false;
+    queueCV.notify_all();
 
-    // Notify all waiting threads
-    schedulerCV.notify_all();
+    for (auto& thread : workerThreads) {
+        if (thread.joinable()) thread.join();
+    }
 
-    // Wait for all worker threads to finish
-    for (auto& worker : cpuWorkers) {
-        if (worker.joinable()) {
-            worker.join();
+    workerThreads.clear();
+    coreAvailable.clear();
+    std::cout << "ProcessScheduler stopped.\n";
+}
+
+void ProcessScheduler::addProcess(std::shared_ptr<Process> process) {
+    if (!process) return;
+
+    process->setStatus(ProcessStatus::READY);
+    process->arrivalTime = getCurrentTimestamp();
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        readyQueue.push(process);
+    }
+
+    queueCV.notify_one();
+    // Comment out this line to reduce output spam
+    // std::cout << "Process " << process->name << " (PID: " << process->pid << ") added to ready queue\n";
+}
+
+void ProcessScheduler::schedulerLoop() {
+    while (!shouldStop.load()) {
+        quantumCycle.fetch_add(1);
+        MemoryManager::getInstance().incrementCycle(); // ✅ updated from FlatMemoryAllocator
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void ProcessScheduler::cpuWorker(int coreId) {
+    while (!shouldStop.load()) {
+        std::shared_ptr<Process> process;
+
+        {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            queueCV.wait(lock, [this] {
+                return !readyQueue.empty() || shouldStop.load();
+                });
+
+            if (shouldStop.load()) break;
+            if (readyQueue.empty()) continue;
+
+            process = readyQueue.front();
+            readyQueue.pop();
+        }
+
+        if (!tryAllocateMemory(process)) {
+            std::lock_guard<std::mutex> lock(queueMutex);
+            readyQueue.push(process);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            continue;
+        }
+
+        coreAvailable[coreId] = false;
+        process->coreAssigned = coreId;
+        process->setStatus(ProcessStatus::RUNNING);
+
+        executeProcess(process, coreId);
+        coreAvailable[coreId] = true;
+    }
+}
+
+bool ProcessScheduler::tryAllocateMemory(std::shared_ptr<Process> process) {
+    if (process->getBaseAddress() != -1) return true;
+    return MemoryManager::getInstance().allocate(process); // ✅ updated
+}
+
+void ProcessScheduler::executeProcess(std::shared_ptr<Process> process, int coreId) {
+    if (process->startTime.empty()) {
+        process->startTime = getCurrentTimestamp();
+    }
+
+    int quantumRemaining = timeQuantum;
+    bool shouldPreempt = false;
+    process->log("Process started execution on core " + std::to_string(coreId));
+
+    while (process->instructionPointer < static_cast<int>(process->instructions.size()) &&
+        !shouldPreempt && !shouldStop.load()) {
+
+        if (process->getWakeupTick() > quantumCycle.load()) {
+            process->setStatus(ProcessStatus::READY);
+            {
+                std::lock_guard<std::mutex> lock(queueMutex);
+                readyQueue.push(process);
+            }
+            process->log("Process went to sleep");
+            return;
+        }
+
+        try {
+            auto instruction = process->instructions[process->instructionPointer];
+            instruction->execute(process, coreId);
+            (*process->completedInstructions)++;
+            process->instructionPointer++;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayPerInstruction));
+
+            if (schedulerType == SchedulerType::ROUND_ROBIN && --quantumRemaining <= 0) {
+                shouldPreempt = true;
+                if (process->instructionPointer < static_cast<int>(process->instructions.size())) {
+                    process->setStatus(ProcessStatus::READY);
+                    {
+                        std::lock_guard<std::mutex> lock(queueMutex);
+                        readyQueue.push(process);
+                    }
+                    process->log("Process preempted (quantum expired)");
+                }
+            }
+        }
+        catch (const std::exception& e) {
+            process->log("Error executing instruction: " + std::string(e.what()));
+            break;
         }
     }
 
-    cpuWorkers.clear();
-    coreAvailable.clear();
-
-    std::cout << "Scheduler stopped.\n";
-}
-
-void addProcess(std::shared_ptr<Process> proc) {
-    if (!proc) return;
-
-    {
-        std::lock_guard<std::mutex> lock(schedulerMutex);
-        readyQueue.push(proc);
+    if (process->instructionPointer >= static_cast<int>(process->instructions.size())) {
+        process->setStatus(ProcessStatus::DONE);
+        process->endTime = getCurrentTimestamp();
+        process->log("Process completed successfully");
+        deallocateProcessMemory(process);
+        process->writeLogToFile();
+        std::cout << "Process " << process->name << " (PID: " << process->pid
+            << ") completed on core " << coreId << "\n";
     }
-    schedulerCV.notify_one();
 }
 
-void generateReport() {
+void ProcessScheduler::deallocateProcessMemory(std::shared_ptr<Process> process) {
+    if (process->getBaseAddress() != -1) {
+        MemoryManager::getInstance().deallocate(process); // ✅ updated
+    }
+}
+
+size_t ProcessScheduler::getReadyQueueSize() const {
+    std::lock_guard<std::mutex> lock(queueMutex);
+    return readyQueue.size();
+}
+
+void ProcessScheduler::generateReport() {
     std::ofstream file("csopesy-log.txt");
     if (!file.is_open()) {
         std::cerr << "Error: Could not create report file.\n";
         return;
     }
 
-    auto allProcesses = ProcessManager::getAllProcesses();
-    auto runningProcesses = ProcessManager::getRunningProcesses();
-    auto finishedProcesses = ProcessManager::getFinishedProcesses();
-    auto waitingProcesses = ProcessManager::getWaitingProcesses();
+    auto all = ProcessManager::getAllProcesses();
+    auto running = ProcessManager::getRunningProcesses();
+    auto finished = ProcessManager::getFinishedProcesses();
 
-    file << "CSOPESY CPU Utilization Report\n";
+    file << "CSOPESY CPU and Memory Utilization Report\n";
     file << "Generated: " << getCurrentTimestamp() << "\n\n";
 
-    // System configuration
     file << "System Configuration:\n";
-    file << "  CPU Cores: " << Config::getInstance().numCPU << "\n";
-    file << "  Scheduler: " << Config::getInstance().scheduler << "\n";
+    file << "  CPU Cores: " << numCPU << "\n";
+    file << "  Scheduler: " << (schedulerType == SchedulerType::FCFS ? "FCFS" : "Round Robin") << "\n";
     if (schedulerType == SchedulerType::ROUND_ROBIN) {
-        file << "  Time Quantum: " << timeQuantum << " cycles\n";
+        file << "  Time Quantum: " << timeQuantum << "\n";
     }
-    file << "  Delay per Instruction: " << Config::getInstance().delayPerInstruction << "ms\n\n";
+    file << "  Delay per Instruction: " << delayPerInstruction << "ms\n\n";
 
-    // Utilization stats
-    double utilization = ProcessManager::getCpuUtilization();
-    file << "CPU Utilization Statistics:\n";
-    file << "  Current Utilization: " << std::fixed << std::setprecision(2) << utilization << "%\n";
-    file << "  Total Processes: " << allProcesses.size() << "\n";
-    file << "  Running Processes: " << runningProcesses.size() << "\n";
-    file << "  Waiting Processes: " << waitingProcesses.size() << "\n";
-    file << "  Finished Processes: " << finishedProcesses.size() << "\n\n";
+    auto& mem = MemoryManager::getInstance(); // ✅ updated
+    file << "Memory Information:\n";
+    file << "  Total Memory: " << mem.getTotalMemory() << " bytes\n";
+    file << "  Used Memory: " << mem.getUsedMemory() << " bytes\n";
+    file << "  Free Memory: " << mem.getFreeMemory() << " bytes\n\n";
 
-    // Core usage
-    file << "Core Usage:\n";
-    for (int i = 0; i < Config::getInstance().numCPU; ++i) {
-        std::string status = (*coreAvailable[i]) ? "Available" : "Busy";
-        file << "  Core " << i << ": " << status;
+    file << "Process Statistics:\n";
+    file << "  Total Processes: " << all.size() << "\n";
+    file << "  Running Processes: " << running.size() << "\n";
+    file << "  Finished Processes: " << finished.size() << "\n";
+    file << "  Ready Queue Size: " << getReadyQueueSize() << "\n\n";
 
-        // Find the process assigned to this core
-        for (const auto& proc : runningProcesses) {
-            if (proc->coreAssigned == i) {
-                file << " | Running: " << proc->name << " (PID: " << proc->pid << ")";
-                break;
-            }
-        }
-        file << "\n";
-    }
-
-    file << "\nFinished Processes:\n";
-    if (finishedProcesses.empty()) {
-        file << "  [None]\n";
-    }
+    file << "Running Processes:\n";
+    if (running.empty()) file << "  None\n";
     else {
-        for (const auto& proc : finishedProcesses) {
-            file << "  " << proc->name << " (PID: " << proc->pid << ") - Completed at " << proc->endTime << "\n";
+        for (const auto& p : running) {
+            file << "  " << p->name << " (PID: " << p->pid
+                << ", Core: " << p->coreAssigned.load()
+                << ", Progress: " << std::fixed << std::setprecision(2)
+                << p->getProgress() << "%)\n";
+        }
+    }
+    file << "\nFinished Processes:\n";
+    if (finished.empty()) file << "  None\n";
+    else {
+        for (const auto& p : finished) {
+            file << "  " << p->name << " (PID: " << p->pid
+                << ", Start: " << p->startTime
+                << ", End: " << p->endTime << ")\n";
         }
     }
 
     file.close();
     std::cout << "Report generated: csopesy-log.txt\n";
+}
+
+void ProcessScheduler::printStatus() const {
+    std::cout << "\n=== Scheduler Status ===\n";
+    std::cout << "Running: " << (running.load() ? "Yes" : "No") << "\n";
+    std::cout << "Current Cycle: " << quantumCycle.load() << "\n";
+    std::cout << "Ready Queue Size: " << getReadyQueueSize() << "\n";
+    std::cout << "Scheduler Type: " << (schedulerType == SchedulerType::FCFS ? "FCFS" : "Round Robin") << "\n";
+    std::cout << "CPU Cores: " << numCPU << "\n";
+    if (schedulerType == SchedulerType::ROUND_ROBIN)
+        std::cout << "Time Quantum: " << timeQuantum << "\n";
+    std::cout << "========================\n\n";
+}
+void startScheduler(const Config& config) {
+    globalScheduler.start(config);
+}
+
+void stopScheduler() {
+    globalScheduler.stop();
+}
+
+void addProcess(std::shared_ptr<Process> p) {
+    globalScheduler.addProcess(p);
+}
+
+void generateReport() {
+    globalScheduler.generateReport();
 }
