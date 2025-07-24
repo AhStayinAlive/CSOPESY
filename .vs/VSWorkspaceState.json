@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\MO1_2"
+    "\\MO1_2",
+    "\\MO1_2\\MO1_2"
   ],
-  "SelectedNode": "\\MO1_2\\MO1_2.sln",
+  "SelectedNode": "\\MO1_2\\MO1_2\\main.cpp",
   "PreviewInSolutionExplorer": false
 }
