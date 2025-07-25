@@ -7,7 +7,7 @@ class CLIManager {
 public:
     CLIManager();
     void run();
-    void stopScheduler();
+    /*void stopScheduler();*/
     void showHelp() const;
 
 private:

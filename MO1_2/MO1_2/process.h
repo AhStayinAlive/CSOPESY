@@ -7,9 +7,9 @@
 #include <atomic>
 #include <chrono>
 #include <mutex>
-#include <fstream>  // ✅ Needed for std::ofstream
+#include <fstream>
 #include <ctime>
-#include <unordered_map> // Add at the top if not already
+#include <unordered_map>
 
 class Instruction;
 
@@ -20,47 +20,39 @@ enum class ProcessStatus {
 };
 
 struct Process {
-    int pid;
+    int pid = -1;  //  Initialized
     std::string name;
-    int instructionPointer;
+    int instructionPointer = 0;  //  Initialized
     std::vector<std::shared_ptr<Instruction>> instructions;
     std::unordered_map<std::string, uint16_t> memory;
 
-    // Memory management
     int baseAddress = -1;
     size_t requiredMemory = 64;
     ProcessStatus status = ProcessStatus::READY;
 
-    // Execution tracking
     std::atomic<int> coreAssigned{ -1 };
     bool isRunning = false;
     bool isFinished = false;
     bool isDetached = false;
 
-    // Time tracking
     std::string arrivalTime;
     std::string startTime;
     std::string endTime;
     std::atomic<int> wakeupTick{ 0 };
 
-    // Instruction counting
     int totalInstructions = 0;
     std::shared_ptr<std::atomic<int>> completedInstructions;
 
-    // Logging
     std::vector<std::string> logs;
     mutable std::mutex logMutex;
 
-    // Constructor
     Process() : completedInstructions(std::make_shared<std::atomic<int>>(0)) {}
 
-    // Memory management
     void setBaseAddress(int address) { baseAddress = address; }
     int getBaseAddress() const { return baseAddress; }
     void setRequiredMemory(size_t memory) { requiredMemory = memory; }
     size_t getRequiredMemory() const { return requiredMemory; }
 
-    // Status
     void setStatus(ProcessStatus newStatus) {
         status = newStatus;
         if (newStatus == ProcessStatus::DONE) {
@@ -70,11 +62,9 @@ struct Process {
     ProcessStatus getStatus() const { return status; }
     bool getIsFinished() const { return isFinished || status == ProcessStatus::DONE; }
 
-    // Wakeup logic
     void setWakeupTick(int tick) { wakeupTick = tick; }
     int getWakeupTick() const { return wakeupTick.load(); }
 
-    // Logging
     void log(const std::string& message) {
         std::lock_guard<std::mutex> lock(logMutex);
         auto now = std::chrono::system_clock::now();
@@ -105,7 +95,6 @@ struct Process {
         file.close();
     }
 
-    // Progress tracking
     double getProgress() const {
         if (totalInstructions == 0) return 0.0;
         return (static_cast<double>(completedInstructions->load()) / totalInstructions) * 100.0;
@@ -116,7 +105,6 @@ struct Process {
     }
 };
 
-// Random generator function (assumed implemented elsewhere)
 std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns);
 
 #endif // PROCESS_H

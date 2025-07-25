@@ -165,37 +165,47 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
-    std::uniform_int_distribution<> addValueDist(1, 10);
+    std::uniform_int_distribution<> opPicker(0, 4); // 0=Declare,1=Add,2=Sub,3=Print,4=Sleep
+    std::uniform_int_distribution<> valDist(1, 100);
+    std::uniform_int_distribution<> sleepDist(100, 500);
 
-    try {
-        int numInstructions = instructionCount(gen);
-        proc->totalInstructions = numInstructions;
+    int numInstructions = instructionCount(gen);
+    proc->totalInstructions = numInstructions;
 
-        // Always declare x = 0
-        proc->instructions.push_back(std::make_shared<DeclareInstruction>("x", 0));
-        int count = 1;
+    // Always start with x=0
+    proc->instructions.push_back(std::make_shared<DeclareInstruction>("x", 0));
+    int count = 1;
 
-        while (static_cast<int>(proc->instructions.size()) < numInstructions) {
-            // PRINT value of x using variable-aware mode
-            auto printInstr = std::make_shared<PrintInstruction>("Value from: ", "x", true); // supports variable
-            proc->instructions.push_back(printInstr);
-            count++;
-            if (count >= numInstructions) break;
-
-            // ADD x = x + random(1–10)
-            int addVal = addValueDist(gen);
-            auto addInstr = std::make_shared<AddInstruction>("x", "x", std::to_string(addVal));
-            proc->instructions.push_back(addInstr);
-            count++;
+    while (count < numInstructions) {
+        int op = opPicker(gen);
+        switch (op) {
+        case 0: {
+            proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(count), valDist(gen)));
+            break;
         }
-    }
-    catch (const std::exception& e) {
-        proc->logs.push_back("Process generation failed: " + std::string(e.what()));
-        proc->totalInstructions = 0;
+        case 1: {
+            proc->instructions.push_back(std::make_shared<AddInstruction>("x", "x", std::to_string(valDist(gen))));
+            break;
+        }
+        case 2: {
+            proc->instructions.push_back(std::make_shared<SubtractInstruction>("x", "x", std::to_string(valDist(gen))));
+            break;
+        }
+        case 3: {
+            proc->instructions.push_back(std::make_shared<PrintInstruction>("Value: ", "x", true));
+            break;
+        }
+        case 4: {
+            proc->instructions.push_back(std::make_shared<SleepInstruction>(sleepDist(gen)));
+            break;
+        }
+        }
+        count++;
     }
 
     return proc;
 }
+
 
 
 std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns) {

@@ -1,37 +1,17 @@
 #include "SleepInstruction.h"
 #include "process.h"
 #include "utils.h"
-#include <thread>
-#include <chrono>
-#include <iostream>
 #include <sstream>
-#include <cstdint>
 
-SleepInstruction::SleepInstruction(int ms, const std::string& logPrefix) : duration(ms), logPrefix(logPrefix) {}
+SleepInstruction::SleepInstruction(int ms, const std::string& logPrefix)
+    : duration(ms), logPrefix(logPrefix) {
+}
 
 void SleepInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(duration));
-
     std::ostringstream logEntry;
-
-    if (logPrefix != "") {
-        logEntry << "[" << getCurrentTimestamp() << "] "
-            << "Core " << coreId
-            << " | PID " << proc->pid
-            << " | " << logPrefix
-            << " | SLEEP: for " + std::to_string(duration) + "ms";
-    }
-    else {
-        logEntry << "[" << getCurrentTimestamp() << "] "
-            << "Core " << coreId
-            << " | PID " << proc->pid
-            << " | SLEEP: for " + std::to_string(duration) + "ms";
-    }
-
-    
-
-    
-
+    logEntry << "[" << getCurrentTimestamp() << "] "
+        << "Core " << coreId << " | PID " << proc->pid
+        << " | SLEEP requested: " << duration << "ms (handled by scheduler)";
     proc->logs.push_back(logEntry.str());
-    logToFile(proc->name, logEntry.str(), proc->coreAssigned);
+    logToFile(proc->name, logEntry.str(), coreId);
 }

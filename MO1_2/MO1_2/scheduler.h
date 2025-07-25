@@ -33,6 +33,7 @@ private:
     int timeQuantum = 3;
     int delayPerInstruction = 100;
     int numCPU = 4;
+    bool gracefulStop = false;
 
     void schedulerLoop();
     void cpuWorker(int coreId);

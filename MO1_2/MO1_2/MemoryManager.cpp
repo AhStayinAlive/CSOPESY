@@ -2,214 +2,213 @@
 #include "process.h"
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 #include <chrono>
 #include <ctime>
+#include <mutex>
 #include <algorithm>
 
-// Static member definitions
-std::unique_ptr<MemoryManager> MemoryManager::instance = nullptr;
+// Static members
+std::unique_ptr<MemoryManager> MemoryManager::instance;
 std::once_flag MemoryManager::initFlag;
 
-MemoryManager::MemoryManager() : memory(MEMORY_SIZE, '.') {
-    std::cout << "MemoryManager initialized with " << MEMORY_SIZE << " bytes\n";
+// Block structure for internal tracking
+struct Block {
+    size_t start;
+    size_t size;
+    bool free;
+    std::shared_ptr<Process> process;
+};
+
+static std::vector<Block> memoryBlocks;
+static std::mutex memLock;
+
+MemoryManager::MemoryManager() {
+    memory.resize(MEMORY_SIZE, 0);
+    memoryBlocks.clear();
+    // Initially, one big free block
+    memoryBlocks.push_back({ 0, MEMORY_SIZE, true, nullptr });
 }
 
 MemoryManager& MemoryManager::getInstance() {
     std::call_once(initFlag, []() {
-        instance = std::unique_ptr<MemoryManager>(new MemoryManager());
+        instance.reset(new MemoryManager());
         });
     return *instance;
 }
 
-bool MemoryManager::canAllocateAt(size_t startIndex, size_t size) const {
-    if (startIndex + size > MEMORY_SIZE) return false;
-
-    for (size_t i = startIndex; i < startIndex + size; ++i) {
-        if (memory[i] != '.') return false;
-    }
-    return true;
-}
-
-void MemoryManager::allocateAt(size_t startIndex, size_t size) {
-    for (size_t i = startIndex; i < startIndex + size; ++i) {
-        memory[i] = '+';
-    }
-}
-
 bool MemoryManager::allocate(std::shared_ptr<Process> process) {
-    if (!process) return false;
+    std::lock_guard<std::mutex> lock(memLock);
+    size_t req = process->getRequiredMemory();
 
-    if (process->baseAddress != -1) return true;
+    for (auto& block : memoryBlocks) {
+        if (block.free && block.size >= req) {
+            // Allocate here
+            size_t oldStart = block.start;
+            size_t oldSize = block.size;
 
-    std::unique_lock<std::shared_mutex> lock(memoryMutex);
+            block.free = false;
+            block.size = req;
+            block.process = process;
+            process->setBaseAddress((int)block.start);
 
-    for (size_t i = 0; i <= MEMORY_SIZE - process->requiredMemory; ++i) {
-        if (canAllocateAt(i, process->requiredMemory)) {
-            allocateAt(i, process->requiredMemory);
-            process->setBaseAddress(static_cast<int>(i));
+            // If block is larger than needed, split it
+            if (oldSize > req) {
+                Block newBlock;
+                newBlock.start = oldStart + req;
+                newBlock.size = oldSize - req;
+                newBlock.free = true;
+                newBlock.process = nullptr;
 
-            std::string logMsg = "Memory allocated at address " + std::to_string(i) +
-                " (size: " + std::to_string(process->requiredMemory) + ")";
-            process->log(logMsg);
-
-            std::cout << "Process " << process->name << " (PID: " << process->pid
-                << ") allocated at address " << i << " (size: " << process->requiredMemory << ")\n";
+                auto it = std::find_if(memoryBlocks.begin(), memoryBlocks.end(), [&](const Block& b) {
+                    return b.start == oldStart;
+                    });
+                if (it != memoryBlocks.end()) {
+                    memoryBlocks.insert(std::next(it), newBlock);
+                }
+            }
             return true;
         }
     }
 
-    process->log("Memory allocation failed - insufficient memory");
-    std::cout << "Memory allocation failed for process " << process->name
-        << " (PID: " << process->pid << ") - insufficient memory\n";
-    return false;
+
+    return false; // No space found
 }
 
 void MemoryManager::deallocate(std::shared_ptr<Process> process) {
-    if (!process || process->baseAddress == -1) return;
+    std::lock_guard<std::mutex> lock(memLock);
+    size_t base = process->getBaseAddress();
 
-    std::unique_lock<std::shared_mutex> lock(memoryMutex);
+    for (auto it = memoryBlocks.begin(); it != memoryBlocks.end(); ++it) {
+        if (!it->free && it->start == base) {
+            it->free = true;
+            it->process = nullptr;
 
-    for (size_t i = process->baseAddress; i < process->baseAddress + process->requiredMemory; ++i) {
-        if (i < MEMORY_SIZE) memory[i] = '.';
-    }
-
-    process->log("Memory deallocated from address " + std::to_string(process->baseAddress));
-    std::cout << "Process " << process->name << " (PID: " << process->pid
-        << ") deallocated from address " << process->baseAddress << "\n";
-
-    process->setBaseAddress(-1);
-}
-
-void MemoryManager::visualizeMemory(int cycle) {
-    std::string filename = "memory_stamp_" + std::to_string(cycle) + ".txt";
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error: Could not create memory stamp file: " << filename << "\n";
-        return;
-    }
-
-    std::shared_lock<std::shared_mutex> lock(memoryMutex);
-
-    file << "Timestamp: (" << getCurrentTimestamp() << ")\n";
-    file << "Number of processes in memory: " << getProcessesInMemory() << "\n";
-    file << "Total external fragmentation in KB: " << (getExternalFragmentation() / 1024.0) << "\n\n";
-
-    file << "Memory Layout (. = free, + = allocated):\n";
-    const size_t lineWidth = 64;
-    for (size_t i = 0; i < MEMORY_SIZE; i += lineWidth) {
-        file << std::setfill('0') << std::setw(5) << i << ": ";
-        size_t endIndex = std::min(i + lineWidth, MEMORY_SIZE);
-        for (size_t j = i; j < endIndex; ++j) {
-            file << memory[j];
+            // Merge adjacent free blocks
+            if (it != memoryBlocks.begin()) {
+                auto prev = std::prev(it);
+                if (prev->free) {
+                    prev->size += it->size;
+                    memoryBlocks.erase(it);
+                    it = prev;
+                }
+            }
+            if (std::next(it) != memoryBlocks.end()) {
+                auto next = std::next(it);
+                if (next->free) {
+                    it->size += next->size;
+                    memoryBlocks.erase(next);
+                }
+            }
+            break;
         }
-        file << "\n";
     }
-
-    file << "\n";
-    file << "Memory Statistics:\n";
-    file << "Total Memory: " << MEMORY_SIZE << " bytes\n";
-    file << "Used Memory: " << getUsedMemory() << " bytes\n";
-    file << "Free Memory: " << getFreeMemory() << " bytes\n";
-    file << "External Fragmentation: " << getExternalFragmentation() << " bytes\n";
-
-    file.close();
 }
 
 void MemoryManager::incrementCycle() {
-    int cycle = currentCycle.fetch_add(1);
+    int cycle = currentCycle.fetch_add(1) + 1;
     visualizeMemory(cycle);
 }
 
-std::string MemoryManager::getCurrentTimestamp() const {
+void MemoryManager::visualizeMemory(int cycle) {
+    std::lock_guard<std::mutex> lock(memLock);
+
+    std::ostringstream filename;
+    filename << "memory_stamp_" << cycle << ".txt";
+    std::ofstream file(filename.str());
+    if (!file.is_open()) return;
+
+    // Timestamp
     auto now = std::chrono::system_clock::now();
     auto time_t = std::chrono::system_clock::to_time_t(now);
-
     std::tm tm;
     localtime_s(&tm, &time_t);
+    char timeBuffer[100];
+    strftime(timeBuffer, sizeof(timeBuffer), "(%m/%d/%Y %I:%M:%S%p)", &tm);
 
-    std::stringstream ss;
-    ss << std::put_time(&tm, "%m/%d/%Y %I:%M:%S%p");
-    return ss.str();
-}
-
-size_t MemoryManager::getUsedMemory() const {
-    std::shared_lock<std::shared_mutex> lock(memoryMutex);
-    return std::count(memory.begin(), memory.end(), '+');
-}
-
-size_t MemoryManager::getFreeMemory() const {
-    return MEMORY_SIZE - getUsedMemory();
-}
-
-size_t MemoryManager::getExternalFragmentation() const {
-    std::shared_lock<std::shared_mutex> lock(memoryMutex);
-
+    int processesInMem = 0;
     size_t fragmentation = 0;
-    size_t currentFreeBlock = 0;
 
-    for (size_t i = 0; i < MEMORY_SIZE; ++i) {
-        if (memory[i] == '.') {
-            currentFreeBlock++;
-        }
-        else {
-            if (currentFreeBlock > 0 && currentFreeBlock < 64) {
-                fragmentation += currentFreeBlock;
-            }
-            currentFreeBlock = 0;
-        }
+    for (const auto& block : memoryBlocks) {
+        if (!block.free) processesInMem++;
     }
 
-    if (currentFreeBlock > 0 && currentFreeBlock < 64) {
-        fragmentation += currentFreeBlock;
+    // Calculate external fragmentation (sum of all free blocks)
+    for (const auto& block : memoryBlocks) {
+        if (block.free) fragmentation += block.size;
     }
 
-    return fragmentation;
-}
+    file << "Timestamp: " << timeBuffer << "\n";
+    file << "Number of processes in memory: " << processesInMem << "\n";
+    file << "Total external fragmentation in KB: " << fragmentation << "\n\n";
 
-int MemoryManager::getProcessesInMemory() const {
-    std::shared_lock<std::shared_mutex> lock(memoryMutex);
+    file << "----end---- = " << MEMORY_SIZE << "\n";
 
-    int processCount = 0;
-    bool inProcess = false;
-
-    for (size_t i = 0; i < MEMORY_SIZE; ++i) {
-        if (memory[i] == '+' && !inProcess) {
-            processCount++;
-            inProcess = true;
+    // Print memory top-down
+    size_t current = MEMORY_SIZE;
+    for (auto it = memoryBlocks.rbegin(); it != memoryBlocks.rend(); ++it) {
+        size_t end = current;
+        size_t start = it->start;
+        if (!it->free && it->process) {
+            file << end << "\n";
+            file << it->process->name << "\n";
+            file << start << "\n";
         }
-        else if (memory[i] == '.' && inProcess) {
-            inProcess = false;
-        }
+        current = start;
     }
 
-    return processCount;
-}
-
-void MemoryManager::printMemoryStatus() const {
-    std::shared_lock<std::shared_mutex> lock(memoryMutex);
-
-    std::cout << "\n=== Memory Manager Status ===\n";
-    std::cout << "Total Memory: " << MEMORY_SIZE << " bytes\n";
-    std::cout << "Used Memory: " << getUsedMemory() << " bytes\n";
-    std::cout << "Free Memory: " << getFreeMemory() << " bytes\n";
-    std::cout << "External Fragmentation: " << getExternalFragmentation() << " bytes\n";
-    std::cout << "Processes in Memory: " << getProcessesInMemory() << "\n";
-
-    std::cout << "\nMemory Layout (showing first 256 bytes):\n";
-    for (size_t i = 0; i < std::min(static_cast<size_t>(256), MEMORY_SIZE); i += 32) {
-        std::cout << std::setfill('0') << std::setw(5) << i << ": ";
-        for (size_t j = i; j < std::min(i + 32, MEMORY_SIZE); ++j) {
-            std::cout << memory[j];
-        }
-        std::cout << "\n";
-    }
-    std::cout << "========================\n\n";
+    file << "----start---- = 0\n";
+    file.close();
 }
 
 void MemoryManager::reset() {
-    std::unique_lock<std::shared_mutex> lock(memoryMutex);
-    std::fill(memory.begin(), memory.end(), '.');
-    currentCycle = 0;
+    std::lock_guard<std::mutex> lock(memLock);
+    memoryBlocks.clear();
+    memoryBlocks.push_back({ 0, MEMORY_SIZE, true, nullptr });
+}
+
+size_t MemoryManager::getUsedMemory() const {
+    size_t used = 0;
+    for (const auto& block : memoryBlocks) {
+        if (!block.free) used += block.size;
+    }
+    return used;
+}
+
+size_t MemoryManager::getFreeMemory() const {
+    size_t freeMem = 0;
+    for (const auto& block : memoryBlocks) {
+        if (block.free) freeMem += block.size;
+    }
+    return freeMem;
+}
+
+size_t MemoryManager::getExternalFragmentation() const {
+    size_t frag = 0;
+    for (const auto& block : memoryBlocks) {
+        if (block.free) frag += block.size;
+    }
+    return frag;
+}
+
+int MemoryManager::getProcessesInMemory() const {
+    int count = 0;
+    for (const auto& block : memoryBlocks) {
+        if (!block.free) count++;
+    }
+    return count;
+}
+
+void MemoryManager::printMemoryStatus() const {
+    std::cout << "\n=== Memory Layout ===\n";
+    for (const auto& block : memoryBlocks) {
+        std::cout << "[" << block.start << "-" << (block.start + block.size - 1)
+            << "] " << (block.free ? "FREE" : "USED");
+        if (!block.free && block.process) {
+            std::cout << " (" << block.process->name << ")";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "======================\n";
 }
