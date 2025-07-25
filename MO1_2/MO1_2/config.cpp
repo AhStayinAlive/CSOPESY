@@ -28,6 +28,10 @@ bool Config::loadFromFile(const std::string& filename) {
         else if (key == "min-ins") minInstructions = std::stoi(value);
         else if (key == "max-ins") maxInstructions = std::stoi(value);
         else if (key == "delay-per-exec" || key == "delays-per-exec") delayPerInstruction = std::stoi(value);
+		else if (key == "max-overall-mem") maxOverallMem = std::stoul(value);
+		else if (key == "mem-per-proc") memPerProc = std::stoul(value);
+		else if (key == "mem-per-frame") memPerFrame = std::stoul(value);
+		
     }
 
     return true;

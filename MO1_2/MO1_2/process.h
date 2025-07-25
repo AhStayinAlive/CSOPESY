@@ -27,7 +27,7 @@ struct Process {
     std::unordered_map<std::string, uint16_t> memory;
 
     int baseAddress = -1;
-    size_t requiredMemory = 64;
+    size_t requiredMemory;
     ProcessStatus status = ProcessStatus::READY;
 
     std::atomic<int> coreAssigned{ -1 };
@@ -103,8 +103,10 @@ struct Process {
     int getRemainingInstructions() const {
         return totalInstructions - completedInstructions->load();
     }
+
+
 };
 
-std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns);
+std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns, size_t memPerProc);
 
 #endif // PROCESS_H

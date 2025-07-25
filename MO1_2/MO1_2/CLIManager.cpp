@@ -41,7 +41,7 @@ void CLIManager::handleCommand(const std::string& input) {
         schedulerThread = std::thread([this]() {
             const auto& config = Config::getInstance();
             while (generating) {
-                auto proc = ProcessManager::createUniqueNamedProcess(config.minInstructions, config.maxInstructions);
+                auto proc = ProcessManager::createUniqueNamedProcess(config.minInstructions, config.maxInstructions, config.memPerProc);
                 ProcessManager::addProcess(proc);
                 addProcess(proc); // Add to scheduler queue
                 /*std::cout << "[INFO] Created process: " << proc->name

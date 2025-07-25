@@ -151,7 +151,7 @@ static int uniqueProcessCounter = 1;
 //
 //    return proc;
 //}
-std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions) {
+std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions, size_t memPerProc) {
     auto proc = std::make_shared<Process>();
     proc->pid = pid;
     proc->name = name;
@@ -161,6 +161,7 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isFinished = false;
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->setRequiredMemory(memPerProc);
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -208,12 +209,12 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
 
 
 
-std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns) {
+std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns, size_t memPerProc) {
     std::string processName;
     do {
         processName = "process_" + std::to_string(uniqueProcessCounter++);
     } while (processMap.find(processName) != processMap.end());
-    return createProcess(processName, pidCounter++, minIns, maxIns);
+    return createProcess(processName, pidCounter++, minIns, maxIns, memPerProc);
 }
 
 std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
@@ -221,7 +222,7 @@ std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& n
         return processMap[name];
     }
     const auto& config = Config::getInstance();
-    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
+    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions, config.memPerProc);
 }
 
 std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
