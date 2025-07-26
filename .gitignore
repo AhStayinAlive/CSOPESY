@@ -8,5 +8,6 @@
 *.tlog
 *.pch
 *.cache
-*.idb'.vs/' 
-'*.suo' 
+*.idb
+.vs/
+*.suo
