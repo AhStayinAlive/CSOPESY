@@ -1,40 +1,117 @@
-#ifndef PROCESS_H
+﻿#ifndef PROCESS_H
 #define PROCESS_H
 
 #include <string>
-#include <atomic>
-#include <memory>
 #include <vector>
-#include <map>
+#include <memory>
+#include <atomic>
+#include <chrono>
+#include <mutex>
+#include <fstream>
+#include <ctime>
+#include <unordered_map>
+#include <unordered_set>
 
-struct Instruction {
-    std::string opcode;
-    std::string arg1, arg2, arg3;
-    std::vector<Instruction> subInstructions; 
-    int loopCount = 0;                         
+class Instruction;
+
+enum class ProcessStatus {
+    READY,
+    RUNNING,
+    DONE
 };
 
 struct Process {
-    int pid;
+    int pid = -1;  //  Initialized
     std::string name;
+    int instructionPointer = 0;  //  Initialized
+    std::vector<std::shared_ptr<Instruction>> instructions;
+    std::unordered_map<std::string, uint16_t> memory;
+    std::unordered_map<size_t, size_t> pageTable; // virtualPageNumber -> frameNumber
+    std::unordered_set<size_t> loadedPages;       // for quick lookup
+    std::unordered_map<std::string, size_t> variableAddressMap;
+
+
+    int baseAddress = -1;
+    size_t requiredMemory = 0;
+    ProcessStatus status = ProcessStatus::READY;
+
+    std::atomic<int> coreAssigned{ -1 };
+    bool isRunning = false;
+    bool isFinished = false;
+    bool isDetached = false;
+
+    std::string arrivalTime;
     std::string startTime;
     std::string endTime;
-    int totalInstructions;
-    size_t instructionPointer;
-    int coreAssigned;
-    bool isRunning;
-    bool isFinished;
-    bool isDetached = false;
-    std::shared_ptr<std::atomic<int>> completedInstructions;
-    std::vector<Instruction> instructions;
-    std::vector<std::string> logs;
+    std::atomic<int> wakeupTick{ 0 };
 
-    std::map<std::string, unsigned short> memory;  
+    int totalInstructions = 0;
+    std::shared_ptr<std::atomic<int>> completedInstructions;
+
+    std::vector<std::string> logs;
+    mutable std::mutex logMutex;
+
+    Process() : completedInstructions(std::make_shared<std::atomic<int>>(0)) {}
+
+    void setBaseAddress(int address) { baseAddress = address; }
+    int getBaseAddress() const { return baseAddress; }
+    void setRequiredMemory(size_t memory) { requiredMemory = memory; }
+    size_t getRequiredMemory() const { return requiredMemory; }
+
+    void setStatus(ProcessStatus newStatus) {
+        status = newStatus;
+        if (newStatus == ProcessStatus::DONE) {
+            isFinished = true;
+        }
+    }
+    ProcessStatus getStatus() const { return status; }
+    bool getIsFinished() const { return isFinished || status == ProcessStatus::DONE; }
+
+    void setWakeupTick(int tick) { wakeupTick = tick; }
+    int getWakeupTick() const { return wakeupTick.load(); }
+
+    void log(const std::string& message) {
+        std::lock_guard<std::mutex> lock(logMutex);
+        auto now = std::chrono::system_clock::now();
+        auto time_t = std::chrono::system_clock::to_time_t(now);
+        std::tm tm;
+        localtime_s(&tm, &time_t);
+
+        char timeBuffer[100];
+        strftime(timeBuffer, sizeof(timeBuffer), "[%m/%d/%Y %I:%M:%S%p]", &tm);
+        std::string logEntry = std::string(timeBuffer) + " " + message;
+        logs.push_back(logEntry);
+    }
+
+    void writeLogToFile() const {
+        std::lock_guard<std::mutex> lock(logMutex);
+        std::string filename = name + "_log.txt";
+        std::ofstream file(filename);
+
+        if (!file.is_open()) return;
+
+        file << "Process Log for " << name << " (PID: " << pid << ")\n";
+        file << "===========================================\n\n";
+
+        for (const auto& logEntry : logs) {
+            file << logEntry << "\n";
+        }
+
+        file.close();
+    }
+
+    double getProgress() const {
+        if (totalInstructions == 0) return 0.0;
+        return (static_cast<double>(completedInstructions->load()) / totalInstructions) * 100.0;
+    }
+
+    int getRemainingInstructions() const {
+        return totalInstructions - completedInstructions->load();
+    }
+
+
 };
 
-extern std::vector<std::shared_ptr<Process>> allProcesses;
+std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns, size_t memPerProc);
 
-
-std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns);
-
-#endif
+#endif // PROCESS_H

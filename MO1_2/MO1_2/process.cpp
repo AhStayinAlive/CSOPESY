@@ -1,18 +1,26 @@
 #include "process.h"
+#include "DeclareInstruction.h"
+#include "PrintInstruction.h"
+#include "AddInstruction.h"
+#include "SubtractInstruction.h"
+#include "SleepInstruction.h"
+#include "ForInstruction.h"
 #include <random>
+#include <memory>
 #include <sstream>
-#include <stdexcept>
+//#include <unor>
 
-std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns) {
+std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns, size_t memPerProc) {
     auto proc = std::make_shared<Process>();
     proc->pid = pid;
     proc->name = name;
-    proc->totalInstructions = 0;
     proc->instructionPointer = 0;
     proc->coreAssigned = -1;
     proc->isRunning = false;
     proc->isFinished = false;
+    proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->setRequiredMemory(memPerProc);
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -22,65 +30,71 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
     std::uniform_int_distribution<> sleepTime(100, 1000);
     std::uniform_int_distribution<> loopCountDist(2, 5);
 
+
     try {
         int numInstructions = instructionCount(gen);
         proc->totalInstructions = numInstructions;
 
-        // Always declare at least 5 variables first
+        // Always declare 5 initial variables
         for (int i = 0; i < 5; ++i) {
-            Instruction declareInst;
-            declareInst.opcode = "DECLARE";
-            declareInst.arg1 = "var" + std::to_string(i);
-            declareInst.arg2 = std::to_string(valueDist(gen));
-            proc->instructions.push_back(declareInst);
+            std::string varName = "var" + std::to_string(i);
+            int val = valueDist(gen);
+            proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, val));
         }
 
-        // Then generate the rest
+        // Add random instructions
         for (int i = 5; i < numInstructions; ++i) {
-            Instruction inst;
             int op = opcodePicker(gen);
 
             switch (op) {
-            case 0: // Extra DECLAREs allowed
-                inst.opcode = "DECLARE";
-                inst.arg1 = "var" + std::to_string(i);
-                inst.arg2 = std::to_string(valueDist(gen));
+            case 0: { // DECLARE
+                std::string varName = "var" + std::to_string(i);
+                int val = valueDist(gen);
+                proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, val));
                 break;
-            case 1: // ADD
-                inst.opcode = "ADD";
-                inst.arg1 = "result" + std::to_string(i);
-                inst.arg2 = "var" + std::to_string(i % 5);  // safe: var0–var4
-                inst.arg3 = "var" + std::to_string((i + 1) % 5);
+            }
+            case 1: { // ADD
+                std::string result = "result" + std::to_string(i);
+                std::string lhs = "var" + std::to_string(i % 5);
+                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                proc->instructions.push_back(std::make_shared<AddInstruction>(result, lhs, rhs));
                 break;
-            case 2: // SUBTRACT
-                inst.opcode = "SUBTRACT";
-                inst.arg1 = "result" + std::to_string(i);
-                inst.arg2 = "var" + std::to_string(i % 5);
-                inst.arg3 = "var" + std::to_string((i + 1) % 5);
+            }
+            case 2: { // SUBTRACT
+                std::string result = "result" + std::to_string(i);
+                std::string lhs = "var" + std::to_string(i % 5);
+                std::string rhs = "var" + std::to_string((i + 1) % 5);
+                proc->instructions.push_back(std::make_shared<SubtractInstruction>(result, lhs, rhs));
                 break;
-            case 3: // PRINT
-                inst.opcode = "PRINT";
-                inst.arg1 = "Hello from " + name + " [" + std::to_string(i) + "]";
+            }
+            case 3: { // PRINT
+                std::string message = "Hello from " + name + " [" + std::to_string(i) + "]";
+                proc->instructions.push_back(std::make_shared<PrintInstruction>(message));
                 break;
-            case 4: // SLEEP
-                inst.opcode = "SLEEP";
-                inst.arg1 = std::to_string(sleepTime(gen));
+            }
+            case 4: { // SLEEP
+                int ms = sleepTime(gen);
+                proc->instructions.push_back(std::make_shared<SleepInstruction>(ms));
                 break;
-            case 5: // FOR
-                inst.opcode = "FOR";
-                inst.loopCount = loopCountDist(gen);
-                for (int j = 0; j < 3; ++j) {
-                    Instruction subInst;
-                    subInst.opcode = "PRINT";
-                    subInst.arg1 = "Loop iteration " + std::to_string(j + 1);
-                    inst.subInstructions.push_back(subInst);
+            }
+            case 5: {
+                int loopCount = loopCountDist(gen);
+                for (int i = 0; i < loopCount; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+                        if (proc->instructions.size() >= maxIns) {
+                            break; // Stop adding more instructions once max is reached
+                        }
+                        std::string msg = "Loop iteration " + std::to_string(j + 1) + " (outer " + std::to_string(i + 1) + ")";
+                        proc->instructions.push_back(std::make_shared<PrintInstruction>(msg));
+                    }
+                    if (proc->instructions.size() >= maxIns) {
+                        break;
+                    }
                 }
                 break;
             }
-
-            proc->instructions.push_back(inst);
+            }
         }
-
     }
     catch (const std::exception& e) {
         proc->logs.push_back("Process generation failed: " + std::string(e.what()));
