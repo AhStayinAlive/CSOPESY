@@ -73,10 +73,11 @@ public:
 
     // Inside public:
     bool handlePageFault(std::shared_ptr<Process> process, size_t virtualPageNumber);
+    bool isPageInMemory(std::shared_ptr<Process> proc, size_t virtualPage);
     void ensurePageLoaded(std::shared_ptr<Process> proc, size_t virtualAddress);
 
     size_t getFrameSize() const;  // returns the frame size (e.g., 4096 bytes)
-
+    bool accessMemory(const std::shared_ptr<Process>& proc, size_t virtualAddress);
     void printMemoryStats(const std::vector<std::shared_ptr<Process>>& allProcesses);
     void writeToBackingStore(const std::shared_ptr<Process>& proc, size_t pageNumber, const std::string& varName, int value);
     bool loadFromBackingStore(const std::shared_ptr<Process>& proc, size_t pageNumber, std::string& varName, int& value);
