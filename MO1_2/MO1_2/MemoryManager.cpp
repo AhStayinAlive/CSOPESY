@@ -9,6 +9,8 @@
 #include <ctime>
 #include <mutex>
 #include <algorithm>
+#include <filesystem>  // ? Add this for file and directory operations
+
 
 // Static members
 std::unique_ptr<MemoryManager> MemoryManager::instance;
@@ -253,7 +255,20 @@ void MemoryManager::evictPage(std::shared_ptr<Process> proc, size_t virtualPage)
 bool MemoryManager::handlePageFault(std::shared_ptr<Process> process, size_t virtualPageNumber) {
     std::lock_guard<std::mutex> lock(memLock);
 
-    // Find a free frame
+    // ? 1. Log the page fault message
+    std::string logMsg = "Page fault in PID " + std::to_string(process->pid) +
+        " for page " + std::to_string(virtualPageNumber);
+    //std::cout << "[PAGE FAULT] " << logMsg << std::endl;
+
+    // ? 2. Create the directory if it doesn't exist (optional)
+    std::filesystem::create_directory("csopesy-backing-store");
+
+    // ? 3. Append the log to the shared csopesy-backing-store.txt
+    std::ofstream outFile("csopesy-backing-store/csopesy-backing-store.txt", std::ios::app);
+    outFile << logMsg << "\n";
+    outFile.close();
+
+    // ? 4. Attempt to load into a free frame
     for (size_t i = 0; i < frames.size(); ++i) {
         if (!frames[i].occupied) {
             loadPage(process, virtualPageNumber, i);
@@ -261,7 +276,7 @@ bool MemoryManager::handlePageFault(std::shared_ptr<Process> process, size_t vir
         }
     }
 
-    // No free frame — need to evict a page (LRU policy)
+    // ? 5. If no free frame, use LRU to evict and load
     size_t lruIndex = 0;
     int oldestCycle = currentCycle.load();
 
@@ -277,22 +292,57 @@ bool MemoryManager::handlePageFault(std::shared_ptr<Process> process, size_t vir
     return true;
 }
 
+
+bool MemoryManager::isPageInMemory(std::shared_ptr<Process> proc, size_t virtualPage) {
+    return proc->loadedPages.count(virtualPage);
+}
+
+bool MemoryManager::accessMemory(const std::shared_ptr<Process>& proc, size_t virtualAddress) {
+    std::lock_guard<std::mutex> lock(memLock);
+
+    size_t page = virtualAddress / frameSize;
+
+    // ?? Check: if page exceeds allocated memory (protection violation)
+    if (page >= proc->pageTable.size()) {
+        std::string logMsg = "Memory access violation in PID " + std::to_string(proc->pid) +
+            " for virtual address " + std::to_string(virtualAddress) +
+            " (page " + std::to_string(page) + ")";
+
+        std::cout << "[ACCESS VIOLATION] " << logMsg << std::endl;
+
+        std::filesystem::create_directory("csopesy-backing-store");
+        std::ofstream outFile("csopesy-backing-store/csopesy-backing-store.txt", std::ios::app);
+        outFile << "[ACCESS VIOLATION] " << logMsg << "\n";
+        outFile.close();
+
+        return false;
+    }
+
+    // ? Load the page if needed
+    ensurePageLoaded(proc, virtualAddress);
+    return true;
+}
+
 void MemoryManager::ensurePageLoaded(std::shared_ptr<Process> proc, size_t virtualAddress) {
     size_t virtualPage = virtualAddress / frameSize;
+
     if (!proc->loadedPages.count(virtualPage)) {
-        std::string var;
-        int val = 143;  //irdk what value this shd be help
+        std::string var = "defaultVar";  // name of the variable
+        int val = 0;                     // sensible default
+
         if (MemoryManager::getInstance().loadFromBackingStore(proc, virtualPage, var, val)) {
-            proc->memory[var] = val; // Load from disk into memory
+            proc->memory[var] = val;
         }
         else {
-            // First time this page is being used — initialize it
             proc->memory[var] = val;
             MemoryManager::getInstance().writeToBackingStore(proc, virtualPage, var, val);
         }
-        proc->loadedPages.insert(virtualPage); // Mark page as loaded
+
+
+        proc->loadedPages.insert(virtualPage);
     }
 }
+
 
 size_t MemoryManager::getFrameSize() const {
     return frameSize;
@@ -314,14 +364,15 @@ void MemoryManager::printMemoryStats(const std::vector<std::shared_ptr<Process>>
 
 
 void MemoryManager::writeToBackingStore(const std::shared_ptr<Process>& proc, size_t pageNumber, const std::string& varName, int value) {
-    std::ofstream outFile("csopesy-backing-store.txt", std::ios::app);
+    std::ofstream outFile("csopesy-backing-store/csopesy-backing-store.txt", std::ios::app);
     outFile << "PID " << proc->pid << " PAGE " << pageNumber
         << " VAR " << varName << " VAL " << value << "\n";
     outFile.close();
 }
 
+
 bool MemoryManager::loadFromBackingStore(const std::shared_ptr<Process>& proc, size_t pageNumber, std::string& varName, int& value) {
-    std::ifstream inFile("csopesy-backing-store.txt");
+    std::ifstream inFile("csopesy-backing-store/csopesy-backing-store.txt");
     std::string line;
 
     while (std::getline(inFile, line)) {
@@ -339,3 +390,6 @@ bool MemoryManager::loadFromBackingStore(const std::shared_ptr<Process>& proc, s
     inFile.close();
     return false;
 }
+
+
+
