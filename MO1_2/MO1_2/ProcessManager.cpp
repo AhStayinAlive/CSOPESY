@@ -8,6 +8,7 @@
 #include "PrintInstruction.h"
 #include "SleepInstruction.h"
 #include "ForInstruction.h"
+#include "WriteInstruction.h"
 #include <random>
 #include <sstream>
 #include <vector>
@@ -162,6 +163,15 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
     proc->setRequiredMemory(minMemPerProc);
+    std::string addrStr = "0x1000";
+    std::string valStr = "42";
+
+    size_t addr = std::stoul(addrStr, nullptr, 16); // convert hex string to number
+    uint16_t val = static_cast<uint16_t>(std::stoi(valStr)); // convert string to int
+
+    proc->instructions.push_back(
+        std::make_shared<WriteInstruction>(addr, val));
+
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -177,8 +187,12 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->instructions.push_back(std::make_shared<DeclareInstruction>("x", 0));
     int count = 1;
 
+
     while (count < numInstructions) {
         int op = opPicker(gen);
+        if (minMemPerProc > Config::getInstance().maxOverallMem) {
+            throw std::runtime_error("Process memory exceeds system limit");
+        }
         switch (op) {
         case 0: {
             proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(count), valDist(gen)));

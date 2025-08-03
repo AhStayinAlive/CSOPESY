@@ -26,7 +26,7 @@ public:
     // Constructor for message + variable
     //PrintInstruction(const std::string& textPart, const std::string& varName, const std::string& logPrefix = "");
 
-    void execute(std::shared_ptr<Process> proc, int coreId = -1) override;
+    void execute (std::shared_ptr<Process> proc, int coreId = -1) override;
 
     std::string getMessage() const { return message; }
     std::string getVariableName() const { return variableName; }

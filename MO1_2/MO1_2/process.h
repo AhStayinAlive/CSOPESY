@@ -1,6 +1,7 @@
 ﻿#ifndef PROCESS_H
 #define PROCESS_H
 
+#include "MemoryManager.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -25,11 +26,19 @@ struct Process {
     std::string name;
     int instructionPointer = 0;  //  Initialized
     std::vector<std::shared_ptr<Instruction>> instructions;
-    std::unordered_map<std::string, uint16_t> memory;
+    std::vector<char> memory;
     std::unordered_map<size_t, size_t> pageTable; // virtualPageNumber -> frameNumber
     std::unordered_set<size_t> loadedPages;       // for quick lookup
     std::unordered_map<std::string, size_t> variableAddressMap;
+    std::unordered_map<std::string, size_t> variableAddresses;
 
+    bool isPageLoaded(size_t virtualPage) const {
+        return loadedPages.count(virtualPage) > 0;
+    }
+
+    size_t getVariablePage(const std::string& varName) const {
+        return variableAddressMap.at(varName) / MemoryManager::getInstance().getFrameSize();
+    }
 
     int baseAddress = -1;
     size_t requiredMemory = 0;
@@ -109,7 +118,27 @@ struct Process {
         return totalInstructions - completedInstructions->load();
     }
 
+    bool declareVariable(const std::string& name, uint16_t value) {
+        if (variableAddressMap.size() >= 32) return false;
+        size_t addr = 0x0000 + (variableAddressMap.size() * 2);
+        variableAddressMap[name] = addr;
 
+        memory[addr] = static_cast<char>(value >> 8);      // high byte
+        memory[addr + 1] = static_cast<char>(value & 0xFF); // low byte
+        return true;
+    }
+
+    void unloadPage(size_t page);
+    void loadPage(size_t page, size_t frame);
+
+    // Inside class Process in Process.h
+    void writeMemory(size_t address, uint16_t value);
+    uint16_t readMemory(size_t address) const;
+
+
+
+private:
+    static constexpr size_t symbolTableBase = 0x0000;
 };
 
 std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int minIns, int maxIns, size_t memPerProc);

@@ -3,54 +3,63 @@
 #include "process.h"
 #include "utils.h"
 #include <sstream>
+#include <stdexcept>
 
-SubtractInstruction::SubtractInstruction(const std::string& result, const std::string& lhs, const std::string& rhs, const std::string& logPrefix)
-    : resultVar(result), arg1(lhs), arg2(rhs), logPrefix(logPrefix) {}
+SubtractInstruction::SubtractInstruction(const std::string& result,
+    const std::string& lhs,
+    const std::string& rhs,
+    const std::string& logPrefix)
+    : resultVar(result), arg1(lhs), arg2(rhs), logPrefix(logPrefix) {
+}
 
 void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    if (!arg1.empty()) {
-        size_t page1 = std::hash<std::string>{}(arg1) % proc->memory.size() / MemoryManager::getInstance().getFrameSize();
-        if (!proc->loadedPages.count(page1)) {
-            std::string var;
-            int val;
-            if (MemoryManager::getInstance().loadFromBackingStore(proc, page1, var, val)) {
-                proc->memory[var] = val; // Load from disk into memory
-            }
-            else {
-                // First time this page is being used — initialize it
-                proc->memory[var] = val;
-                MemoryManager::getInstance().writeToBackingStore(proc, page1, var, val);
-            }
-            proc->loadedPages.insert(page1); // Mark page as loaded
-        }
-    }
-    if (!arg2.empty()) {
-        size_t page2 = std::hash<std::string>{}(arg2) % proc->memory.size() / MemoryManager::getInstance().getFrameSize();
-        if (!proc->loadedPages.count(page2)) {
-            std::string var;
-            int val;
-            if (MemoryManager::getInstance().loadFromBackingStore(proc, page2, var, val)) {
-                proc->memory[var] = val; // Load from disk into memory
-            }
-            else {
-                // First time this page is being used — initialize it
-                proc->memory[var] = val;
-                MemoryManager::getInstance().writeToBackingStore(proc, page2, var, val);
-            }
-            proc->loadedPages.insert(page2); // Mark page as loaded
-        }
+    auto& memMgr = MemoryManager::getInstance();
+
+    // Validate symbol table space
+    if (proc->variableAddressMap.size() >= 32 &&
+        proc->variableAddressMap.count(resultVar) == 0) {
+        throw std::runtime_error("Symbol table full (max 32 variables)");
     }
 
-    uint16_t val1 = proc->memory.count(arg1) ? proc->memory[arg1] : 0;
-    uint16_t val2 = proc->memory.count(arg2) ? proc->memory[arg2] : 0;
+    // Helper function to get variable value
+    auto getValue = [&](const std::string& name) -> uint16_t {
+        if (proc->variableAddressMap.count(name)) {
+            size_t addr = proc->variableAddressMap[name];
+            if (!memMgr.accessMemory(proc, addr)) {
+                throw std::runtime_error("Access violation for " + name);
+            }
+            return proc->memory[addr]; // Access by name, not address
+        }
+        try {
+            return static_cast<uint16_t>(std::stoi(name)); // Handle literals
+        }
+        catch (...) {
+            return 0;
+        }
+        };
 
+    // Perform subtraction
+    uint16_t val1 = getValue(arg1);
+    uint16_t val2 = getValue(arg2);
     uint16_t result = (val1 > val2) ? (val1 - val2) : 0;
-    proc->memory[resultVar] = result;
 
+    // Store result
+    if (proc->variableAddressMap.count(resultVar) == 0) {
+        // Assign new address in symbol table (0x0000-0x0040)
+        size_t newAddr = 0x0000 + (proc->variableAddressMap.size() * 2);
+        proc->variableAddressMap[resultVar] = newAddr;
+    }
+    size_t addr = proc->variableAddressMap[resultVar];
+    proc->memory[addr] = result;
+
+
+    // Logging
     std::ostringstream logEntry;
     logEntry << "[" << getCurrentTimestamp() << "] "
-             << "Core " << coreId << " | PID " << proc->pid
-             << " | SUBTRACT: " << val1 << " - " << val2 << " = " << result;
+        << "Core " << coreId << " | PID " << proc->pid
+        << " | SUB: " << arg1 << "=" << val1 << " - "
+        << arg2 << "=" << val2 << " = " << result
+        << " (" << resultVar << ")";
 
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), coreId);

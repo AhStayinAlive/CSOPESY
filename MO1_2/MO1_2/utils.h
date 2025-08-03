@@ -17,6 +17,12 @@ inline std::string getCurrentTimestamp() {
     return ss.str();
 }
 
+inline std::string to_hex(size_t value) {
+    std::stringstream ss;
+    ss << "0x" << std::hex << value;
+    return ss.str();
+}
+
 inline bool fileExists(const std::string& filename) {
     struct stat buffer;
     return (stat(filename.c_str(), &buffer) == 0);

@@ -26,21 +26,35 @@ void ForInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     for (int i = 0; i < iterations; ++i) {
         for (auto& instruction : subInstructions) {
             size_t virtualPage = i / MemoryManager::getInstance().getFrameSize();
+
             if (!proc->loadedPages.count(virtualPage)) {
                 std::string var;
                 int val;
+
                 if (MemoryManager::getInstance().loadFromBackingStore(proc, virtualPage, var, val)) {
-                    proc->memory[var] = val; // Load from disk into memory
+                    // Write val into memory at the address assigned to var
+                    if (proc->variableAddressMap.count(var)) {
+                        size_t addr = proc->variableAddressMap[var];
+                        proc->memory[addr] = static_cast<char>(val & 0xFF);
+                        proc->memory[addr + 1] = static_cast<char>((val >> 8) & 0xFF);
+                    }
                 }
                 else {
                     // First time this page is being used — initialize it
-                    proc->memory[var] = val;
-                    MemoryManager::getInstance().writeToBackingStore(proc, virtualPage, var, val);
+                    if (proc->variableAddressMap.count(var)) {
+                        size_t addr = proc->variableAddressMap[var];
+                        proc->memory[addr] = static_cast<char>(val & 0xFF);
+                        proc->memory[addr + 1] = static_cast<char>((val >> 8) & 0xFF);
+                        MemoryManager::getInstance().writeToBackingStore(proc, virtualPage, var, val);
+                    }
                 }
+
                 proc->loadedPages.insert(virtualPage); // Mark page as loaded
             }
+
             instruction->execute(proc, proc->coreAssigned);
         }
     }
 }
+
 

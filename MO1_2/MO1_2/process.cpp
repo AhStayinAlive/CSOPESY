@@ -102,3 +102,16 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
 
     return proc;
 }
+
+// Getter for 16-bit value
+uint16_t Process::readMemory(size_t address) const {
+    if (address + 1 >= memory.size()) throw std::runtime_error("Out-of-bounds read");
+    return static_cast<uint8_t>(memory[address]) | (static_cast<uint8_t>(memory[address + 1]) << 8);
+}
+
+// Setter for 16-bit value
+void Process::writeMemory(size_t address, uint16_t value) {
+    if (address + 1 >= memory.size()) memory.resize(address + 2);;
+    memory[address] = static_cast<char>(value & 0xFF);
+    memory[address + 1] = static_cast<char>((value >> 8) & 0xFF);
+}

@@ -118,6 +118,17 @@ void CLIManager::handleCommand(const std::string& input) {
             std::cout << "Process " << name << " not found or already finished.\n";
         }
     }
+    else if (cmd == "screen" && tokens.size() >= 4 && tokens[1] == "-c") {
+        std::string name = tokens[2];
+        size_t memSize = std::stoul(tokens[3]);
+        std::string instructions = tokens[4];
+
+        auto proc = ProcessManager::createNamedProcess(name);
+        proc->setRequiredMemory(memSize);
+
+        // Parse instructions (e.g., "READ x 0x1000; WRITE 0x2000 42")
+        // ... (Add to proc->instructions)
+    }
     else if (cmd == "screen" && tokens.size() > 1 && tokens[1] == "-ls") {
         showProcessList();
     }
@@ -129,17 +140,14 @@ void CLIManager::handleCommand(const std::string& input) {
         exit(0);
     }
     else if (cmd == "process-smi" && tokens.size() == 2) {
-        std::string name = tokens[1];
-        auto proc = ProcessManager::findByName(name);
-        if (!proc) {
-            std::cout << "Process '" << name << "' not found.\n";
-            return;
+        auto& memMgr = MemoryManager::getInstance();
+        std::cout << "=== PROCESS-SMI ===\n"
+            << "Memory: " << memMgr.getUsedMemory() << "/"
+            << memMgr.getTotalMemory() << " bytes\n"
+            << "Processes:\n";
+        for (const auto& p : ProcessManager::getAllProcesses()) {
+            std::cout << p->name << " | " << p->getRequiredMemory() << " bytes\n";
         }
-        std::cout << "---- Logs for process: " << name << " ----\n";
-        for (const auto& log : proc->logs) {
-            std::cout << log << "\n";
-        }
-        std::cout << "----------------------------------------\n";
     }
     else if (cmd == "vmstat") {
         MemoryManager::getInstance().printMemoryStats(ProcessManager::getAllProcesses());

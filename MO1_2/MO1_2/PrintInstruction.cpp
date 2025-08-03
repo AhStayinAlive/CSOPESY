@@ -21,23 +21,27 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     logEntry << "[" << getCurrentTimestamp() << "] "
         << "Core " << coreId << " | PID " << proc->pid << " | PRINT: ";
 
-    if (hasVariable && proc->memory.find(variableName) != proc->memory.end()) {
-        size_t virtualPage = std::hash<std::string>{}(variableName) % proc->memory.size() / MemoryManager::getInstance().getFrameSize();
+    if (hasVariable) {
+        size_t addr = std::hash<std::string>{}(variableName) % proc->memory.size();
+        size_t virtualPage = addr / MemoryManager::getInstance().getFrameSize();
+
         if (!proc->loadedPages.count(virtualPage)) {
             std::string var;
             int val;
             if (MemoryManager::getInstance().loadFromBackingStore(proc, virtualPage, var, val)) {
-                proc->memory[var] = val; // Load from disk into memory
+                size_t varAddr = std::hash<std::string>{}(var) % proc->memory.size();
+                proc->memory[varAddr] = static_cast<char>(val);
             }
             else {
-                // First time this page is being used — initialize it
-                proc->memory[var] = val;
+                // First time page use — initialize
+                size_t varAddr = std::hash<std::string>{}(var) % proc->memory.size();
+                proc->memory[varAddr] = static_cast<char>(val);
                 MemoryManager::getInstance().writeToBackingStore(proc, virtualPage, var, val);
             }
-            proc->loadedPages.insert(virtualPage); // Mark page as loaded
+            proc->loadedPages.insert(virtualPage);
         }
-        
-        logEntry << message << proc->memory[variableName];
+
+        logEntry << message << static_cast<int>(proc->memory[addr]);
     }
     else {
         logEntry << message;
@@ -46,3 +50,4 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), coreId);
 }
+

@@ -8,6 +8,7 @@ SleepInstruction::SleepInstruction(int ms, const std::string& logPrefix)
 }
 
 void SleepInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+    proc->setWakeupTick(proc->getWakeupTick() + duration);
     std::ostringstream logEntry;
     logEntry << "[" << getCurrentTimestamp() << "] "
         << "Core " << coreId << " | PID " << proc->pid

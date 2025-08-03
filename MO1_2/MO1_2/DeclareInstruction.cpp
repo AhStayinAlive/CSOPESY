@@ -8,22 +8,27 @@ DeclareInstruction::DeclareInstruction(const std::string& varName, int val, cons
     : variableName(varName), value(val), logPrefix(logPrefix) {
 }
 
+// Example for DeclareInstruction.cpp
 void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    size_t frameSize = MemoryManager::getInstance().getFrameSize();
-    size_t memSize = std::max<size_t>(1, proc->memory.size()); // Avoid zero
-    size_t hashVal = std::hash<std::string>{}(variableName);
-    size_t page = (hashVal % memSize) / frameSize;
+    auto& memMgr = MemoryManager::getInstance();
 
-    if (!proc->loadedPages.count(page)) {
-        MemoryManager::getInstance().handlePageFault(proc, page);
+    if (proc->variableAddressMap.size() >= 32) {
+        throw std::runtime_error("Symbol table full");
     }
 
-    
-    proc->memory[variableName] = value;
-    std::ostringstream logEntry;
-    logEntry << "[" << getCurrentTimestamp() << "] "
-        << "Core " << coreId << " | PID " << proc->pid
-        << " | DECLARE: " << variableName << " = " << value;
-    proc->logs.push_back(logEntry.str());
-    logToFile(proc->name, logEntry.str(), coreId);
+    // Assign new address
+    size_t newAddr = proc->variableAddressMap.size() * 2;
+    proc->variableAddressMap[variableName] = newAddr;
+
+    // Check if the page is loaded
+    size_t page = newAddr / memMgr.getFrameSize();
+    if (!proc->loadedPages.count(page)) {
+        memMgr.handlePageFault(proc, page);
+    }
+
+    // Store value into memory (little-endian)
+    proc->memory[newAddr] = static_cast<char>(value & 0xFF);            // lower byte
+    proc->memory[newAddr + 1] = static_cast<char>((value >> 8) & 0xFF); // upper byte
 }
+
+

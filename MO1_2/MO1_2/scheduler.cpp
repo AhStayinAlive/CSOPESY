@@ -3,6 +3,7 @@
 #include "ProcessManager.h"
 #include "config.h"
 #include "utils.h"
+#include "process.h"
 #include "instruction.h"
 
 #include <iostream>
@@ -189,6 +190,7 @@ void ProcessScheduler::cpuWorker(int coreId) {
         process->isRunning = true;
         process->setStatus(ProcessStatus::RUNNING);
 
+        
         executeProcess(process, coreId);
 
         coreAvailable[coreId] = true;
@@ -247,6 +249,10 @@ void ProcessScheduler::executeProcess(std::shared_ptr<Process> process, int core
         process->writeLogToFile();
         /*std::cout << "Process " << process->name << " (PID: " << process->pid
             << ") completed on core " << coreId << "\n";*/
+    }
+
+    if (!MemoryManager::getInstance().accessMemory(process, coreId)) {
+        process->setStatus(ProcessStatus::DONE); // Terminate process
     }
 }
 
