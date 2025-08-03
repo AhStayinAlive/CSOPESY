@@ -135,13 +135,18 @@
     <ClCompile Include="DeclareInstruction.cpp" />
     <ClCompile Include="ForInstruction.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MemoryManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="PrintInstruction.cpp" />
     <ClCompile Include="process.cpp" />
     <ClCompile Include="ProcessManager.cpp" />
+    <ClCompile Include="ReadInstruction.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="SleepInstruction.cpp" />
     <ClCompile Include="SubtractInstruction.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="WriteInstruction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddInstruction.h" />
@@ -152,13 +157,16 @@
     <ClInclude Include="ForInstruction.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="instruction_executor.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="PrintInstruction.h" />
     <ClInclude Include="process.h" />
     <ClInclude Include="ProcessManager.h" />
+    <ClInclude Include="ReadInstruction.h" />
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="SleepInstruction.h" />
     <ClInclude Include="SubtractInstruction.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="WriteInstruction.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
