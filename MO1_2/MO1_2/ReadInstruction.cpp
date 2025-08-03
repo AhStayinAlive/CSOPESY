@@ -9,23 +9,19 @@ ReadInstruction::ReadInstruction(const std::string& var, size_t addr)
     : varName(var), address(addr) {
 }
 
-void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Validate address range
-    if (address >= proc->getRequiredMemory()) {
-        throw std::runtime_error("Invalid address: 0x" + to_hex(address));
-    }
+uint16_t MemoryManager::read(std::shared_ptr<Process> proc, size_t address) {
+    size_t page = address / frameSize;
 
-    // Ensure page is loaded
-    size_t page = address / MemoryManager::getInstance().getFrameSize();
+    // Demand paging: load if not present
     if (!proc->loadedPages.count(page)) {
-        MemoryManager::getInstance().handlePageFault(proc, page);
+        handlePageFault(proc, page);
     }
 
-    // Read value (0 if uninitialized)
-    uint16_t value = 0;
-    if (address + 1 < proc->memory.size()) {
-        value = (static_cast<uint16_t>(proc->memory[address + 1]) << 8) | static_cast<uint8_t>(proc->memory[address]);
+    if (address + 1 >= proc->memory.size()) {
+        throw std::runtime_error("Read out of bounds at " + std::to_string(address));
     }
-    proc->declareVariable(varName, value);
 
+    // Read 2 bytes from memory
+    return static_cast<uint16_t>(proc->memory[address]) |
+        (static_cast<uint16_t>(proc->memory[address + 1]) << 8);
 }

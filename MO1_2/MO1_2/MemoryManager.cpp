@@ -55,6 +55,8 @@ bool MemoryManager::allocate(std::shared_ptr<Process> process) {
             block.process = process;
             process->setBaseAddress((int)block.start);
 
+            process->memory.resize(req, 0);
+
             if (oldSize > req) {
                 Block newBlock{ oldStart + req, oldSize - req, true, nullptr };
                 auto it = std::find(memoryBlocks.begin(), memoryBlocks.end(), block);
@@ -152,7 +154,7 @@ bool MemoryManager::handlePageFault(std::shared_ptr<Process> proc, size_t virtua
     frameIndex = findLRUFrame();
     auto victimProcess = frames[frameIndex].process.lock();
     if (victimProcess) {
-        evictPage(victimProcess, frames[frameIndex].virtualPageNumber);
+        swapOutPage(frameIndex);
     }
 
     // Load the new page
@@ -163,9 +165,9 @@ bool MemoryManager::handlePageFault(std::shared_ptr<Process> proc, size_t virtua
 // Memory access
 bool MemoryManager::accessMemory(const std::shared_ptr<Process>& proc, size_t virtualAddress) {
     std::lock_guard<std::mutex> lock(memLock);
-    size_t page = virtualAddress / frameSize;
+    size_t page = virtualAddress / this->frameSize;
 
-    if (page >= proc->pageTable.size()) {
+    if (!proc->pageTable.contains(page)) {
         std::string logMsg = "Memory access violation in PID " + std::to_string(proc->pid) +
             " for virtual address " + std::to_string(virtualAddress) +
             " (page " + std::to_string(page) + ")";
@@ -185,7 +187,7 @@ void MemoryManager::incrementCycle() {
 }
 
 size_t MemoryManager::getFrameSize() const {
-    return frameSize;
+    return this->frameSize;
 }
 
 void MemoryManager::reset() {
@@ -310,7 +312,7 @@ size_t MemoryManager::getExternalFragmentation() const {
     size_t fragmentation = 0;
 
     // Sum all free blocks that are too small to be useful (smaller than smallest allocation unit)
-    const size_t minAllocationSize = frameSize; // Could also be a fixed minimum size
+    const size_t minAllocationSize = this->frameSize; // Could also be a fixed minimum size
     for (const auto& block : memoryBlocks) {
         if (block.free && block.size >= minAllocationSize) {
             fragmentation += block.size;
@@ -530,7 +532,7 @@ bool MemoryManager::isPageInMemory(std::shared_ptr<Process> proc, size_t virtual
 void MemoryManager::ensurePageLoaded(std::shared_ptr<Process> proc, size_t virtualAddress) {
     if (!proc) return;
 
-    size_t virtualPage = virtualAddress / frameSize;
+    size_t virtualPage = virtualAddress / this->frameSize;
 
     if (!isPageInMemory(proc, virtualPage)) {
         handlePageFault(proc, virtualPage);
@@ -540,4 +542,48 @@ void MemoryManager::ensurePageLoaded(std::shared_ptr<Process> proc, size_t virtu
     if (auto frame = getFrameForProcess(proc->pid, virtualPage)) {
         frame->lastUsedCycle = currentCycle.load();
     }
+}
+
+uint16_t MemoryManager::read(std::shared_ptr<Process> proc, size_t virtualAddress) {
+    ensurePageLoaded(proc, virtualAddress);
+
+    size_t virtualPage = virtualAddress / this->frameSize;
+    size_t offset = virtualAddress % this->frameSize;
+
+    if (!proc->pageTable.contains(virtualPage)) {
+        throw std::runtime_error("Page not mapped for read at address " + std::to_string(virtualAddress));
+    }
+
+    size_t frameIndex = proc->pageTable[virtualPage];
+    size_t physicalAddress = frameIndex * this->frameSize + offset;
+
+    if (physicalAddress + 1 >= memory.size()) {
+        throw std::runtime_error("Read overflow at physical address " + std::to_string(physicalAddress));
+    }
+
+    uint16_t value = (static_cast<uint16_t>(this->memory[physicalAddress +1]) << 8) |
+        static_cast<uint8_t>(this->memory[physicalAddress]);
+
+    return value;
+}
+
+void MemoryManager::write(std::shared_ptr<Process> proc, size_t virtualAddress, uint16_t value) {
+    ensurePageLoaded(proc, virtualAddress);
+
+    size_t virtualPage = virtualAddress / this->frameSize;
+    size_t offset = virtualAddress % this->frameSize;
+
+    if (!proc->pageTable.contains(virtualPage)) {
+        throw std::runtime_error("Page not mapped for write at address " + std::to_string(virtualAddress));
+    }
+
+    size_t frameIndex = proc->pageTable[virtualPage];
+    size_t physicalAddress = frameIndex * this->frameSize + offset;
+
+    if (physicalAddress + 1 >= memory.size()) {
+        throw std::runtime_error("Write overflow at physical address " + std::to_string(physicalAddress));
+    }
+
+    this->memory[physicalAddress] = static_cast<uint8_t>(value & 0xFF);
+    this->memory[physicalAddress + 1] = static_cast<uint8_t>((value >> 8) & 0xFF);
 }

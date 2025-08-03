@@ -36,9 +36,9 @@ struct Process {
         return loadedPages.count(virtualPage) > 0;
     }
 
-    size_t getVariablePage(const std::string& varName) const {
-        return variableAddressMap.at(varName) / MemoryManager::getInstance().getFrameSize();
-    }
+    
+
+    size_t getVariablePage(const std::string& varName) const;
 
     int baseAddress = -1;
     size_t requiredMemory = 0;

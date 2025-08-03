@@ -16,11 +16,177 @@
 #include <unordered_map>
 #include <algorithm>
 #include "config.h"
+#include "process.h"
 
 static std::vector<std::shared_ptr<Process>> allProcesses;
 static std::unordered_map<std::string, std::shared_ptr<Process>> processMap;
 static int pidCounter = 1000;
 static int uniqueProcessCounter = 1;
+
+std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions, size_t minMemPerProc) {
+    auto proc = std::make_shared<Process>();
+    proc->pid = pid;
+    proc->name = name;
+    proc->instructionPointer = 0;
+    proc->coreAssigned = -1;
+    proc->isRunning = false;
+    proc->isFinished = false;
+    proc->isDetached = false;
+    proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->setRequiredMemory(minMemPerProc);
+    std::string addrStr = "0x1000";
+    std::string valStr = "42";
+
+    size_t addr = std::stoul(addrStr, nullptr, 16); // convert hex string to number
+    uint16_t val = static_cast<uint16_t>(std::stoi(valStr)); // convert string to int
+
+    proc->instructions.push_back(
+        std::make_shared<WriteInstruction>(addr, val));
+
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
+    std::uniform_int_distribution<> opPicker(0, 4); // 0=Declare,1=Add,2=Sub,3=Print,4=Sleep
+    std::uniform_int_distribution<> valDist(1, 100);
+    std::uniform_int_distribution<> sleepDist(100, 500);
+
+    int numInstructions = instructionCount(gen);
+    proc->totalInstructions = numInstructions;
+
+    // Always start with x=0
+    proc->instructions.push_back(std::make_shared<DeclareInstruction>("x", 0));
+    int count = 1;
+
+
+    while (count < numInstructions) {
+        int op = opPicker(gen);
+        if (minMemPerProc > Config::getInstance().maxOverallMem) {
+            throw std::runtime_error("Process memory exceeds system limit");
+        }
+        switch (op) {
+        case 0: {
+            proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(count), valDist(gen)));
+            break;
+        }
+        case 1: {
+            proc->instructions.push_back(std::make_shared<AddInstruction>("x", "x", std::to_string(valDist(gen))));
+            break;
+        }
+        case 2: {
+            proc->instructions.push_back(std::make_shared<SubtractInstruction>("x", "x", std::to_string(valDist(gen))));
+            break;
+        }
+        case 3: {
+            proc->instructions.push_back(std::make_shared<PrintInstruction>("Value: ", "x", true));
+            break;
+        }
+        case 4: {
+            proc->instructions.push_back(std::make_shared<SleepInstruction>(sleepDist(gen)));
+            break;
+        }
+        }
+        count++;
+    }
+
+    return proc;
+}
+
+size_t Process::getVariablePage(const std::string& varName) const {
+    return variableAddressMap.at(varName) / MemoryManager::getInstance().getFrameSize();
+}
+
+std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns, size_t memPerProc) {
+    std::string processName;
+    do {
+        processName = "process_" + std::to_string(uniqueProcessCounter++);
+    } while (processMap.find(processName) != processMap.end());
+    return createProcess(processName, pidCounter++, minIns, maxIns, memPerProc);
+}
+
+std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
+    if (processMap.find(name) != processMap.end()) {
+        return processMap[name];
+    }
+    const auto& config = Config::getInstance();
+    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions, config.minMemPerProc);
+}
+
+std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
+    auto it = processMap.find(name);
+    return (it != processMap.end()) ? it->second : nullptr;
+}
+
+std::shared_ptr<Process> ProcessManager::findByPid(int pid) {
+    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
+        [pid](const std::shared_ptr<Process>& p) { return p->pid == pid; });
+    return (it != allProcesses.end()) ? *it : nullptr;
+}
+
+void ProcessManager::addProcess(std::shared_ptr<Process> proc) {
+    if (!proc) return;
+    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
+        [&proc](const std::shared_ptr<Process>& p) { return p->name == proc->name; });
+    if (it == allProcesses.end()) {
+        allProcesses.push_back(proc);
+        processMap[proc->name] = proc;
+    }
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getAllProcesses() {
+    return allProcesses;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getRunningProcesses() {
+    std::vector<std::shared_ptr<Process>> running;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(running),
+        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; });
+    return running;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getFinishedProcesses() {
+    std::vector<std::shared_ptr<Process>> finished;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(finished),
+        [](const std::shared_ptr<Process>& p) { return p->isFinished; });
+    return finished;
+}
+
+std::vector<std::shared_ptr<Process>> ProcessManager::getWaitingProcesses() {
+    std::vector<std::shared_ptr<Process>> waiting;
+    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(waiting),
+        [](const std::shared_ptr<Process>& p) { return !p->isRunning && !p->isFinished; });
+    return waiting;
+}
+
+int ProcessManager::getProcessCount() {
+    return static_cast<int>(allProcesses.size());
+}
+
+int ProcessManager::getRunningProcessCount() {
+    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
+        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; }));
+}
+
+int ProcessManager::getFinishedProcessCount() {
+    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
+        [](const std::shared_ptr<Process>& p) { return p->isFinished; }));
+}
+
+double ProcessManager::getCpuUtilization() {
+    int numCPU = Config::getInstance().numCPU;
+    if (numCPU == 0) return 0.0;
+    int running = getRunningProcessCount();
+    return (static_cast<double>(running) / numCPU) * 100.0;
+}
+
+void ProcessManager::clearAllProcesses() {
+    allProcesses.clear();
+    processMap.clear();
+    pidCounter = 1000;
+    uniqueProcessCounter = 1;
+}
+
+
 
 //std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions) {
 //    auto proc = std::make_shared<Process>();
@@ -152,163 +318,3 @@ static int uniqueProcessCounter = 1;
 //
 //    return proc;
 //}
-std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions, size_t minMemPerProc) {
-    auto proc = std::make_shared<Process>();
-    proc->pid = pid;
-    proc->name = name;
-    proc->instructionPointer = 0;
-    proc->coreAssigned = -1;
-    proc->isRunning = false;
-    proc->isFinished = false;
-    proc->isDetached = false;
-    proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
-    proc->setRequiredMemory(minMemPerProc);
-    std::string addrStr = "0x1000";
-    std::string valStr = "42";
-
-    size_t addr = std::stoul(addrStr, nullptr, 16); // convert hex string to number
-    uint16_t val = static_cast<uint16_t>(std::stoi(valStr)); // convert string to int
-
-    proc->instructions.push_back(
-        std::make_shared<WriteInstruction>(addr, val));
-
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
-    std::uniform_int_distribution<> opPicker(0, 4); // 0=Declare,1=Add,2=Sub,3=Print,4=Sleep
-    std::uniform_int_distribution<> valDist(1, 100);
-    std::uniform_int_distribution<> sleepDist(100, 500);
-
-    int numInstructions = instructionCount(gen);
-    proc->totalInstructions = numInstructions;
-
-    // Always start with x=0
-    proc->instructions.push_back(std::make_shared<DeclareInstruction>("x", 0));
-    int count = 1;
-
-
-    while (count < numInstructions) {
-        int op = opPicker(gen);
-        if (minMemPerProc > Config::getInstance().maxOverallMem) {
-            throw std::runtime_error("Process memory exceeds system limit");
-        }
-        switch (op) {
-        case 0: {
-            proc->instructions.push_back(std::make_shared<DeclareInstruction>("var" + std::to_string(count), valDist(gen)));
-            break;
-        }
-        case 1: {
-            proc->instructions.push_back(std::make_shared<AddInstruction>("x", "x", std::to_string(valDist(gen))));
-            break;
-        }
-        case 2: {
-            proc->instructions.push_back(std::make_shared<SubtractInstruction>("x", "x", std::to_string(valDist(gen))));
-            break;
-        }
-        case 3: {
-            proc->instructions.push_back(std::make_shared<PrintInstruction>("Value: ", "x", true));
-            break;
-        }
-        case 4: {
-            proc->instructions.push_back(std::make_shared<SleepInstruction>(sleepDist(gen)));
-            break;
-        }
-        }
-        count++;
-    }
-
-    return proc;
-}
-
-
-
-std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, int maxIns, size_t memPerProc) {
-    std::string processName;
-    do {
-        processName = "process_" + std::to_string(uniqueProcessCounter++);
-    } while (processMap.find(processName) != processMap.end());
-    return createProcess(processName, pidCounter++, minIns, maxIns, memPerProc);
-}
-
-std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
-    if (processMap.find(name) != processMap.end()) {
-        return processMap[name];
-    }
-    const auto& config = Config::getInstance();
-    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions, config.minMemPerProc);
-}
-
-std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
-    auto it = processMap.find(name);
-    return (it != processMap.end()) ? it->second : nullptr;
-}
-
-std::shared_ptr<Process> ProcessManager::findByPid(int pid) {
-    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
-        [pid](const std::shared_ptr<Process>& p) { return p->pid == pid; });
-    return (it != allProcesses.end()) ? *it : nullptr;
-}
-
-void ProcessManager::addProcess(std::shared_ptr<Process> proc) {
-    if (!proc) return;
-    auto it = std::find_if(allProcesses.begin(), allProcesses.end(),
-        [&proc](const std::shared_ptr<Process>& p) { return p->name == proc->name; });
-    if (it == allProcesses.end()) {
-        allProcesses.push_back(proc);
-        processMap[proc->name] = proc;
-    }
-}
-
-std::vector<std::shared_ptr<Process>> ProcessManager::getAllProcesses() {
-    return allProcesses;
-}
-
-std::vector<std::shared_ptr<Process>> ProcessManager::getRunningProcesses() {
-    std::vector<std::shared_ptr<Process>> running;
-    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(running),
-        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; });
-    return running;
-}
-
-std::vector<std::shared_ptr<Process>> ProcessManager::getFinishedProcesses() {
-    std::vector<std::shared_ptr<Process>> finished;
-    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(finished),
-        [](const std::shared_ptr<Process>& p) { return p->isFinished; });
-    return finished;
-}
-
-std::vector<std::shared_ptr<Process>> ProcessManager::getWaitingProcesses() {
-    std::vector<std::shared_ptr<Process>> waiting;
-    std::copy_if(allProcesses.begin(), allProcesses.end(), std::back_inserter(waiting),
-        [](const std::shared_ptr<Process>& p) { return !p->isRunning && !p->isFinished; });
-    return waiting;
-}
-
-int ProcessManager::getProcessCount() {
-    return static_cast<int>(allProcesses.size());
-}
-
-int ProcessManager::getRunningProcessCount() {
-    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
-        [](const std::shared_ptr<Process>& p) { return p->isRunning && !p->isFinished; }));
-}
-
-int ProcessManager::getFinishedProcessCount() {
-    return static_cast<int>(std::count_if(allProcesses.begin(), allProcesses.end(),
-        [](const std::shared_ptr<Process>& p) { return p->isFinished; }));
-}
-
-double ProcessManager::getCpuUtilization() {
-    int numCPU = Config::getInstance().numCPU;
-    if (numCPU == 0) return 0.0;
-    int running = getRunningProcessCount();
-    return (static_cast<double>(running) / numCPU) * 100.0;
-}
-
-void ProcessManager::clearAllProcesses() {
-    allProcesses.clear();
-    processMap.clear();
-    pidCounter = 1000;
-    uniqueProcessCounter = 1;
-}

@@ -9,9 +9,10 @@
 #include <atomic>
 #include <unordered_map>
 #include <mutex>
+#include "process.h"
 
 // Forward declare to avoid cyclic include
-class Process;
+struct Process;
 
 class MemoryManager {
 private:
@@ -129,5 +130,9 @@ public:
     MemoryManager& operator=(const MemoryManager&) = delete;
     MemoryManager(MemoryManager&&) = delete;
     MemoryManager& operator=(MemoryManager&&) = delete;
+
+    //read and write
+    uint16_t read(std::shared_ptr<Process> proc, size_t virtualAddress);
+    void write(std::shared_ptr<Process> proc, size_t virtualAddress, uint16_t value);
 };
 #endif // MEMORYMANAGER_H
