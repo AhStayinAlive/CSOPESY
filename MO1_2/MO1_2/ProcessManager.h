@@ -21,4 +21,5 @@ public:
     static int getFinishedProcessCount();
     static double getCpuUtilization();
     static void clearAllProcesses();
+    static std::shared_ptr<Process> createProcessWithInstructions(const std::string& name, int memoryLimit, const std::vector<std::string>& instructions);
 };

@@ -35,8 +35,8 @@ void MemoryManager::initialize() {
     backingStore << "# CSOPESY Backing Store - Format: PID PAGE_NUM DATA_BYTES\n";
     backingStore.close();
 
-    std::cout << "[MEMORY] Initialized " << totalFrames << " frames of " << pageSize << " bytes each\n";
-    std::cout << "[MEMORY] Total physical memory: " << config.maxOverallMem << " bytes\n";
+    /*std::cout << "[MEMORY] Initialized " << totalFrames << " frames of " << pageSize << " bytes each\n";
+    std::cout << "[MEMORY] Total physical memory: " << config.maxOverallMem << " bytes\n";*/
 }
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
@@ -120,7 +120,7 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
     fifoQueue.push_back(freeFrame);
 
     std::ostringstream ss;
-    ss << "[MEMORY] Loaded page " << virtualPage << " of PID " << proc->pid << " into frame " << freeFrame;
+    //ss << "[MEMORY] Loaded page " << virtualPage << " of PID " << proc->pid << " into frame " << freeFrame;
     proc->logs.push_back(ss.str());
 
     return freeFrame;
@@ -162,7 +162,7 @@ void MemoryManager::evictPage() {
         pageOuts++;
 
         std::ostringstream ss;
-        ss << "[MEMORY] Evicted dirty page " << pageNum << " of PID " << pid << " from frame " << victim;
+        //ss << "[MEMORY] Evicted dirty page " << pageNum << " of PID " << pid << " from frame " << victim;
         proc->logs.push_back(ss.str());
     }
 
@@ -294,7 +294,7 @@ int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::st
 }
 
 void MemoryManager::freeProcessMemory(int pid) {
-    std::cout << "[MEMORY] Freeing memory for process PID " << pid << "\n";
+    //std::cout << "[MEMORY] Freeing memory for process PID " << pid << "\n";
 
     // Free all frames used by this process
     int freedFrames = 0;
@@ -319,7 +319,7 @@ void MemoryManager::freeProcessMemory(int pid) {
     // Clean up backing store entries for this process
     cleanupBackingStore(pid);
 
-    std::cout << "[MEMORY] Freed " << freedFrames << " frames for PID " << pid << "\n";
+    //std::cout << "[MEMORY] Freed " << freedFrames << " frames for PID " << pid << "\n";
 }
 
 void MemoryManager::cleanupBackingStore(int pid) {
@@ -362,7 +362,7 @@ void MemoryManager::cleanupBackingStore(int pid) {
     outFile.close();
 
     if (removedEntries > 0) {
-        std::cout << "[MEMORY] Cleaned up " << removedEntries << " backing store entries for PID " << pid << "\n";
+        //std::cout << "[MEMORY] Cleaned up " << removedEntries << " backing store entries for PID " << pid << "\n";
     }
 }
 

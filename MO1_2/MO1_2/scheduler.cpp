@@ -122,7 +122,7 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
         MemoryManager::getInstance().freeProcessMemory(proc->pid);
 
         logToFile(proc->name, "Process completed successfully", proc->coreAssigned);
-        std::cout << "[SCHEDULER] Process " << proc->name << " (PID " << proc->pid << ") completed and memory freed\n";
+        //std::cout << "[SCHEDULER] Process " << proc->name << " (PID " << proc->pid << ") completed and memory freed\n";
     }
 
     proc->isRunning = false;

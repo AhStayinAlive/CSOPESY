@@ -1,7 +1,5 @@
-﻿  main.cpp
-C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(82,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\stayi\Downloads\CSOPESY\MO1_2\MO1_2\main.cpp(177,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-  process.cpp
-  scheduler.cpp
+﻿  CLIManager.cpp
+  ProcessManager.cpp
+C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\ProcessManager.cpp(260,48): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   Generating Code...
-  MO1_2.vcxproj -> C:\Users\stayi\Downloads\CSOPESY\MO1_2\x64\Debug\MO1_2.exe
+  MO1_2.vcxproj -> C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\x64\Debug\MO1_2.exe

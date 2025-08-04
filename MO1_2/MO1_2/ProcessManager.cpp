@@ -5,6 +5,8 @@
 #include "PrintInstruction.h"
 #include "SleepInstruction.h"
 #include "ForInstruction.h"
+#include "UserAddInstruction.h"
+#include "UserPrintInstruction.h"
 #include <random>
 #include <sstream>
 #include <vector>
@@ -12,6 +14,8 @@
 #include <unordered_map>
 #include <algorithm>
 #include "config.h"
+#include "ReadInstruction.h"
+#include "WriteInstruction.h"
 
 static std::vector<std::shared_ptr<Process>> allProcesses;
 static std::unordered_map<std::string, std::shared_ptr<Process>> processMap;
@@ -240,5 +244,65 @@ void ProcessManager::clearAllProcesses() {
     processMap.clear();
     pidCounter = 1000;
     uniqueProcessCounter = 1;
+}
+
+std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std::string& name, int memoryLimit, const std::vector<std::string>& instructions) {
+    auto proc = std::make_shared<Process>();
+    proc->pid = pidCounter++;
+    proc->name = name;
+    proc->instructionPointer = 0;
+    proc->coreAssigned = -1;
+    proc->isRunning = false;
+    proc->isFinished = false;
+    proc->isDetached = false;
+    proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->virtualMemoryLimit = memoryLimit;
+    proc->totalInstructions = instructions.size();
+
+    // Parse instructions 
+    for (const auto& instrStr : instructions) {
+        std::stringstream ss(instrStr);
+        std::string cmd;
+        ss >> cmd;
+
+        // Convert to uppercase 
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
+
+        if (cmd == "DECLARE") {
+            std::string varName;
+            int value;
+            ss >> varName >> value;
+            proc->instructions.push_back(std::make_shared<DeclareInstruction>(varName, value));
+        }
+        else if (cmd == "ADD") {
+            std::string result, arg1, arg2;
+            ss >> result >> arg1 >> arg2;
+            proc->instructions.push_back(std::make_shared<UserAddInstruction>(result, arg1, arg2));
+        }
+        else if (cmd == "WRITE") {
+            std::string hexAddr, varName;
+            ss >> hexAddr >> varName;
+            int address = std::stoi(hexAddr, nullptr, 16);
+            proc->instructions.push_back(std::make_shared<WriteInstruction>(address, varName));
+        }
+        else if (cmd == "READ") {  
+            std::string varName, hexAddr;
+            ss >> varName >> hexAddr;
+            int address = std::stoi(hexAddr, nullptr, 16);
+            proc->instructions.push_back(std::make_shared<ReadInstruction>(varName, address));
+        }
+        
+        else if (cmd == "PRINT") {
+            std::string message;
+            std::getline(ss, message);
+
+            message.erase(0, message.find_first_not_of(" \t"));
+
+
+            proc->instructions.push_back(std::make_shared<UserPrintInstruction>(message));
+        }
+    }
+
+    return proc;
 }
 

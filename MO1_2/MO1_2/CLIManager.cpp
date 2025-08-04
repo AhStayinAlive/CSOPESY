@@ -4,6 +4,7 @@
 #include "MemoryManager.h"
 #include "ConsoleView.h"
 #include "scheduler.h"
+#include <regex>
 #include "utils.h"
 #include <iostream>
 #include <fstream>
@@ -142,6 +143,82 @@ void CLIManager::handleCommand(const std::string& input) {
             std::cout << "  PID: " << proc->pid << "\n";
             std::cout << "  Memory allocated: " << requestedMem << " bytes\n";
             std::cout << "  Required frames: " << requiredFrames << "\n";
+
+            ConsoleView::show(proc);
+        }
+        else {
+            std::cout << "Error: Process '" << name << "' already exists.\n";
+        }
+    }
+
+    // New screen -c command for user-defined instructions
+    else if (cmd == "screen" && tokens.size() >= 5 && tokens[1] == "-c") {
+        std::string name = tokens[2];
+        int requestedMem = 0;
+
+        try {
+            requestedMem = std::stoi(tokens[3]);
+
+            // Validate memory size: must be power of 2 between 64 and 65536
+            if (requestedMem < 64 || requestedMem > 65536) {
+                std::cout << "invalid command\n";
+                return;
+            }
+
+            // Check if it's a power of 2
+            if ((requestedMem & (requestedMem - 1)) != 0) {
+                std::cout << "invalid command\n";
+                return;
+            }
+        }
+        catch (...) {
+            std::cout << "invalid command\n";
+            return;
+        }
+
+        // Get instructions string (everything after the 4th token)
+        std::string instructionsStr;
+        for (size_t i = 4; i < tokens.size(); ++i) {
+            if (i > 4) instructionsStr += " ";
+            instructionsStr += tokens[i];
+        }
+
+        // Remove quotes if present
+        if (instructionsStr.front() == '"' && instructionsStr.back() == '"') {
+            instructionsStr = instructionsStr.substr(1, instructionsStr.length() - 2);
+        }
+
+        // Split by semicolon
+        std::vector<std::string> instructions;
+        std::stringstream ss(instructionsStr);
+        std::string instruction;
+
+        while (std::getline(ss, instruction, ';')) {
+            // Trim whitespace
+            instruction.erase(0, instruction.find_first_not_of(" \t"));
+            instruction.erase(instruction.find_last_not_of(" \t") + 1);
+            if (!instruction.empty()) {
+                instructions.push_back(instruction);
+            }
+        }
+
+        // Validate instruction count (1-50)
+        if (instructions.size() < 1 || instructions.size() > 50) {
+            std::cout << "invalid command\n";
+            return;
+        }
+
+        auto proc = ProcessManager::findByName(name);
+        if (!proc) {
+            proc = ProcessManager::createProcessWithInstructions(name, requestedMem, instructions);
+            ProcessManager::addProcess(proc);
+            addProcess(proc);
+
+            std::cout << "Process created successfully:\n";
+            std::cout << "  Name: " << name << "\n";
+            std::cout << "  PID: " << proc->pid << "\n";
+            std::cout << "  Memory allocated: " << requestedMem << " bytes\n";
+            std::cout << "  Instructions: " << instructions.size() << "\n";
 
             ConsoleView::show(proc);
         }
@@ -383,6 +460,7 @@ void CLIManager::showHelp() const {
     std::cout << "Available commands:\n"
         << "  initialize                    - Load config.txt and prepare scheduler\n"
         << "  screen -s [name] [memory_size] - Create a process with specified memory (64-65536 bytes, power of 2)\n"
+        << "  screen -c [name] [memory_size] \"[instructions]\" - Create process with user-defined instructions\n"
         << "  process-smi [name]            - Show detailed information for a specific process\n"
         << "  screen -r [name]              - Resume and inspect a process\n"
         << "  screen -ls                    - Show running and finished processes\n"
@@ -395,8 +473,7 @@ void CLIManager::showHelp() const {
         << "  exit                          - Exit the CLI\n\n"
         << "Memory allocation examples:\n"
         << "  screen -s myprocess 256       - Allocate 256 bytes\n"
-        << "  screen -s bigprocess 4096     - Allocate 4KB\n"
-        << "  screen -s maxprocess 65536    - Allocate 64KB (maximum)\n";
+        << "  screen -c process2 512 \"DECLARE varA 10; ADD varA varA varB\" - Create with instructions\n";
 }
 
 std::vector<std::string> CLIManager::tokenize(const std::string& input) const {
