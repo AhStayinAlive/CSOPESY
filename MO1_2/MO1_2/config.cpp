@@ -1,3 +1,4 @@
+// config.cpp
 #include "config.h"
 #include <fstream>
 #include <sstream>
@@ -20,7 +21,11 @@ bool Config::loadFromFile(const std::string& filename) {
         else if (key == "batch-process-freq") file >> batchProcessFreq;
         else if (key == "min-ins") file >> minInstructions;
         else if (key == "max-ins") file >> maxInstructions;
-        else if (key == "delays-per-exec") file >> delayPerInstruction;
+        else if (key == "delay-per-exec") file >> delayPerInstruction;
+        else if (key == "max-overall-mem") file >> maxOverallMem;
+        else if (key == "mem-per-frame") file >> memPerFrame;
+        else if (key == "min-mem-per-proc") file >> minMemPerProc;
+        else if (key == "max-mem-per-proc") file >> maxMemPerProc;
     }
 
     std::cout << "Configuration loaded successfully:\n";
@@ -31,6 +36,10 @@ bool Config::loadFromFile(const std::string& filename) {
     std::cout << "  minInstructions: " << minInstructions << "\n";
     std::cout << "  maxInstructions: " << maxInstructions << "\n";
     std::cout << "  delayPerInstruction: " << delayPerInstruction << "\n";
+    std::cout << "  maxOverallMem: " << maxOverallMem << "\n";
+    std::cout << "  memPerFrame: " << memPerFrame << "\n";
+    std::cout << "  minMemPerProc: " << minMemPerProc << "\n";
+    std::cout << "  maxMemPerProc: " << maxMemPerProc << "\n";
 
     return true;
 }

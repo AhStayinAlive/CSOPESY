@@ -1,6 +1,7 @@
 ﻿#include "CLIManager.h"
 #include "config.h"
 #include "ProcessManager.h"
+#include "MemoryManager.h"
 #include "ConsoleView.h"
 #include "scheduler.h"
 #include "utils.h"
@@ -12,6 +13,10 @@
 #include <iomanip>
 
 CLIManager::CLIManager() : schedulerThread(), generating(false) {}
+extern std::atomic<int> totalCpuTicks;
+extern std::atomic<int> activeCpuTicks;
+extern std::atomic<int> idleCpuTicks;
+
 
 void printBanner() {
     std::cout << "  ____ _____   ____    ____  _____  _____  __    __\n";
@@ -60,6 +65,7 @@ void CLIManager::handleCommand(const std::string& input) {
     if (cmd == "initialize") {
         if (Config::getInstance().loadFromFile("config.txt")) {
             std::cout << "Configuration loaded.\n";
+            MemoryManager::getInstance().initialize();
 
             auto& config = Config::getInstance();
             if (config.scheduler == "FCFS" || config.scheduler == "fcfs") {
@@ -125,7 +131,28 @@ void CLIManager::handleCommand(const std::string& input) {
         for (const auto& log : proc->logs) {
             std::cout << log << "\n";
         }
+
+        int pageSizeKB = Config::getInstance().memPerFrame;         // already in KB
+        int procMemKB = Config::getInstance().maxMemPerProc;        // already in KB
+        int totalPages = procMemKB / pageSizeKB;
+
+        int pagesInMemory = 0;
+        int pagesInBacking = 0;
+
+        for (const auto& [vpn, entry] : proc->pageTable) {
+            if (entry.valid) pagesInMemory++;
+            else pagesInBacking++;
+        }
+
         std::cout << "----------------------------------------\n";
+        std::cout << "Memory Summary:\n";
+        std::cout << "  Page Size           : " << pageSizeKB << " KB\n";
+        std::cout << "  Total Virtual Pages : " << totalPages << "\n";
+        std::cout << "  Pages in Memory     : " << pagesInMemory << "\n";
+        std::cout << "  Pages in Backing    : " << pagesInBacking << "\n";
+        std::cout << "  Approx. Used Memory : " << (pagesInMemory * pageSizeKB) << " KB\n";
+        std::cout << "----------------------------------------\n";
+
     }
 
     else if (cmd == "scheduler-start" || cmd == "scheduler-test") {
@@ -159,6 +186,10 @@ void CLIManager::handleCommand(const std::string& input) {
         else {
             std::cout << "Scheduler was not running.\n";
         }
+    }
+
+    else if (cmd == "vmstat") {
+        printVMStat();
     }
 
     else if (cmd == "report-util") {
@@ -249,4 +280,31 @@ void CLIManager::showProcessList() const {
                 << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
         }
     }
+}
+
+void CLIManager::printVMStat() {
+    auto& config = Config::getInstance();
+    auto& mem = MemoryManager::getInstance();
+
+    int totalMem = config.maxOverallMem;
+    int frameSize = config.memPerFrame;
+    int totalFrames = totalMem / frameSize;
+
+    int usedFrames = 0;
+    for (int i = 0; i < totalFrames; ++i) {
+        if (mem.isFrameOccupied(i)) usedFrames++;
+    }
+
+    int usedMem = usedFrames * frameSize;
+    int freeMem = totalMem - usedMem;
+
+    std::cout << "VMSTAT:\n";
+    std::cout << "  Total memory     : " << totalMem << " KB\n";
+    std::cout << "  Used memory      : " << usedMem << " KB\n";
+    std::cout << "  Free memory      : " << freeMem << " KB\n";
+    std::cout << "  Idle CPU ticks   : " << idleCpuTicks.load() << "\n";
+    std::cout << "  Active CPU ticks : " << activeCpuTicks.load() << "\n";
+    std::cout << "  Total CPU ticks  : " << totalCpuTicks.load() << "\n";
+    std::cout << "  Num paged in     : " << mem.getPageIns() << "\n";
+    std::cout << "  Num paged out    : " << mem.getPageOuts() << "\n";
 }

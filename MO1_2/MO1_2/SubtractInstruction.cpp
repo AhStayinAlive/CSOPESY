@@ -1,6 +1,8 @@
 ﻿#include "SubtractInstruction.h"
 #include "process.h"
 #include "utils.h"
+#include "MemoryManager.h"
+#include "config.h"
 #include <algorithm>
 #include <cstdint>
 #include <sstream>
@@ -10,17 +12,18 @@ SubtractInstruction::SubtractInstruction(const std::string& result, const std::s
 }
 
 void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    if (proc->memory.find(arg1) == proc->memory.end()) proc->memory[arg1] = 0;
-    if (proc->memory.find(arg2) == proc->memory.end()) proc->memory[arg2] = 0;
+    int addr1 = std::hash<std::string>{}(arg1) % Config::getInstance().maxMemPerProc;
+    int addr2 = std::hash<std::string>{}(arg2) % Config::getInstance().maxMemPerProc;
+    int resAddr = std::hash<std::string>{}(resultVar) % Config::getInstance().maxMemPerProc;
 
-    uint16_t val1 = proc->memory[arg1];
-    uint16_t val2 = proc->memory[arg2];
+    uint16_t val1 = MemoryManager::getInstance().read(proc, addr1);
+    uint16_t val2 = MemoryManager::getInstance().read(proc, addr2);
 
     uint16_t result = (val1 > val2) ? (val1 - val2) : 0;
-    proc->memory[resultVar] = result;
+    MemoryManager::getInstance().write(proc, resAddr, static_cast<uint8_t>(result));
 
     std::ostringstream logEntry;
-    if (logPrefix != "") {
+    if (!logPrefix.empty()) {
         logEntry << "[" << getCurrentTimestamp() << "] "
             << "Core " << coreId
             << " | PID " << proc->pid
@@ -33,9 +36,6 @@ void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             << " | PID " << proc->pid
             << " | SUBTRACT: " << val1 << " - " << val2 << " = " << result;
     }
-
-    
-
 
     std::string finalLog = logEntry.str();
     proc->logs.push_back(finalLog);

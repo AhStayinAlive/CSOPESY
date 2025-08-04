@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "config.h"
 #include "ProcessManager.h"
+#include "MemoryManager.h"
 #include "instruction.h"
 #include "AddInstruction.h"
 #include "SubtractInstruction.h"
@@ -50,6 +51,10 @@ static std::priority_queue<std::shared_ptr<Process>,
     std::vector<std::shared_ptr<Process>>,
     decltype(sleepCmp)> sleepQueue(sleepCmp);
 
+std::atomic<int> totalCpuTicks = 0;
+std::atomic<int> activeCpuTicks = 0;
+std::atomic<int> idleCpuTicks = 0;
+
 bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Instruction> instruction, int coreId) {
     try {
         instruction->execute(proc, coreId);
@@ -87,6 +92,8 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
         }
 
         proc->instructionPointer++;
+        activeCpuTicks++;
+        totalCpuTicks++;
         globalCpuTick++;
 
         // Add execution delay
@@ -136,10 +143,22 @@ void cpuWorker(int coreId, int delayMs) {
 
             if (shouldStop.load()) break;
 
-            if (readyQueue.empty()) continue;
+            if (readyQueue.empty()) {
+                idleCpuTicks++;
+                totalCpuTicks++;
+                continue;
+            }
 
             proc = readyQueue.front();
             readyQueue.pop();
+
+            if (!MemoryManager::getInstance().hasFreeFrame() && proc->pageTable.empty()) {
+                // Defer process — not enough memory and no pages are loaded yet
+                readyQueue.push(proc);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+
             proc->coreAssigned = coreId;
             proc->isRunning = true;
             *coreAvailable[coreId] = false;

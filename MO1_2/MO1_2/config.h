@@ -21,6 +21,11 @@ public:
     int maxInstructions = 2000;
     int delayPerInstruction = 100;
 
+    int maxOverallMem = 512;     // total bytes of physical memory
+    int memPerFrame = 256;       // size per frame
+    int minMemPerProc = 512;     // min memory per process
+    int maxMemPerProc = 512;     // max memory per process
+
     // Method to load configuration from file
     bool loadFromFile(const std::string& filename);
 };

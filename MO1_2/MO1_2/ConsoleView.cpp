@@ -1,4 +1,5 @@
 ﻿#include "ConsoleView.h"
+#include "config.h"
 #include "utils.h"
 #include <iostream>
 #include <fstream>
@@ -37,6 +38,27 @@ void ConsoleView::show(const std::shared_ptr<Process>& proc) {
             clearScreen();
             std::cout << "Process name: " << proc->name << std::endl;
             std::cout << "ID: " << proc->pid << std::endl;
+            int pageSizeKB = Config::getInstance().memPerFrame;         // already in KB
+            int procMemKB = Config::getInstance().maxMemPerProc;        // already in KB
+            int totalPages = procMemKB / pageSizeKB;
+
+            int pagesInMemory = 0;
+            int pagesInBacking = 0;
+
+            for (const auto& [vpn, entry] : proc->pageTable) {
+                if (entry.valid) pagesInMemory++;
+                else pagesInBacking++;
+            }
+
+            std::cout << "----------------------------------------\n";
+            std::cout << "Memory Summary:\n";
+            std::cout << "  Page Size           : " << pageSizeKB << " KB\n";
+            std::cout << "  Total Virtual Pages : " << totalPages << "\n";
+            std::cout << "  Pages in Memory     : " << pagesInMemory << "\n";
+            std::cout << "  Pages in Backing    : " << pagesInBacking << "\n";
+            std::cout << "  Approx. Used Memory : " << (pagesInMemory * pageSizeKB) << " KB\n";
+            std::cout << "----------------------------------------\n";
+
             std::cout << "Logs:\n";
             if (proc->logs.empty()) {
                 std::cout << "  [No logs available]\n";

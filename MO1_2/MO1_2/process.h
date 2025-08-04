@@ -10,9 +10,16 @@
 
 class Instruction;
 
+struct PageTableEntry {
+    int frameNumber = -1; // Physical frame number
+    bool valid = false;   // Is page in memory
+    bool dirty = false;   // Was page modified
+    int lastUsedTick = 0; // For LRU (optional for FIFO)
+};
+
 struct Process {
     // Identity and control
-    int pid;
+    int pid = -1;
     std::string name;
     int instructionPointer = 0;
     int coreAssigned = -1;
@@ -29,8 +36,11 @@ struct Process {
     int totalInstructions = 0;
     std::shared_ptr<std::atomic<int>> completedInstructions = std::make_shared<std::atomic<int>>(0);
 
-    // Process memory (vars) and logs
-    std::unordered_map<std::string, uint16_t> memory; // variable map (was: variables)
+    // Virtual memory and page table
+    std::unordered_map<int, PageTableEntry> pageTable;
+
+    // Legacy memory (can be deprecated or used as cache)
+    std::unordered_map<std::string, uint16_t> memory;
     std::vector<std::string> logs;
 
     // Sleep control
