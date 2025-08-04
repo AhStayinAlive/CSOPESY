@@ -1,4 +1,4 @@
-// MemoryManager.cpp
+// MemoryManager.cpp - Improved Implementation
 #include "MemoryManager.h"
 #include "ProcessManager.h"
 #include "config.h"
@@ -7,6 +7,8 @@
 #include <cstring>
 #include <filesystem>
 #include <sstream>
+#include <fstream>
+#include <algorithm>
 
 MemoryManager::MemoryManager() {}
 
@@ -20,29 +22,54 @@ void MemoryManager::initialize() {
     pageSize = config.memPerFrame;
     totalFrames = config.maxOverallMem / pageSize;
     frames.resize(totalFrames);
+
     for (auto& frame : frames) {
         frame.occupied = false;
-        frame.data.resize(pageSize);
+        frame.pid = -1;
+        frame.pageNumber = -1;
+        frame.data.resize(pageSize, 0); // Initialize with zeros
     }
+
+    // Clear any existing backing store file
+    std::ofstream backingStore("csopesy-backing-store.txt", std::ios::trunc);
+    backingStore << "# CSOPESY Backing Store - Format: PID PAGE_NUM DATA_BYTES\n";
+    backingStore.close();
+
+    std::cout << "[MEMORY] Initialized " << totalFrames << " frames of " << pageSize << " bytes each\n";
+    std::cout << "[MEMORY] Total physical memory: " << config.maxOverallMem << " bytes\n";
 }
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
     if (address < 0 || address >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Memory access violation: address out of bounds.");
+        throw std::runtime_error("Memory access violation: address " + std::to_string(address) +
+            " out of bounds [0, " + std::to_string(proc->virtualMemoryLimit) + "]");
     }
+
     int pageNum = address / pageSize;
     int offset = address % pageSize;
     int frameIdx = getFrame(proc, pageNum);
+
+    if (frameIdx == INVALID_FRAME) {
+        throw std::runtime_error("Failed to load page " + std::to_string(pageNum) + " for process " + std::to_string(proc->pid));
+    }
+
     return frames[frameIdx].data[offset];
 }
 
 void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t value) {
     if (address < 0 || address >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Memory access violation: address out of bounds.");
+        throw std::runtime_error("Memory access violation: address " + std::to_string(address) +
+            " out of bounds [0, " + std::to_string(proc->virtualMemoryLimit) + "]");
     }
+
     int pageNum = address / pageSize;
     int offset = address % pageSize;
     int frameIdx = getFrame(proc, pageNum);
+
+    if (frameIdx == INVALID_FRAME) {
+        throw std::runtime_error("Failed to load page " + std::to_string(pageNum) + " for process " + std::to_string(proc->pid));
+    }
+
     frames[frameIdx].data[offset] = value;
     proc->pageTable[pageNum].dirty = true;
 }
@@ -56,48 +83,72 @@ int MemoryManager::getFrame(std::shared_ptr<Process> proc, int virtualPage) {
 }
 
 int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
-    int freeFrame = INVALID_FRAME;
-    for (int i = 0; i < totalFrames; ++i) {
-        if (!frames[i].occupied) {
-            freeFrame = i;
-            break;
-        }
-    }
+    int freeFrame = findFreeFrame();
 
-    while (freeFrame == INVALID_FRAME) {
+    // If no free frame, evict one
+    if (freeFrame == INVALID_FRAME) {
         evictPage();
+        freeFrame = findFreeFrame();
 
-        for (int i = 0; i < totalFrames; ++i) {
-            if (!frames[i].occupied) {
-                freeFrame = i;
-                break;
-            }
+        if (freeFrame == INVALID_FRAME) {
+            throw std::runtime_error("Critical: No memory available after eviction");
         }
     }
 
+    // Load page into the free frame
     frames[freeFrame].pid = proc->pid;
     frames[freeFrame].pageNumber = virtualPage;
     frames[freeFrame].occupied = true;
-    auto restored = readFromBackingStore(proc->pid, virtualPage);
-    if (restored.size() < pageSize) {
-        restored.resize(pageSize, 0); // pad with zeros to avoid underrun
+
+    // Try to restore data from backing store
+    auto restoredData = readFromBackingStore(proc->pid, virtualPage);
+    if (!restoredData.empty()) {
+        if (restoredData.size() != pageSize) {
+            restoredData.resize(pageSize, 0);
+        }
+        frames[freeFrame].data = restoredData;
     }
-    frames[freeFrame].data = restored;
+    else {
+        // Initialize with zeros if not in backing store
+        std::fill(frames[freeFrame].data.begin(), frames[freeFrame].data.end(), 0);
+    }
+
     pageIns++;
 
+    // Update page table
     proc->pageTable[virtualPage] = { freeFrame, true, false, 0 };
     fifoQueue.push_back(freeFrame);
 
     std::ostringstream ss;
-    ss << "[PF] Loaded page " << virtualPage << " of PID " << proc->pid << " into frame " << freeFrame;
+    ss << "[MEMORY] Loaded page " << virtualPage << " of PID " << proc->pid << " into frame " << freeFrame;
     proc->logs.push_back(ss.str());
-    logToFile(proc->name, ss.str(), proc->coreAssigned);
+
     return freeFrame;
 }
 
+int MemoryManager::findFreeFrame() {
+    for (int i = 0; i < totalFrames; ++i) {
+        if (!frames[i].occupied) {
+            return i;
+        }
+    }
+    return INVALID_FRAME;
+}
+
 void MemoryManager::evictPage() {
-    std::cout << "[DEBUG] evictPage() called.\n";
-    if (fifoQueue.empty()) return;
+    if (fifoQueue.empty()) {
+        // Emergency: find any occupied frame to evict
+        for (int i = 0; i < totalFrames; ++i) {
+            if (frames[i].occupied) {
+                fifoQueue.push_back(i);
+                break;
+            }
+        }
+        if (fifoQueue.empty()) {
+            return; // No frames to evict
+        }
+    }
+
     int victim = fifoQueue.front();
     fifoQueue.pop_front();
 
@@ -105,57 +156,62 @@ void MemoryManager::evictPage() {
     int pageNum = frames[victim].pageNumber;
 
     auto proc = ProcessManager::findByPid(pid);
-    if (proc && proc->pageTable[pageNum].dirty) {
-        auto data = frames[victim].data;
-        if (data.size() < pageSize) data.resize(pageSize, 0);
-
-        std::cout << "[WRITE] Evicting PID=" << pid << " PAGE=" << pageNum << "\n";
-
-        writeToBackingStore(pid, pageNum, data);
+    if (proc && proc->pageTable.count(pageNum) && proc->pageTable[pageNum].dirty) {
+        // Write dirty page to backing store
+        writeToBackingStore(pid, pageNum, frames[victim].data);
         pageOuts++;
 
+        std::ostringstream ss;
+        ss << "[MEMORY] Evicted dirty page " << pageNum << " of PID " << pid << " from frame " << victim;
+        proc->logs.push_back(ss.str());
     }
 
-    if (proc) proc->pageTable[pageNum] = { -1, false, false, 0 };
+    // Update page table if process still exists
+    if (proc && proc->pageTable.count(pageNum)) {
+        proc->pageTable[pageNum] = { -1, false, false, 0 };
+    }
+
+    // Free the frame
     frames[victim].occupied = false;
+    frames[victim].pid = -1;
+    frames[victim].pageNumber = -1;
+    std::fill(frames[victim].data.begin(), frames[victim].data.end(), 0);
 }
 
 void MemoryManager::writeToBackingStore(int pid, int page, const std::vector<uint8_t>& data) {
-    std::ofstream file("csopesy-backing-store.txt", std::ios::app); // append mode
+    // First, remove any existing entry for this PID+PAGE combination
+    removeFromBackingStore(pid, page);
+
+    // Append new entry
+    std::ofstream file("csopesy-backing-store.txt", std::ios::app);
     if (!file) {
-        std::cerr << "Error opening backing store for writing.\n";
+        std::cerr << "[ERROR] Cannot open backing store for writing\n";
         return;
     }
 
-    file << "PID=" << pid << " PAGE=" << page << " DATA=";
-    for (uint8_t byte : data) {
-        file << static_cast<int>(byte) << " ";
+    file << pid << " " << page << " ";
+    for (size_t i = 0; i < data.size(); ++i) {
+        file << static_cast<int>(data[i]);
+        if (i < data.size() - 1) file << " ";
     }
     file << "\n";
     file.close();
-
-    std::cout << "[BACKING STORE] Wrote PID=" << pid << " PAGE=" << page << " (" << data.size() << " bytes)\n";
-
 }
-
 
 std::vector<uint8_t> MemoryManager::readFromBackingStore(int pid, int page) {
     std::ifstream file("csopesy-backing-store.txt");
     if (!file) {
-        std::cerr << "Error opening backing store for reading.\n";
-        return {};
+        return {}; // File doesn't exist or can't be opened
     }
 
     std::string line;
     while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue; // Skip comments and empty lines
+
         std::istringstream iss(line);
-        std::string pidStr, pageStr, dataLabel;
         int foundPid, foundPage;
 
-        iss >> pidStr >> pageStr >> dataLabel;
-
-        if (sscanf_s(pidStr.c_str(), "PID=%d", &foundPid) != 1) continue;
-        if (sscanf_s(pageStr.c_str(), "PAGE=%d", &foundPage) != 1) continue;
+        if (!(iss >> foundPid >> foundPage)) continue;
 
         if (foundPid == pid && foundPage == page) {
             std::vector<uint8_t> data;
@@ -163,20 +219,53 @@ std::vector<uint8_t> MemoryManager::readFromBackingStore(int pid, int page) {
             while (iss >> byte) {
                 data.push_back(static_cast<uint8_t>(byte));
             }
+            file.close();
             return data;
         }
     }
 
-    //std::cerr << "Page not found in backing store: PID=" << pid << " PAGE=" << page << "\n";
-    return {};
+    file.close();
+    return {}; // Not found
 }
 
+void MemoryManager::removeFromBackingStore(int pid, int page) {
+    std::ifstream inFile("csopesy-backing-store.txt");
+    if (!inFile) return;
+
+    std::vector<std::string> lines;
+    std::string line;
+
+    while (std::getline(inFile, line)) {
+        if (line.empty() || line[0] == '#') {
+            lines.push_back(line);
+            continue;
+        }
+
+        std::istringstream iss(line);
+        int foundPid, foundPage;
+
+        if (!(iss >> foundPid >> foundPage)) {
+            lines.push_back(line);
+            continue;
+        }
+
+        // Only keep lines that don't match our PID+PAGE
+        if (!(foundPid == pid && foundPage == page)) {
+            lines.push_back(line);
+        }
+    }
+    inFile.close();
+
+    // Write back the filtered content
+    std::ofstream outFile("csopesy-backing-store.txt", std::ios::trunc);
+    for (const auto& l : lines) {
+        outFile << l << "\n";
+    }
+    outFile.close();
+}
 
 bool MemoryManager::hasFreeFrame() {
-    for (const auto& frame : frames) {
-        if (!frame.occupied) return true;
-    }
-    return false;
+    return findFreeFrame() != INVALID_FRAME;
 }
 
 bool MemoryManager::isFrameOccupied(int index) const {
@@ -187,17 +276,112 @@ bool MemoryManager::isFrameOccupied(int index) const {
 }
 
 int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::string& varName) {
+    // Check if variable already exists
     if (proc->variableTable.count(varName)) {
-        return proc->variableTable[varName];  // already exists
+        return proc->variableTable[varName];
     }
 
-    if (proc->nextFreeAddress + 1 > proc->virtualMemoryLimit) {
-        throw std::runtime_error("Out of memory: cannot allocate variable '" + varName + "'");
+    // Check if we have enough virtual memory space
+    if (proc->nextFreeAddress >= proc->virtualMemoryLimit) {
+        throw std::runtime_error("Out of virtual memory: cannot allocate variable '" + varName + "'");
     }
 
     int address = proc->nextFreeAddress;
     proc->variableTable[varName] = address;
-    proc->nextFreeAddress += 1;
+    proc->nextFreeAddress += sizeof(uint16_t); // Allocate space for a 16-bit value
 
     return address;
+}
+
+void MemoryManager::freeProcessMemory(int pid) {
+    std::cout << "[MEMORY] Freeing memory for process PID " << pid << "\n";
+
+    // Free all frames used by this process
+    int freedFrames = 0;
+    for (int i = 0; i < totalFrames; ++i) {
+        if (frames[i].occupied && frames[i].pid == pid) {
+            frames[i].occupied = false;
+            frames[i].pid = -1;
+            frames[i].pageNumber = -1;
+            std::fill(frames[i].data.begin(), frames[i].data.end(), 0);
+            freedFrames++;
+        }
+    }
+
+    // Remove from FIFO queue
+    fifoQueue.erase(
+        std::remove_if(fifoQueue.begin(), fifoQueue.end(),
+            [pid, this](int frameIdx) {
+                return !frames[frameIdx].occupied || frames[frameIdx].pid == pid;
+            }),
+        fifoQueue.end());
+
+    // Clean up backing store entries for this process
+    cleanupBackingStore(pid);
+
+    std::cout << "[MEMORY] Freed " << freedFrames << " frames for PID " << pid << "\n";
+}
+
+void MemoryManager::cleanupBackingStore(int pid) {
+    std::ifstream inFile("csopesy-backing-store.txt");
+    if (!inFile) return;
+
+    std::vector<std::string> lines;
+    std::string line;
+    int removedEntries = 0;
+
+    while (std::getline(inFile, line)) {
+        if (line.empty() || line[0] == '#') {
+            lines.push_back(line);
+            continue;
+        }
+
+        std::istringstream iss(line);
+        int foundPid;
+
+        if (!(iss >> foundPid)) {
+            lines.push_back(line);
+            continue;
+        }
+
+        // Only keep lines that don't match our PID
+        if (foundPid != pid) {
+            lines.push_back(line);
+        }
+        else {
+            removedEntries++;
+        }
+    }
+    inFile.close();
+
+    // Write back the filtered content
+    std::ofstream outFile("csopesy-backing-store.txt", std::ios::trunc);
+    for (const auto& l : lines) {
+        outFile << l << "\n";
+    }
+    outFile.close();
+
+    if (removedEntries > 0) {
+        std::cout << "[MEMORY] Cleaned up " << removedEntries << " backing store entries for PID " << pid << "\n";
+    }
+}
+
+int MemoryManager::getUsedFrames() const {
+    int count = 0;
+    for (const auto& frame : frames) {
+        if (frame.occupied) count++;
+    }
+    return count;
+}
+
+void MemoryManager::printMemoryStatus() const {
+    std::cout << "=== MEMORY MANAGER STATUS ===\n";
+    std::cout << "Total Frames: " << totalFrames << "\n";
+    std::cout << "Used Frames: " << getUsedFrames() << "\n";
+    std::cout << "Free Frames: " << (totalFrames - getUsedFrames()) << "\n";
+    std::cout << "Page Size: " << pageSize << " bytes\n";
+    std::cout << "Page Ins: " << pageIns << "\n";
+    std::cout << "Page Outs: " << pageOuts << "\n";
+    std::cout << "FIFO Queue Size: " << fifoQueue.size() << "\n";
+    std::cout << "=============================\n";
 }

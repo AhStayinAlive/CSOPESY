@@ -117,13 +117,17 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
     if (proc->instructionPointer >= static_cast<int>(proc->instructions.size())) {
         proc->endTime = getCurrentTimestamp();
         proc->isFinished = true;
+
+        // **CRITICAL: Free memory when process finishes**
+        MemoryManager::getInstance().freeProcessMemory(proc->pid);
+
         logToFile(proc->name, "Process completed successfully", proc->coreAssigned);
+        std::cout << "[SCHEDULER] Process " << proc->name << " (PID " << proc->pid << ") completed and memory freed\n";
     }
 
     proc->isRunning = false;
     *coreAvailable[coreId] = true;
 }
-
 void cpuWorker(int coreId, int delayMs) {
     while (!shouldStop.load()) {
         std::shared_ptr<Process> proc;
