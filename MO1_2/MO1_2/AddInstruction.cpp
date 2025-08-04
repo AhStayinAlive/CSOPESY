@@ -14,7 +14,6 @@ AddInstruction::AddInstruction(const std::string& result, const std::string& lhs
 void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     int addr1 = std::hash<std::string>{}(arg1) % Config::getInstance().maxMemPerProc;
     int addr2 = std::hash<std::string>{}(arg2) % Config::getInstance().maxMemPerProc;
-    int resAddr = std::hash<std::string>{}(resultVar) % Config::getInstance().maxMemPerProc;
 
     uint16_t val1 = MemoryManager::getInstance().read(proc, addr1);
     uint16_t val2 = MemoryManager::getInstance().read(proc, addr2);
@@ -22,7 +21,9 @@ void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     uint32_t temp = static_cast<uint32_t>(val1) + static_cast<uint32_t>(val2);
     uint16_t result = static_cast<uint16_t>(std::min(temp, static_cast<uint32_t>(65535)));
 
+    int resAddr = MemoryManager::getInstance().allocateVariable(proc, resultVar);
     MemoryManager::getInstance().write(proc, resAddr, static_cast<uint8_t>(result));
+
 
     std::ostringstream logEntry;
     if (!logPrefix.empty()) {

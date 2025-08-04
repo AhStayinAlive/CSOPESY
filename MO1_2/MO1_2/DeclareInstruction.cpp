@@ -1,4 +1,5 @@
 #include "DeclareInstruction.h"
+#include "MemoryManager.h"
 #include "process.h"
 #include "utils.h"
 #include <algorithm>
@@ -15,6 +16,9 @@ DeclareInstruction::DeclareInstruction(
 
 void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     proc->memory[variableName] = value;
+
+    int address = MemoryManager::getInstance().allocateVariable(proc, variableName);
+    MemoryManager::getInstance().write(proc, address, value);
 
     std::ostringstream logEntry;
 

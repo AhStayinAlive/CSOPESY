@@ -18,7 +18,7 @@ static std::unordered_map<std::string, std::shared_ptr<Process>> processMap;
 static int pidCounter = 1000;
 static int uniqueProcessCounter = 1;
 
-std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions) {
+std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, int pid, int minInstructions, int maxInstructions, int memoryLimit) {
     auto proc = std::make_shared<Process>();
     proc->pid = pid;
     proc->name = name;
@@ -28,6 +28,7 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isFinished = false;
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->virtualMemoryLimit = memoryLimit;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -154,15 +155,17 @@ std::shared_ptr<Process> ProcessManager::createUniqueNamedProcess(int minIns, in
     do {
         processName = "process_" + std::to_string(uniqueProcessCounter++);
     } while (processMap.find(processName) != processMap.end());
-    return createProcess(processName, pidCounter++, minIns, maxIns);
+
+    const auto& config = Config::getInstance();
+    return createProcess(processName, pidCounter++, minIns, maxIns, config.maxMemPerProc);
 }
 
-std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name) {
+std::shared_ptr<Process> ProcessManager::createNamedProcess(const std::string& name, int memoryLimit) {
     if (processMap.find(name) != processMap.end()) {
         return processMap[name];
     }
     const auto& config = Config::getInstance();
-    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions);
+    return createProcess(name, pidCounter++, config.minInstructions, config.maxInstructions, memoryLimit);
 }
 
 std::shared_ptr<Process> ProcessManager::findByName(const std::string& name) {
@@ -238,3 +241,4 @@ void ProcessManager::clearAllProcesses() {
     pidCounter = 1000;
     uniqueProcessCounter = 1;
 }
+

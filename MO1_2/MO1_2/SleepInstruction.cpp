@@ -1,4 +1,5 @@
 #include "SleepInstruction.h"
+#include "MemoryManager.h"
 #include "process.h"
 #include "utils.h"
 #include <thread>

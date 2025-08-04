@@ -66,6 +66,8 @@ void CLIManager::handleCommand(const std::string& input) {
         if (Config::getInstance().loadFromFile("config.txt")) {
             std::cout << "Configuration loaded.\n";
             MemoryManager::getInstance().initialize();
+            std::ofstream backingStore("csopesy-backing-store.txt", std::ios::app);
+            backingStore.close();
 
             auto& config = Config::getInstance();
             if (config.scheduler == "FCFS" || config.scheduler == "fcfs") {
@@ -87,22 +89,33 @@ void CLIManager::handleCommand(const std::string& input) {
     }
 
 
-    else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-s") {
+    else if (cmd == "screen" && tokens.size() == 4 && tokens[1] == "-s") {
         std::string name = tokens[2];
-        auto proc = ProcessManager::findByName(name);
-        if (!proc) {
-            proc = ProcessManager::createNamedProcess(name);
-            ProcessManager::addProcess(proc);
-            addProcess(proc);
-            std::cout << "Created and queued process " << name << "\n";
-            ConsoleView::show(proc);
+        int requestedMem = 0;
+
+        try {
+            requestedMem = std::stoi(tokens[3]);
+            if (requestedMem < 64 || requestedMem > 65536 || (requestedMem & (requestedMem - 1)) != 0) {
+                std::cout << "invalid memory allocation\n";
+                return;
+            }
+        }
+        catch (...) {
+            std::cout << "invalid memory allocation\n";
+            return;
         }
 
-        else {
-            std::cout << name << " already exists." << "\n";
+        auto proc = ProcessManager::findByName(name);
+        if (!proc) {
+            proc = ProcessManager::createNamedProcess(name, requestedMem);
+            ProcessManager::addProcess(proc);
+            addProcess(proc);
+            std::cout << "Created and queued process " << name << " with " << requestedMem << " bytes of memory.\n";
+            ConsoleView::show(proc);
         }
-        
-        
+        else {
+            std::cout << name << " already exists.\n";
+        }
     }
 
     else if (cmd == "screen" && tokens.size() >= 3 && tokens[1] == "-r") {
@@ -214,7 +227,7 @@ void CLIManager::stopScheduler() {
 void CLIManager::showHelp() const {
     std::cout << "Available commands:\n"
         << "  initialize         - Load config.txt and prepare scheduler\n"
-        << "  screen -s [name]   - Create or open a process\n"
+        << "  screen -s [name] [memory_size]   - Create a process\n"
         << "  process-smi [name] - Show logs for a specific process\n"
         << "  screen -r [name]   - Resume and inspect a process\n"
         << "  screen -ls         - Show running and finished processes\n"

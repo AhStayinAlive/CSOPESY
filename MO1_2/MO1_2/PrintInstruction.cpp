@@ -1,5 +1,6 @@
 ﻿// PrintInstruction.cpp
 #include "PrintInstruction.h"
+#include "MemoryManager.h"
 #include "process.h"
 #include "utils.h"
 #include "MemoryManager.h"

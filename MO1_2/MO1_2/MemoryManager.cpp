@@ -27,6 +27,9 @@ void MemoryManager::initialize() {
 }
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
+    if (address < 0 || address >= proc->virtualMemoryLimit) {
+        throw std::runtime_error("Memory access violation: address out of bounds.");
+    }
     int pageNum = address / pageSize;
     int offset = address % pageSize;
     int frameIdx = getFrame(proc, pageNum);
@@ -34,6 +37,9 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
 }
 
 void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t value) {
+    if (address < 0 || address >= proc->virtualMemoryLimit) {
+        throw std::runtime_error("Memory access violation: address out of bounds.");
+    }
     int pageNum = address / pageSize;
     int offset = address % pageSize;
     int frameIdx = getFrame(proc, pageNum);
@@ -72,7 +78,11 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
     frames[freeFrame].pid = proc->pid;
     frames[freeFrame].pageNumber = virtualPage;
     frames[freeFrame].occupied = true;
-    frames[freeFrame].data = readFromBackingStore(proc->pid, virtualPage);
+    auto restored = readFromBackingStore(proc->pid, virtualPage);
+    if (restored.size() < pageSize) {
+        restored.resize(pageSize, 0); // pad with zeros to avoid underrun
+    }
+    frames[freeFrame].data = restored;
     pageIns++;
 
     proc->pageTable[virtualPage] = { freeFrame, true, false, 0 };
@@ -86,6 +96,7 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
 }
 
 void MemoryManager::evictPage() {
+    std::cout << "[DEBUG] evictPage() called.\n";
     if (fifoQueue.empty()) return;
     int victim = fifoQueue.front();
     fifoQueue.pop_front();
@@ -95,8 +106,14 @@ void MemoryManager::evictPage() {
 
     auto proc = ProcessManager::findByPid(pid);
     if (proc && proc->pageTable[pageNum].dirty) {
-        writeToBackingStore(pid, pageNum, frames[victim].data);
+        auto data = frames[victim].data;
+        if (data.size() < pageSize) data.resize(pageSize, 0);
+
+        std::cout << "[WRITE] Evicting PID=" << pid << " PAGE=" << pageNum << "\n";
+
+        writeToBackingStore(pid, pageNum, data);
         pageOuts++;
+
     }
 
     if (proc) proc->pageTable[pageNum] = { -1, false, false, 0 };
@@ -104,21 +121,56 @@ void MemoryManager::evictPage() {
 }
 
 void MemoryManager::writeToBackingStore(int pid, int page, const std::vector<uint8_t>& data) {
-    std::ofstream out("backing_" + std::to_string(pid) + ".bin", std::ios::binary | std::ios::in | std::ios::out);
-    if (!out.is_open()) out.open("backing_" + std::to_string(pid) + ".bin", std::ios::binary | std::ios::out);
-    out.seekp(page * pageSize);
-    out.write(reinterpret_cast<const char*>(data.data()), data.size());
+    std::ofstream file("csopesy-backing-store.txt", std::ios::app); // append mode
+    if (!file) {
+        std::cerr << "Error opening backing store for writing.\n";
+        return;
+    }
+
+    file << "PID=" << pid << " PAGE=" << page << " DATA=";
+    for (uint8_t byte : data) {
+        file << static_cast<int>(byte) << " ";
+    }
+    file << "\n";
+    file.close();
+
+    std::cout << "[BACKING STORE] Wrote PID=" << pid << " PAGE=" << page << " (" << data.size() << " bytes)\n";
+
 }
 
+
 std::vector<uint8_t> MemoryManager::readFromBackingStore(int pid, int page) {
-    std::vector<uint8_t> buffer(pageSize, 0);
-    std::ifstream in("backing_" + std::to_string(pid) + ".bin", std::ios::binary);
-    if (in.is_open()) {
-        in.seekg(page * pageSize);
-        in.read(reinterpret_cast<char*>(buffer.data()), pageSize);
+    std::ifstream file("csopesy-backing-store.txt");
+    if (!file) {
+        std::cerr << "Error opening backing store for reading.\n";
+        return {};
     }
-    return buffer;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string pidStr, pageStr, dataLabel;
+        int foundPid, foundPage;
+
+        iss >> pidStr >> pageStr >> dataLabel;
+
+        if (sscanf_s(pidStr.c_str(), "PID=%d", &foundPid) != 1) continue;
+        if (sscanf_s(pageStr.c_str(), "PAGE=%d", &foundPage) != 1) continue;
+
+        if (foundPid == pid && foundPage == page) {
+            std::vector<uint8_t> data;
+            int byte;
+            while (iss >> byte) {
+                data.push_back(static_cast<uint8_t>(byte));
+            }
+            return data;
+        }
+    }
+
+    //std::cerr << "Page not found in backing store: PID=" << pid << " PAGE=" << page << "\n";
+    return {};
 }
+
 
 bool MemoryManager::hasFreeFrame() {
     for (const auto& frame : frames) {
@@ -132,4 +184,20 @@ bool MemoryManager::isFrameOccupied(int index) const {
         return frames[index].occupied;
     }
     return false;
+}
+
+int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::string& varName) {
+    if (proc->variableTable.count(varName)) {
+        return proc->variableTable[varName];  // already exists
+    }
+
+    if (proc->nextFreeAddress + 1 > proc->virtualMemoryLimit) {
+        throw std::runtime_error("Out of memory: cannot allocate variable '" + varName + "'");
+    }
+
+    int address = proc->nextFreeAddress;
+    proc->variableTable[varName] = address;
+    proc->nextFreeAddress += 1;
+
+    return address;
 }

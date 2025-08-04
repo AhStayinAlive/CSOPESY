@@ -21,11 +21,16 @@ struct Process {
     // Identity and control
     int pid = -1;
     std::string name;
+    int virtualMemoryLimit = 0;
     int instructionPointer = 0;
     int coreAssigned = -1;
     bool isRunning = false;
     bool isFinished = false;
     bool isDetached = false;
+
+    std::unordered_map<std::string, int> variableTable;
+    int nextFreeAddress = 0;
+    
 
     // Timing
     std::string startTime;

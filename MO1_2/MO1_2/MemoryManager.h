@@ -33,6 +33,8 @@ public:
 
     int getPageIns() const { return pageIns; }
     int getPageOuts() const { return pageOuts; }
+    int allocateVariable(std::shared_ptr<Process> proc, const std::string& varName);
+
 
 private:
     MemoryManager();
