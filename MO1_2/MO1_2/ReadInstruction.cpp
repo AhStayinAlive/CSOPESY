@@ -10,13 +10,13 @@ ReadInstruction::ReadInstruction(const std::string& varName, int addr, const std
 }
 
 void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Validate address bounds
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
-        std::ostringstream oss;
-        oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
-            << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
-        throw std::runtime_error(oss.str());
-    }
+    //// Validate address bounds
+    //if (address < 0 || address >= proc->virtualMemoryLimit) {
+    //    std::ostringstream oss;
+    //    oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
+    //        << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+    //    throw std::runtime_error(oss.str());
+    //}
 
     // Read 16-bit value from memory (stored as 2 bytes)
     uint8_t lowByte = MemoryManager::getInstance().read(proc, address);
@@ -41,6 +41,20 @@ void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     // Also store in legacy memory map for compatibility
     proc->memory[variableName] = value;
 
+    // Debug: Verify the write was successful
+    try {
+        uint8_t testRead = MemoryManager::getInstance().read(proc, address);
+        std::ostringstream debugLog;
+        debugLog << "[DEBUG] Write verification: address 0x" << std::hex << address
+            << " contains value " << std::dec << static_cast<int>(testRead);
+        proc->logs.push_back(debugLog.str());
+    }
+    catch (const std::exception& e) {
+        std::ostringstream errorLog;
+        errorLog << "[ERROR] Write verification failed: " << e.what();
+        proc->logs.push_back(errorLog.str());
+    }
+
     std::ostringstream logEntry;
     if (!logPrefix.empty()) {
         logEntry << "[" << getCurrentTimestamp() << "] "
@@ -48,14 +62,14 @@ void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             << " | PID " << proc->pid
             << " | " << logPrefix
             << " | READ: " << variableName << " = " << value
-            << " from 0x" << std::hex << std::uppercase << address;
+            << " from 0x" << std::hex << std::uppercase << address << " - SUCCESS";
     }
     else {
         logEntry << "[" << getCurrentTimestamp() << "] "
             << "Core " << coreId
             << " | PID " << proc->pid
             << " | READ: " << variableName << " = " << value
-            << " from 0x" << std::hex << std::uppercase << address;
+            << " from 0x" << std::hex << std::uppercase << address << " - SUCCESS";
     }
 
     proc->logs.push_back(logEntry.str());

@@ -44,15 +44,15 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamically expand virtual memory if needed
+    // ✅ ENHANCED: Dynamically expand virtual memory for backing store compatibility
     if (address >= proc->virtualMemoryLimit) {
-        // Expand virtual memory in reasonable chunks
-        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        // Calculate new virtual memory size to accommodate the address + some buffer
+        int newLimit = ((address / pageSize) + 1) * pageSize;
         proc->virtualMemoryLimit = newLimit;
 
         std::ostringstream log;
-        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-            << std::hex << std::uppercase << address;
+        log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+            << " bytes to access address 0x" << std::hex << std::uppercase << address;
         proc->logs.push_back(log.str());
     }
 
@@ -75,15 +75,15 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamically expand virtual memory if needed
+    // ✅ ENHANCED: Dynamically expand virtual memory for backing store compatibility
     if (address >= proc->virtualMemoryLimit) {
-        // Expand virtual memory in reasonable chunks
-        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        // Calculate new virtual memory size to accommodate the address + some buffer
+        int newLimit = ((address / pageSize) + 1) * pageSize;
         proc->virtualMemoryLimit = newLimit;
 
         std::ostringstream log;
-        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-            << std::hex << std::uppercase << address;
+        log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+            << " bytes to access address 0x" << std::hex << std::uppercase << address;
         proc->logs.push_back(log.str());
     }
 
