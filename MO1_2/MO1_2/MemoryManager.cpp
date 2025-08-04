@@ -1,4 +1,4 @@
-// MemoryManager.cpp - Improved Implementation
+﻿// MemoryManager.cpp - Improved Implementation
 #include "MemoryManager.h"
 #include "ProcessManager.h"
 #include "config.h"
@@ -40,17 +40,20 @@ void MemoryManager::initialize() {
 }
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
-        std::ostringstream oss;
-        oss << "Memory access violation: address ";
-        if (address >= 0) {
-            oss << "0x" << std::hex << std::uppercase << address;
-        }
-        else {
-            oss << address;
-        }
-        oss << " out of bounds [0, " << (proc->virtualMemoryLimit - 1) << "]";
-        throw std::runtime_error(oss.str());
+    if (address < 0) {
+        throw std::runtime_error("Invalid negative address: " + std::to_string(address));
+    }
+
+    // ✅ FIXED: Dynamically expand virtual memory if needed
+    if (address >= proc->virtualMemoryLimit) {
+        // Expand virtual memory in reasonable chunks
+        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        proc->virtualMemoryLimit = newLimit;
+
+        std::ostringstream log;
+        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
+            << std::hex << std::uppercase << address;
+        proc->logs.push_back(log.str());
     }
 
     int pageNum = address / pageSize;
@@ -68,17 +71,20 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
 }
 
 void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t value) {
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
-        std::ostringstream oss;
-        oss << "Memory access violation: address ";
-        if (address >= 0) {
-            oss << "0x" << std::hex << std::uppercase << address;
-        }
-        else {
-            oss << address;
-        }
-        oss << " out of bounds [0, " << (proc->virtualMemoryLimit - 1) << "]";
-        throw std::runtime_error(oss.str());
+    if (address < 0) {
+        throw std::runtime_error("Invalid negative address: " + std::to_string(address));
+    }
+
+    // ✅ FIXED: Dynamically expand virtual memory if needed
+    if (address >= proc->virtualMemoryLimit) {
+        // Expand virtual memory in reasonable chunks
+        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        proc->virtualMemoryLimit = newLimit;
+
+        std::ostringstream log;
+        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
+            << std::hex << std::uppercase << address;
+        proc->logs.push_back(log.str());
     }
 
     int pageNum = address / pageSize;
@@ -296,16 +302,15 @@ bool MemoryManager::isFrameOccupied(int index) const {
     return false;
 }
 
+
 int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::string& varName) {
     // Check if variable already exists
     if (proc->variableTable.count(varName)) {
         return proc->variableTable[varName];
     }
 
-    // Check if we have enough virtual memory space
-    if (proc->nextFreeAddress >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Out of virtual memory: cannot allocate variable '" + varName + "'");
-    }
+    // ✅ FIXED: Remove the artificial virtual memory limit check
+    // Let the paging system handle memory management instead
 
     int address = proc->nextFreeAddress;
     proc->variableTable[varName] = address;

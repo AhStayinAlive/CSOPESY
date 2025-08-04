@@ -12,12 +12,12 @@ AddInstruction::AddInstruction(const std::string& result, const std::string& lhs
 }
 
 void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    int addr1 = std::hash<std::string>{}(arg1) % proc->virtualMemoryLimit;
-    int addr2 = std::hash<std::string>{}(arg2) % proc->virtualMemoryLimit;
+    int maxSafeAddress = proc->virtualMemoryLimit - sizeof(uint16_t);
+    int addr1 = std::hash<std::string>{}(arg1) % maxSafeAddress;
+    int addr2 = std::hash<std::string>{}(arg2) % maxSafeAddress;
 
     uint16_t val1 = MemoryManager::getInstance().read(proc, addr1);
     uint16_t val2 = MemoryManager::getInstance().read(proc, addr2);
-
     uint32_t temp = static_cast<uint32_t>(val1) + static_cast<uint32_t>(val2);
     uint16_t result = static_cast<uint16_t>(std::min(temp, static_cast<uint32_t>(65535)));
 

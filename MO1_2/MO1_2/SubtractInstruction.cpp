@@ -12,12 +12,12 @@ SubtractInstruction::SubtractInstruction(const std::string& result, const std::s
 }
 
 void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    int addr1 = std::hash<std::string>{}(arg1) % proc->virtualMemoryLimit;;
-    int addr2 = std::hash<std::string>{}(arg2) % proc->virtualMemoryLimit;;
+    int maxSafeAddress = proc->virtualMemoryLimit - sizeof(uint16_t);
+    int addr1 = std::hash<std::string>{}(arg1) % maxSafeAddress;
+    int addr2 = std::hash<std::string>{}(arg2) % maxSafeAddress;
 
     uint16_t val1 = MemoryManager::getInstance().read(proc, addr1);
     uint16_t val2 = MemoryManager::getInstance().read(proc, addr2);
-
     uint16_t result = (val1 > val2) ? (val1 - val2) : 0;
 
     int resAddr = MemoryManager::getInstance().allocateVariable(proc, resultVar);
