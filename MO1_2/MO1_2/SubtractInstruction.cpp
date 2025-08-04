@@ -12,8 +12,8 @@ SubtractInstruction::SubtractInstruction(const std::string& result, const std::s
 }
 
 void SubtractInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    int addr1 = std::hash<std::string>{}(arg1) % Config::getInstance().maxMemPerProc;
-    int addr2 = std::hash<std::string>{}(arg2) % Config::getInstance().maxMemPerProc;
+    int addr1 = std::hash<std::string>{}(arg1) % proc->virtualMemoryLimit;;
+    int addr2 = std::hash<std::string>{}(arg2) % proc->virtualMemoryLimit;;
 
     uint16_t val1 = MemoryManager::getInstance().read(proc, addr1);
     uint16_t val2 = MemoryManager::getInstance().read(proc, addr2);

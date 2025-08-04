@@ -16,7 +16,7 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
 
     if (hasVariable) {
-        int addr = std::hash<std::string>{}(variableName) % Config::getInstance().maxMemPerProc;
+        int addr = std::hash<std::string>{}(variableName) % proc->virtualMemoryLimit;;
         uint16_t varValue = MemoryManager::getInstance().read(proc, addr);
         output += std::to_string(varValue);
     }

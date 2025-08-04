@@ -457,6 +457,69 @@ void CLIManager::showProcessList() const {
     }
 }
 
+////void CLIManager::printVMStat() {
+//    auto& config = Config::getInstance();
+//    auto& mem = MemoryManager::getInstance();
+//
+//    int totalMem = config.maxOverallMem;
+//    int frameSize = config.memPerFrame;
+//    int totalFrames = totalMem / frameSize;
+//    int usedFrames = mem.getUsedFrames();
+//
+//    int usedMem = usedFrames * frameSize;
+//    int freeMem = totalMem - usedMem;
+//    double memUtilization = totalFrames > 0 ? (static_cast<double>(usedFrames) / totalFrames * 100.0) : 0.0;
+//
+//    std::cout << "=== VIRTUAL MEMORY STATISTICS ===\n";
+//    std::cout << "Physical Memory:\n";
+//    std::cout << "  Total memory        : " << totalMem << " KB\n";
+//    std::cout << "  Used memory         : " << usedMem << " KB (" << std::fixed << std::setprecision(1) << memUtilization << "%)\n";
+//    std::cout << "  Free memory         : " << freeMem << " KB\n";
+//    std::cout << "  Frame size          : " << frameSize << " KB\n";
+//    std::cout << "  Total frames        : " << totalFrames << "\n";
+//    std::cout << "  Used frames         : " << usedFrames << "\n";
+//    std::cout << "  Available frames    : " << (totalFrames - usedFrames) << "\n\n";
+//
+//    std::cout << "Paging Statistics:\n";
+//    std::cout << "  Pages loaded (page-ins)  : " << mem.getPageIns() << "\n";
+//    std::cout << "  Pages evicted (page-outs): " << mem.getPageOuts() << "\n\n";
+//
+//    std::cout << "CPU Statistics:\n";
+//    std::cout << "  Idle CPU ticks      : " << idleCpuTicks.load() << "\n";
+//    std::cout << "  Active CPU ticks    : " << activeCpuTicks.load() << "\n";
+//    std::cout << "  Total CPU ticks     : " << totalCpuTicks.load() << "\n";
+//
+//    if (totalCpuTicks.load() > 0) {
+//        double cpuUtilization = (static_cast<double>(activeCpuTicks.load()) / totalCpuTicks.load()) * 100.0;
+//        std::cout << "  CPU utilization     : " << std::fixed << std::setprecision(1) << cpuUtilization << "%\n";
+//    }
+//
+//    // Show process memory usage
+//    auto allProcesses = ProcessManager::getAllProcesses();
+//    if (!allProcesses.empty()) {
+//        std::cout << "\nPer-Process Memory Usage:\n";
+//        std::cout << "  PID  | Name           | Virtual | Pages in Memory | Pages in Backing\n";
+//        std::cout << "  -----|----------------|---------|------------------|------------------\n";
+//
+//        for (const auto& proc : allProcesses) {
+//            int pagesInMemory = 0;
+//            int pagesInBacking = 0;
+//
+//            for (const auto& [vpn, entry] : proc->pageTable) {
+//                if (entry.valid) pagesInMemory++;
+//                else pagesInBacking++;
+//            }
+//
+//            std::cout << "  " << std::setw(4) << proc->pid << " | "
+//                << std::setw(14) << std::left << proc->name.substr(0, 14) << " | "
+//                << std::setw(7) << std::right << proc->virtualMemoryLimit << " | "
+//                << std::setw(16) << pagesInMemory << " | "
+//                << std::setw(17) << pagesInBacking << "\n";
+//        }
+//    }
+//    std::cout << "===================================\n";
+//}
+
 void CLIManager::printVMStat() {
     auto& config = Config::getInstance();
     auto& mem = MemoryManager::getInstance();
@@ -464,58 +527,22 @@ void CLIManager::printVMStat() {
     int totalMem = config.maxOverallMem;
     int frameSize = config.memPerFrame;
     int totalFrames = totalMem / frameSize;
-    int usedFrames = mem.getUsedFrames();
+
+    int usedFrames = 0;
+    for (int i = 0; i < totalFrames; ++i) {
+        if (mem.isFrameOccupied(i)) usedFrames++;
+    }
 
     int usedMem = usedFrames * frameSize;
     int freeMem = totalMem - usedMem;
-    double memUtilization = totalFrames > 0 ? (static_cast<double>(usedFrames) / totalFrames * 100.0) : 0.0;
 
-    std::cout << "=== VIRTUAL MEMORY STATISTICS ===\n";
-    std::cout << "Physical Memory:\n";
-    std::cout << "  Total memory        : " << totalMem << " KB\n";
-    std::cout << "  Used memory         : " << usedMem << " KB (" << std::fixed << std::setprecision(1) << memUtilization << "%)\n";
-    std::cout << "  Free memory         : " << freeMem << " KB\n";
-    std::cout << "  Frame size          : " << frameSize << " KB\n";
-    std::cout << "  Total frames        : " << totalFrames << "\n";
-    std::cout << "  Used frames         : " << usedFrames << "\n";
-    std::cout << "  Available frames    : " << (totalFrames - usedFrames) << "\n\n";
-
-    std::cout << "Paging Statistics:\n";
-    std::cout << "  Pages loaded (page-ins)  : " << mem.getPageIns() << "\n";
-    std::cout << "  Pages evicted (page-outs): " << mem.getPageOuts() << "\n\n";
-
-    std::cout << "CPU Statistics:\n";
-    std::cout << "  Idle CPU ticks      : " << idleCpuTicks.load() << "\n";
-    std::cout << "  Active CPU ticks    : " << activeCpuTicks.load() << "\n";
-    std::cout << "  Total CPU ticks     : " << totalCpuTicks.load() << "\n";
-
-    if (totalCpuTicks.load() > 0) {
-        double cpuUtilization = (static_cast<double>(activeCpuTicks.load()) / totalCpuTicks.load()) * 100.0;
-        std::cout << "  CPU utilization     : " << std::fixed << std::setprecision(1) << cpuUtilization << "%\n";
-    }
-
-    // Show process memory usage
-    auto allProcesses = ProcessManager::getAllProcesses();
-    if (!allProcesses.empty()) {
-        std::cout << "\nPer-Process Memory Usage:\n";
-        std::cout << "  PID  | Name           | Virtual | Pages in Memory | Pages in Backing\n";
-        std::cout << "  -----|----------------|---------|------------------|------------------\n";
-
-        for (const auto& proc : allProcesses) {
-            int pagesInMemory = 0;
-            int pagesInBacking = 0;
-
-            for (const auto& [vpn, entry] : proc->pageTable) {
-                if (entry.valid) pagesInMemory++;
-                else pagesInBacking++;
-            }
-
-            std::cout << "  " << std::setw(4) << proc->pid << " | "
-                << std::setw(14) << std::left << proc->name.substr(0, 14) << " | "
-                << std::setw(7) << std::right << proc->virtualMemoryLimit << " | "
-                << std::setw(16) << pagesInMemory << " | "
-                << std::setw(17) << pagesInBacking << "\n";
-        }
-    }
-    std::cout << "===================================\n";
+    std::cout << "VMSTAT:\n";
+    std::cout << "  Total memory     : " << totalMem << " KB\n";
+    std::cout << "  Used memory      : " << usedMem << " KB\n";
+    std::cout << "  Free memory      : " << freeMem << " KB\n";
+    std::cout << "  Idle CPU ticks   : " << idleCpuTicks.load() << "\n";
+    std::cout << "  Active CPU ticks : " << activeCpuTicks.load() << "\n";
+    std::cout << "  Total CPU ticks  : " << totalCpuTicks.load() << "\n";
+    std::cout << "  Num paged in     : " << mem.getPageIns() << "\n";
+    std::cout << "  Num paged out    : " << mem.getPageOuts() << "\n";
 }
