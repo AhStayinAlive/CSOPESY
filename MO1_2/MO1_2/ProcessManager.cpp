@@ -16,6 +16,7 @@
 #include "config.h"
 #include "ReadInstruction.h"
 #include "WriteInstruction.h"
+#include <iostream>
 
 static std::vector<std::shared_ptr<Process>> allProcesses;
 static std::unordered_map<std::string, std::shared_ptr<Process>> processMap;
@@ -282,23 +283,63 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
         else if (cmd == "WRITE") {
             std::string hexAddr, varName;
             ss >> hexAddr >> varName;
-            int address = std::stoi(hexAddr, nullptr, 16);
+
+            // Improved hex parsing
+            int address;
+            try {
+                // Handle both 0x and 0X prefixes, and plain hex
+                if (hexAddr.substr(0, 2) == "0x" || hexAddr.substr(0, 2) == "0X") {
+                    address = std::stoi(hexAddr, nullptr, 16);
+                }
+                else {
+                    // Try hex first, then decimal as fallback
+                    try {
+                        address = std::stoi(hexAddr, nullptr, 16);
+                    }
+                    catch (...) {
+                        address = std::stoi(hexAddr, nullptr, 10);
+                    }
+                }
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error parsing address '" << hexAddr << "': " << e.what() << std::endl;
+                address = 0; // Default to 0 on parse error
+            }
+
             proc->instructions.push_back(std::make_shared<WriteInstruction>(address, varName));
         }
-        else if (cmd == "READ") {  
+        else if (cmd == "READ") {
             std::string varName, hexAddr;
             ss >> varName >> hexAddr;
-            int address = std::stoi(hexAddr, nullptr, 16);
+
+            // Improved hex parsing
+            int address;
+            try {
+                // Handle both 0x and 0X prefixes, and plain hex
+                if (hexAddr.substr(0, 2) == "0x" || hexAddr.substr(0, 2) == "0X") {
+                    address = std::stoi(hexAddr, nullptr, 16);
+                }
+                else {
+                    // Try hex first, then decimal as fallback
+                    try {
+                        address = std::stoi(hexAddr, nullptr, 16);
+                    }
+                    catch (...) {
+                        address = std::stoi(hexAddr, nullptr, 10);
+                    }
+                }
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error parsing address '" << hexAddr << "': " << e.what() << std::endl;
+                address = 0; // Default to 0 on parse error
+            }
+
             proc->instructions.push_back(std::make_shared<ReadInstruction>(varName, address));
         }
-        
         else if (cmd == "PRINT") {
             std::string message;
             std::getline(ss, message);
-
             message.erase(0, message.find_first_not_of(" \t"));
-
-
             proc->instructions.push_back(std::make_shared<UserPrintInstruction>(message));
         }
     }

@@ -3,37 +3,51 @@
 #include "utils.h"
 #include "MemoryManager.h"
 #include <sstream>
+#include <iomanip>
 
 WriteInstruction::WriteInstruction(int addr, const std::string& varName, const std::string& logPrefix)
     : address(addr), variableName(varName), logPrefix(logPrefix) {
 }
 
 void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Use variable table
-    int varAddr;
+    // Validate address bounds
+    if (address < 0 || address >= proc->virtualMemoryLimit) {
+        std::ostringstream oss;
+        oss << "Memory access violation: WRITE at address 0x" << std::hex << std::uppercase << address
+            << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+        throw std::runtime_error(oss.str());
+    }
 
+    uint16_t value = 0;
+
+    // Get value from variable table
     if (proc->variableTable.count(variableName)) {
-        varAddr = proc->variableTable[variableName];
+        int varAddr = proc->variableTable[variableName];
+
+        // Read 16-bit value from variable's memory location
+        uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
+        uint8_t highByte = 0;
+        if (varAddr + 1 < proc->virtualMemoryLimit) {
+            highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
+        }
+        value = lowByte | (static_cast<uint16_t>(highByte) << 8);
+    }
+    // Fallback to legacy memory map
+    else if (proc->memory.count(variableName)) {
+        value = proc->memory[variableName];
     }
     else {
-        throw std::runtime_error("Variable " + variableName + " not found");
+        throw std::runtime_error("WRITE: Variable '" + variableName + "' not found");
     }
 
-    // Read 16-bit value
-    uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
-    uint8_t highByte = 0;
-    if (varAddr + 1 < proc->virtualMemoryLimit) {
-        highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
-    }
-    uint16_t value = lowByte | (static_cast<uint16_t>(highByte) << 8);
+    // Clamp value to uint16 range
+    if (value > 65535) value = 65535;
 
-    // Validate address is within bounds
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Write address " + std::to_string(address) + " out of bounds");
-    }
-
-    // Write to specified address (just the low byte for now, can be expanded)
+    // Write 16-bit value to specified memory address (as 2 bytes)
     MemoryManager::getInstance().write(proc, address, static_cast<uint8_t>(value & 0xFF));
+    if (address + 1 < proc->virtualMemoryLimit) {
+        MemoryManager::getInstance().write(proc, address + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
+    }
 
     std::ostringstream logEntry;
     if (!logPrefix.empty()) {
@@ -41,13 +55,15 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             << "Core " << coreId
             << " | PID " << proc->pid
             << " | " << logPrefix
-            << " | WRITE: " << value << " to 0x" << std::hex << address;
+            << " | WRITE: " << value
+            << " to 0x" << std::hex << std::uppercase << address;
     }
     else {
         logEntry << "[" << getCurrentTimestamp() << "] "
             << "Core " << coreId
             << " | PID " << proc->pid
-            << " | WRITE: " << value << " to 0x" << std::hex << address;
+            << " | WRITE: " << value
+            << " to 0x" << std::hex << std::uppercase << address;
     }
 
     proc->logs.push_back(logEntry.str());

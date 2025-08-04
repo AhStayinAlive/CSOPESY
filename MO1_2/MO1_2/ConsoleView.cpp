@@ -111,7 +111,11 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
 
     std::cout << "\nStatus: ";
     if (proc->isFinished) {
-        if (*proc->completedInstructions == static_cast<int>(proc->instructions.size())) {
+        if (proc->hasMemoryViolation) {
+            std::cout << "[ERROR] Memory access violation at address " << proc->memoryViolationAddress << ".\n";
+            std::cout << "Process terminated due to invalid memory access.\n";
+        }
+        else if (*proc->completedInstructions == static_cast<int>(proc->instructions.size())) {
             std::cout << "[OK] Finished successfully.\n";
             std::cout << "Finished!\n";
         }

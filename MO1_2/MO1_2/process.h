@@ -27,6 +27,9 @@ struct Process {
     bool isRunning = false;
     bool isFinished = false;
     bool isDetached = false;
+    bool hasMemoryViolation = false;
+    std::string memoryViolationAddress = "";
+    std::string memoryViolationError = "";
 
     std::unordered_map<std::string, int> variableTable;
     int nextFreeAddress = 0;

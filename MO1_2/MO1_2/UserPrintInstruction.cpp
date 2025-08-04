@@ -13,13 +13,27 @@ UserPrintInstruction::UserPrintInstruction(const std::string& msg, const std::st
 void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
 
-    // Handle "text" + variable pattern
+    // Trim whitespace from message
+    output.erase(0, output.find_first_not_of(" \t"));
+    output.erase(output.find_last_not_of(" \t") + 1);
+
+    // Remove quotes if present
+    while (!output.empty() && (output.front() == '"' || output.front() == '\'')) {
+        output = output.substr(1);
+    }
+    while (!output.empty() && (output.back() == '"' || output.back() == '\'')) {
+        output = output.substr(0, output.length() - 1);
+    }
+
+    // Check if this is a variable name (no spaces, no special chars except +)
     size_t plusPos = output.find(" + ");
+
     if (plusPos != std::string::npos) {
+        // Handle "text" + variable pattern
         std::string textPart = output.substr(0, plusPos);
         std::string varPart = output.substr(plusPos + 3);
 
-        // Remove any quotes from textPart - handle both single and double quotes
+        // Remove any quotes from textPart
         while (!textPart.empty() && (textPart.front() == '"' || textPart.front() == '\'')) {
             textPart = textPart.substr(1);
         }
@@ -33,30 +47,30 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
         if (proc->variableTable.count(varPart)) {
             int varAddr = proc->variableTable[varPart];
-
-            // Read 16-bit value (stored as two bytes)
             uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
             uint8_t highByte = 0;
             if (varAddr + 1 < proc->virtualMemoryLimit) {
                 highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
             }
             uint16_t varValue = lowByte | (static_cast<uint16_t>(highByte) << 8);
-
             output = textPart + std::to_string(varValue);
         }
         else {
             output = textPart + "[VAR_NOT_FOUND: " + varPart + "]";
         }
     }
-    else {
-        // No variable concatenation, just remove quotes if present
-        while (!output.empty() && (output.front() == '"' || output.front() == '\'')) {
-            output = output.substr(1);
+    else if (proc->variableTable.count(output)) {
+        // This is a single variable name - print its value
+        int varAddr = proc->variableTable[output];
+        uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
+        uint8_t highByte = 0;
+        if (varAddr + 1 < proc->virtualMemoryLimit) {
+            highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
         }
-        while (!output.empty() && (output.back() == '"' || output.back() == '\'')) {
-            output = output.substr(0, output.length() - 1);
-        }
+        uint16_t varValue = lowByte | (static_cast<uint16_t>(highByte) << 8);
+        output = std::to_string(varValue);
     }
+    // else: treat as literal text
 
     std::ostringstream logEntry;
     if (!logPrefix.empty()) {

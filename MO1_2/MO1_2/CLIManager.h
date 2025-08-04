@@ -9,7 +9,7 @@ public:
     void run();
     void stopScheduler();
     void showHelp() const;
-
+    void printSystemProcessSMI();
 private:
     void handleCommand(const std::string& input);
     std::vector<std::string> tokenize(const std::string& input) const;

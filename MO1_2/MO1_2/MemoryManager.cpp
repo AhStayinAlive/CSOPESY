@@ -41,8 +41,16 @@ void MemoryManager::initialize() {
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
     if (address < 0 || address >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Memory access violation: address " + std::to_string(address) +
-            " out of bounds [0, " + std::to_string(proc->virtualMemoryLimit) + "]");
+        std::ostringstream oss;
+        oss << "Memory access violation: address ";
+        if (address >= 0) {
+            oss << "0x" << std::hex << std::uppercase << address;
+        }
+        else {
+            oss << address;
+        }
+        oss << " out of bounds [0, " << (proc->virtualMemoryLimit - 1) << "]";
+        throw std::runtime_error(oss.str());
     }
 
     int pageNum = address / pageSize;
@@ -50,7 +58,10 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
     int frameIdx = getFrame(proc, pageNum);
 
     if (frameIdx == INVALID_FRAME) {
-        throw std::runtime_error("Failed to load page " + std::to_string(pageNum) + " for process " + std::to_string(proc->pid));
+        std::ostringstream oss;
+        oss << "Memory access violation: failed to load page " << pageNum
+            << " for address 0x" << std::hex << std::uppercase << address;
+        throw std::runtime_error(oss.str());
     }
 
     return frames[frameIdx].data[offset];
@@ -58,8 +69,16 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
 
 void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t value) {
     if (address < 0 || address >= proc->virtualMemoryLimit) {
-        throw std::runtime_error("Memory access violation: address " + std::to_string(address) +
-            " out of bounds [0, " + std::to_string(proc->virtualMemoryLimit) + "]");
+        std::ostringstream oss;
+        oss << "Memory access violation: address ";
+        if (address >= 0) {
+            oss << "0x" << std::hex << std::uppercase << address;
+        }
+        else {
+            oss << address;
+        }
+        oss << " out of bounds [0, " << (proc->virtualMemoryLimit - 1) << "]";
+        throw std::runtime_error(oss.str());
     }
 
     int pageNum = address / pageSize;
@@ -67,13 +86,15 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
     int frameIdx = getFrame(proc, pageNum);
 
     if (frameIdx == INVALID_FRAME) {
-        throw std::runtime_error("Failed to load page " + std::to_string(pageNum) + " for process " + std::to_string(proc->pid));
+        std::ostringstream oss;
+        oss << "Memory access violation: failed to load page " << pageNum
+            << " for address 0x" << std::hex << std::uppercase << address;
+        throw std::runtime_error(oss.str());
     }
 
     frames[frameIdx].data[offset] = value;
     proc->pageTable[pageNum].dirty = true;
 }
-
 int MemoryManager::getFrame(std::shared_ptr<Process> proc, int virtualPage) {
     auto it = proc->pageTable.find(virtualPage);
     if (it != proc->pageTable.end() && it->second.valid) {

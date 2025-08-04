@@ -59,16 +59,66 @@ bool executeSingleInstruction(std::shared_ptr<Process> proc, std::shared_ptr<Ins
     try {
         instruction->execute(proc, coreId);
         (*proc->completedInstructions)++;
-
-        // Don't duplicate logging here since each instruction already logs itself
-        // This was causing the "Executed unknown instruction type" messages
         return true;
-
     }
     catch (const std::exception& e) {
-        std::string errorMsg = "Error executing instruction: " + std::string(e.what());
-        logToFile(proc->name, errorMsg, proc->coreAssigned);
+        std::string errorMsg = std::string(e.what());
+
+        // **NEW: Check if this is a memory access violation**
+        if (errorMsg.find("Memory access violation") != std::string::npos ||
+            errorMsg.find("out of bounds") != std::string::npos) {
+
+            proc->hasMemoryViolation = true;
+
+            // Extract address from error message
+            // Look for patterns like "address 0x500" or "address 1280"
+            size_t addrPos = errorMsg.find("address ");
+            if (addrPos != std::string::npos) {
+                size_t start = addrPos + 8; // Skip "address "
+                size_t end = errorMsg.find(" ", start);
+                if (end == std::string::npos) {
+                    end = errorMsg.find("]", start);
+                }
+                if (end != std::string::npos) {
+                    proc->memoryViolationAddress = errorMsg.substr(start, end - start);
+                }
+                else {
+                    proc->memoryViolationAddress = errorMsg.substr(start);
+                }
+            }
+
+            proc->memoryViolationError = errorMsg;
+
+            std::string violationLog = "Memory access violation at address " +
+                proc->memoryViolationAddress + ": " + errorMsg;
+            proc->logs.push_back(violationLog);
+            logToFile(proc->name, violationLog, coreId);
+        }
+        else {
+            // Regular error handling
+            std::string regularErrorMsg = "Error executing instruction: " + errorMsg;
+            proc->logs.push_back(regularErrorMsg);
+            logToFile(proc->name, regularErrorMsg, coreId);
+        }
+
+        // Mark process as finished due to error
+        proc->isFinished = true;
+        proc->isRunning = false;
+        proc->endTime = getCurrentTimestamp();
+
+        std::cerr << "Process " << proc->name << " encountered error: " << errorMsg << std::endl;
+        return false;
+    }
+    catch (...) {
+        std::string errorMsg = "Unknown error executing instruction";
         proc->logs.push_back(errorMsg);
+        logToFile(proc->name, errorMsg, coreId);
+
+        proc->isFinished = true;
+        proc->isRunning = false;
+        proc->endTime = getCurrentTimestamp();
+
+        std::cerr << "Process " << proc->name << " encountered unknown error" << std::endl;
         return false;
     }
 }
@@ -128,6 +178,7 @@ void executeInstructions(std::shared_ptr<Process>& proc, int coreId, int delayMs
     proc->isRunning = false;
     *coreAvailable[coreId] = true;
 }
+
 void cpuWorker(int coreId, int delayMs) {
     while (!shouldStop.load()) {
         std::shared_ptr<Process> proc;
