@@ -1,8 +1,8 @@
-MEMBERS:
-Hanna delos Santos
-Joseph Dean T. Enriquez
-Shanette Giane G. Presas
-Jersey Jaclyn K. To
+## MEMBERS:
+- Hanna delos Santos
+- Joseph Dean T. Enriquez
+- Shanette Giane G. Presas
+- Jersey Jaclyn K. To
 
 REQUIREMENTS:
 C++17 compatible compiler (MSVC, GCC, or Clang)
