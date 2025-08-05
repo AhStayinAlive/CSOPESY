@@ -34,4 +34,5 @@
 6. Press Ctrl+F5 (or Debug → Start Without Debugging) to run the emulator.
 
 ## Github Link
-https://github.com/AhStayinAlive/CSOPESY/tree/hanna2
+- the final version is in the branch: hanna2
+- https://github.com/AhStayinAlive/CSOPESY/tree/hanna2
