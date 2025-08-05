@@ -21,11 +21,11 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         output.replace(pos, 2, "\\");
     }
 
-    // Trim whitespace from message
+    
     output.erase(0, output.find_first_not_of(" \t"));
     output.erase(output.find_last_not_of(" \t") + 1);
 
-    // Remove quotes if present
+    // Remove quotes
     while (!output.empty() && (output.front() == '"' || output.front() == '\'')) {
         output = output.substr(1);
     }
@@ -33,15 +33,14 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         output = output.substr(0, output.length() - 1);
     }
 
-    // Check if this is a variable name (no spaces, no special chars except +)
+    
     size_t plusPos = output.find(" + ");
 
     if (plusPos != std::string::npos) {
-        // Handle "text" + variable pattern
+    
         std::string textPart = output.substr(0, plusPos);
         std::string varPart = output.substr(plusPos + 3);
 
-        // Remove any quotes from textPart
         while (!textPart.empty() && (textPart.front() == '"' || textPart.front() == '\'')) {
             textPart = textPart.substr(1);
         }
@@ -49,7 +48,6 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             textPart = textPart.substr(0, textPart.length() - 1);
         }
 
-        // Trim whitespace from variable name
         varPart.erase(0, varPart.find_first_not_of(" \t"));
         varPart.erase(varPart.find_last_not_of(" \t") + 1);
 
@@ -68,7 +66,7 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         }
     }
     else if (proc->variableTable.count(output)) {
-        // This is a single variable name - print its value
+        
         int varAddr = proc->variableTable[output];
         uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
         uint8_t highByte = 0;
@@ -78,7 +76,7 @@ void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         uint16_t varValue = lowByte | (static_cast<uint16_t>(highByte) << 8);
         output = std::to_string(varValue);
     }
-    // else: treat as literal text
+   
 
     std::ostringstream logEntry;
     if (!logPrefix.empty()) {
