@@ -12,7 +12,6 @@ AddInstruction::AddInstruction(const std::string& result, const std::string& lhs
 }
 
 void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // ✅ Fix hash calculation to be safe for 16-bit access
     int maxSafeAddress = std::max(1, proc->virtualMemoryLimit - static_cast<int>(sizeof(uint16_t)));
     int addr1 = std::hash<std::string>{}(arg1) % maxSafeAddress;
     int addr2 = std::hash<std::string>{}(arg2) % maxSafeAddress;
@@ -47,4 +46,5 @@ void AddInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     proc->logs.push_back(finalLog);
     logToFile(proc->name, finalLog, proc->coreAssigned);
 }
+
 
