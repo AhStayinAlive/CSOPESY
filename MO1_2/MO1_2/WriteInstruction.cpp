@@ -19,7 +19,6 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
     uint16_t value = 0;
 
-    // FIXED: Look in both variableTable and legacy memory, prioritizing the most recent
     if (proc->variableTable.count(variableName)) {
         int varAddr = proc->variableTable[variableName];
         uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
@@ -36,10 +35,8 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
         throw std::runtime_error("WRITE: Variable '" + variableName + "' not found");
     }
 
-    // Clamp value to uint16 range
     if (value > 65535) value = 65535;
 
-    // Write 16-bit value to specified memory address (as 2 bytes)
     MemoryManager::getInstance().write(proc, address, static_cast<uint8_t>(value & 0xFF));
     if (address + 1 < proc->virtualMemoryLimit) {
         MemoryManager::getInstance().write(proc, address + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
