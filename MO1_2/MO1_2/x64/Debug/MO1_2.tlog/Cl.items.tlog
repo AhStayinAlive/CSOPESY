@@ -1,19 +1,19 @@
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\AddInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\AddInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\CLIManager.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\CLIManager.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\config.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\config.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\ConsoleView.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\ConsoleView.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\DeclareInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\DeclareInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\ForInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\ForInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\main.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\main.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\MemoryManager.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\MemoryManager.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\PrintInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\PrintInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\process.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\process.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\ProcessManager.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\ProcessManager.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\ReadInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\ReadInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\scheduler.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\scheduler.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\SleepInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\SleepInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\SubtractInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\SubtractInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\UserAddInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\UserAddInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\UserPrintInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\UserPrintInstruction.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\utils.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\utils.obj
-C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\WriteInstruction.cpp;C:\Users\Jersey\Downloads\Y3\TERM 3\CSOPESY\MO2-seph\CSOPESY\MO1_2\MO1_2\x64\Debug\WriteInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\AddInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\AddInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\CLIManager.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\CLIManager.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\config.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\config.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\ConsoleView.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\ConsoleView.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\DeclareInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\DeclareInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\ForInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\ForInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\main.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\main.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\MemoryManager.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\MemoryManager.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\PrintInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\PrintInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\process.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\process.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\ProcessManager.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\ProcessManager.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\ReadInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\ReadInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\scheduler.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\scheduler.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\SleepInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\SleepInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\SubtractInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\SubtractInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\UserAddInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\UserAddInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\UserPrintInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\UserPrintInstruction.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\utils.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\utils.obj
+C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\WriteInstruction.cpp;C:\Users\stayi\OneDrive\Documents\GitHub\CSOPESY\MO1_2\MO1_2\x64\Debug\WriteInstruction.obj
