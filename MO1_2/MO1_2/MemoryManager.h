@@ -39,7 +39,7 @@ public:
     int getTotalFrames() const { return totalFrames; }
     int getUsedFrames() const;
     void printMemoryStatus() const;
-
+    int getPageSize() const { return pageSize; }
 private:
     MemoryManager();
 

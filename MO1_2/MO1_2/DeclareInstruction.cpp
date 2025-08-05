@@ -1,4 +1,4 @@
-#include "DeclareInstruction.h"
+﻿#include "DeclareInstruction.h"
 #include "MemoryManager.h"
 #include "process.h"
 #include "utils.h"
@@ -17,11 +17,17 @@ DeclareInstruction::DeclareInstruction(
 void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     proc->memory[variableName] = value;
 
-    int address = MemoryManager::getInstance().allocateVariable(proc, variableName);
-    MemoryManager::getInstance().write(proc, address, value);
+    // ✅ Use safe hash calculation for consistency
+    int maxSafeAddress = std::max(1, proc->virtualMemoryLimit - static_cast<int>(sizeof(uint16_t)));
+    int address = std::hash<std::string>{}(variableName) % maxSafeAddress;
+
+    // Write 16-bit value as two bytes
+    MemoryManager::getInstance().write(proc, address, static_cast<uint8_t>(value & 0xFF));
+    if (address + 1 < proc->virtualMemoryLimit) {
+        MemoryManager::getInstance().write(proc, address + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
+    }
 
     std::ostringstream logEntry;
-
     if (logPrefix != "") {
         logEntry << "[" << getCurrentTimestamp() << "] "
             << "Core " << coreId
@@ -35,10 +41,6 @@ void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             << " | PID " << proc->pid
             << " | DECLARE: " << variableName << " = " << value;
     }
-
-    
-
-    
 
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), proc->coreAssigned);

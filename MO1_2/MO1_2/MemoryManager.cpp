@@ -1,5 +1,4 @@
-﻿// MemoryManager.cpp - Improved Implementation
-#include "MemoryManager.h"
+﻿#include "MemoryManager.h"
 #include "ProcessManager.h"
 #include "config.h"
 #include "utils.h"
@@ -34,9 +33,6 @@ void MemoryManager::initialize() {
     std::ofstream backingStore("csopesy-backing-store.txt", std::ios::trunc);
     backingStore << "# CSOPESY Backing Store - Format: PID PAGE_NUM DATA_BYTES\n";
     backingStore.close();
-
-    /*std::cout << "[MEMORY] Initialized " << totalFrames << " frames of " << pageSize << " bytes each\n";
-    std::cout << "[MEMORY] Total physical memory: " << config.maxOverallMem << " bytes\n";*/
 }
 
 uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
@@ -44,36 +40,16 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    //// ✅ FIXED: Dynamically expand virtual memory if needed
-    //if (address >= proc->virtualMemoryLimit) {
-    //    // Expand virtual memory in reasonable chunks
-    //    int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
-    //    proc->virtualMemoryLimit = newLimit;
-
-    //    std::ostringstream log;
-    //    log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-    //        << std::hex << std::uppercase << address;
-    //    proc->logs.push_back(log.str());
-    //}
-
-    // ✅ ENHANCED: Dynamically expand virtual memory ONLY for screen -c processes
+    // ✅ FIXED: Dynamic virtual memory expansion
     if (address >= proc->virtualMemoryLimit) {
-        if (proc->allowMemoryExpansion) {
-            // Calculate new virtual memory size to accommodate the address + some buffer
-            int newLimit = ((address / pageSize) + 1) * pageSize;
-            proc->virtualMemoryLimit = newLimit;
+        // Expand virtual memory to accommodate the address
+        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        proc->virtualMemoryLimit = newLimit;
 
-            std::ostringstream log;
-            log << "[MEMORY] Expanded virtual memory limit to " << newLimit
-                << " bytes to access address 0x" << std::hex << std::uppercase << address;
-            proc->logs.push_back(log.str());
-        }
-        else {
-            std::ostringstream oss;
-            oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
-                << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
-            throw std::runtime_error(oss.str());
-        }
+        std::ostringstream log;
+        log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+            << " bytes to access address 0x" << std::hex << std::uppercase << address;
+        proc->logs.push_back(log.str());
     }
 
     int pageNum = address / pageSize;
@@ -95,36 +71,16 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    //// ✅ FIXED: Dynamically expand virtual memory if needed
-    //if (address >= proc->virtualMemoryLimit) {
-    //    // Expand virtual memory in reasonable chunks
-    //    int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
-    //    proc->virtualMemoryLimit = newLimit;
-
-    //    std::ostringstream log;
-    //    log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-    //        << std::hex << std::uppercase << address;
-    //    proc->logs.push_back(log.str());
-    //}
-
-    // ✅ ENHANCED: Dynamically expand virtual memory ONLY for screen -c processes
+    // ✅ FIXED: Dynamic virtual memory expansion
     if (address >= proc->virtualMemoryLimit) {
-        if (proc->allowMemoryExpansion) {
-            // Calculate new virtual memory size to accommodate the address + some buffer
-            int newLimit = ((address / pageSize) + 1) * pageSize;
-            proc->virtualMemoryLimit = newLimit;
+        // Expand virtual memory to accommodate the address
+        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+        proc->virtualMemoryLimit = newLimit;
 
-            std::ostringstream log;
-            log << "[MEMORY] Expanded virtual memory limit to " << newLimit
-                << " bytes to access address 0x" << std::hex << std::uppercase << address;
-            proc->logs.push_back(log.str());
-        }
-        else {
-            std::ostringstream oss;
-            oss << "Memory access violation: WRITE at address 0x" << std::hex << std::uppercase << address
-                << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
-            throw std::runtime_error(oss.str());
-        }
+        std::ostringstream log;
+        log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+            << " bytes to access address 0x" << std::hex << std::uppercase << address;
+        proc->logs.push_back(log.str());
     }
 
     int pageNum = address / pageSize;
@@ -141,6 +97,8 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
     frames[frameIdx].data[offset] = value;
     proc->pageTable[pageNum].dirty = true;
 }
+
+// ✅ CRITICAL: This function was missing - here's the implementation
 int MemoryManager::getFrame(std::shared_ptr<Process> proc, int virtualPage) {
     auto it = proc->pageTable.find(virtualPage);
     if (it != proc->pageTable.end() && it->second.valid) {
@@ -186,10 +144,6 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
     proc->pageTable[virtualPage] = { freeFrame, true, false, 0 };
     fifoQueue.push_back(freeFrame);
 
-    std::ostringstream ss;
-    //ss << "[MEMORY] Loaded page " << virtualPage << " of PID " << proc->pid << " into frame " << freeFrame;
-    proc->logs.push_back(ss.str());
-
     return freeFrame;
 }
 
@@ -227,10 +181,6 @@ void MemoryManager::evictPage() {
         // Write dirty page to backing store
         writeToBackingStore(pid, pageNum, frames[victim].data);
         pageOuts++;
-
-        std::ostringstream ss;
-        //ss << "[MEMORY] Evicted dirty page " << pageNum << " of PID " << pid << " from frame " << victim;
-        proc->logs.push_back(ss.str());
     }
 
     // Update page table if process still exists
@@ -342,26 +292,30 @@ bool MemoryManager::isFrameOccupied(int index) const {
     return false;
 }
 
-
 int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::string& varName) {
     // Check if variable already exists
     if (proc->variableTable.count(varName)) {
         return proc->variableTable[varName];
     }
 
-    // ✅ FIXED: Remove the artificial virtual memory limit check
-    // Let the paging system handle memory management instead
+    // ✅ OPTION 2: Dynamically expand virtual memory limit if needed
+    if (proc->nextFreeAddress >= proc->virtualMemoryLimit) {
+        // Expand virtual memory in chunks (e.g., double it)
+        proc->virtualMemoryLimit *= 2;
+        
+        std::ostringstream log;
+        log << "Expanded virtual memory limit to " << proc->virtualMemoryLimit << " bytes";
+        proc->logs.push_back(log.str());
+    }
 
     int address = proc->nextFreeAddress;
     proc->variableTable[varName] = address;
-    proc->nextFreeAddress += sizeof(uint16_t); // Allocate space for a 16-bit value
+    proc->nextFreeAddress += sizeof(uint16_t);
 
     return address;
 }
 
 void MemoryManager::freeProcessMemory(int pid) {
-    //std::cout << "[MEMORY] Freeing memory for process PID " << pid << "\n";
-
     // Free all frames used by this process
     int freedFrames = 0;
     for (int i = 0; i < totalFrames; ++i) {
@@ -384,8 +338,6 @@ void MemoryManager::freeProcessMemory(int pid) {
 
     // Clean up backing store entries for this process
     cleanupBackingStore(pid);
-
-    //std::cout << "[MEMORY] Freed " << freedFrames << " frames for PID " << pid << "\n";
 }
 
 void MemoryManager::cleanupBackingStore(int pid) {
@@ -426,10 +378,6 @@ void MemoryManager::cleanupBackingStore(int pid) {
         outFile << l << "\n";
     }
     outFile.close();
-
-    if (removedEntries > 0) {
-        //std::cout << "[MEMORY] Cleaned up " << removedEntries << " backing store entries for PID " << pid << "\n";
-    }
 }
 
 int MemoryManager::getUsedFrames() const {

@@ -207,10 +207,39 @@ void cpuWorker(int coreId, int delayMs) {
             proc = readyQueue.front();
             readyQueue.pop();
 
-            if (!MemoryManager::getInstance().hasFreeFrame() && proc->pageTable.empty()) {
-                // Defer process — not enough memory and no pages are loaded yet
-                readyQueue.push(proc);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            // ✅ FIXED: Comprehensive memory availability check
+            auto& memManager = MemoryManager::getInstance();
+            int pageSize = memManager.getPageSize();
+            int totalFrames = memManager.getTotalFrames();
+            int usedFrames = memManager.getUsedFrames();
+            int availableFrames = totalFrames - usedFrames;
+
+            // Calculate frames needed for this process
+            int framesNeeded = (proc->virtualMemoryLimit + pageSize - 1) / pageSize;
+
+            // Count how many frames this process already has loaded
+            int processFramesInMemory = 0;
+            for (const auto& [vpn, entry] : proc->pageTable) {
+                if (entry.valid) {
+                    processFramesInMemory++;
+                }
+            }
+
+            // Calculate additional frames needed
+            int additionalFramesNeeded = framesNeeded - processFramesInMemory;
+
+            // ✅ KEY FIX: Check if there are enough frames for this process to run
+            if (additionalFramesNeeded > 0 && availableFrames < additionalFramesNeeded) {
+                // Not enough memory - defer this process
+                readyQueue.push(proc);  // Put it back in queue
+
+                // Add idle time since this core can't run the process
+                idleCpuTicks++;
+                totalCpuTicks++;
+
+                // Sleep briefly to avoid busy waiting
+                lock.unlock();
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 continue;
             }
 
@@ -228,7 +257,6 @@ void cpuWorker(int coreId, int delayMs) {
         executeInstructions(proc, coreId, delayMs);
     }
 }
-
 void updateCpuUtilization() {
     auto now = std::chrono::steady_clock::now();
 
