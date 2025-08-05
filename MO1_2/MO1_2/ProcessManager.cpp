@@ -35,7 +35,7 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
     proc->virtualMemoryLimit = memoryLimit;
-    proc->allowMemoryExpansion = false;  // Regular processes cannot expand memory
+    proc->allowMemoryExpansion = false; 
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -270,11 +270,9 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
     proc->allowMemoryExpansion = true;  // Mark as screen -c process
     proc->totalInstructions = instructions.size();
 
-    // Parse instructions 
-    // Parse instructions 
     for (const auto& instrStr : instructions) {
         std::string trimmed = instrStr;
-        // Remove leading/trailing whitespace
+        
         trimmed.erase(0, trimmed.find_first_not_of(" \t"));
         trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
 
@@ -282,7 +280,7 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
         std::string cmd;
         ss >> cmd;
 
-        // Convert to uppercase 
+        
         std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
 
         if (cmd == "DECLARE") {
@@ -347,7 +345,7 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
             proc->instructions.push_back(std::make_shared<ReadInstruction>(varName, address));
         }
         else if (trimmed.find("PRINT(") == 0) {
-            // Handle PRINT("message" + variable) format
+            
             size_t openParen = trimmed.find('(');
             size_t closeParen = trimmed.rfind(')');
 
@@ -360,4 +358,5 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
 
     return proc;
 }
+
 
