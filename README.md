@@ -4,7 +4,6 @@ Joseph Dean T. Enriquez
 Shanette Giane G. Presas
 Jersey Jaclyn K. To
 
-
 REQUIREMENTS:
 C++17 compatible compiler (MSVC, GCC, or Clang)
 Windows or Linux terminal (uses console output for interaction)
@@ -16,12 +15,15 @@ HOW TO RUN:
 3. Input command "initialize" to initialize the emulator.
 4. Input command "scheduler-start" or "scheduler-test" to start the scheduler.
 5. Input command "screen -ls" to view a list of all running as well as queued and finished processes.
-6. Input command "screen -s <process_name>" to create a new process. 
+6. Input command "screen -s <process_name> <process_memory_size>" to create a new process. 
 7. Input command "screen -r <process_name>" to view logs of running process.
-8. Input command "process-smi" to print simple information about the process.
-9. Input command "report-util" to save the log of a process in a text file.
-10. Input command "scheduler-stop" to stop the scheduler.
-11. Input command "exit" to exit the program.
+8. Input command "screen -c <process_name> <process_memory_size> '<instructions>' " to create a process with user-defined instructions.
+9. Input command "process-smi <process_name>" to print simple information about the process.
+10. Input command "process-smi" to print a high-level overview of available/used memory.
+11. Input command "vmstat" to print fine-grained memory details.
+12. Input command "report-util" to save the log of a process in a text file.
+13. Input command "scheduler-stop" to stop the scheduler.
+14. Input command "exit" to exit the program.
 
 How to Open and Build in Visual Studio
 1. Open Visual Studio 2022 (or any modern version).
