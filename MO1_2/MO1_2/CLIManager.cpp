@@ -56,7 +56,6 @@
 #define BG_BRIGHT_CYAN "\033[106m"
 #define BG_BRIGHT_WHITE "\033[107m"
 
-// Custom cream/beige color (closest approximation)
 #define CREAM "\033[38;5;230m"  // Light cream color
 
 CLIManager::CLIManager() : schedulerThread(), generating(false) {}
@@ -161,14 +160,13 @@ void CLIManager::handleCommand(const std::string& input) {
         try {
             requestedMem = std::stoi(tokens[3]);
 
-            // Validate memory size: must be power of 2 between 64 and 65536
+            // Validate memory size
             if (requestedMem < 64 || requestedMem > 65536) {
                 std::cout << BRIGHT_RED << "Error: Memory size must be between 64 and 65536 bytes.\n";
                 std::cout << "invalid memory allocation\n" << RESET;
                 return;
             }
 
-            // Check if it's a power of 2
             if ((requestedMem & (requestedMem - 1)) != 0) {
                 std::cout << BRIGHT_RED << "Error: Memory size must be a power of 2.\n";
                 std::cout << BRIGHT_YELLOW << "Valid sizes: 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536\n";
@@ -215,7 +213,7 @@ void CLIManager::handleCommand(const std::string& input) {
         }
     }
 
-    // New screen -c command for user-defined instructions
+    // New screen -c command
     else if (cmd == "screen" && tokens.size() >= 4 && tokens[1] == "-c") {
         std::string name = tokens[2];
         int requestedMem = 0;
@@ -224,41 +222,37 @@ void CLIManager::handleCommand(const std::string& input) {
         // Check if memory size is provided or if we should use default
         bool hasMemorySize = true;
         try {
-            // Try to parse the 4th token as memory size
             requestedMem = std::stoi(tokens[3]);
 
-            // Validate memory size: must be power of 2 between 64 and 65536
+            // Validate memory size
             if (requestedMem < 64 || requestedMem > 65536) {
                 std::cout << BRIGHT_RED << "invalid command\n" << RESET;
                 return;
             }
 
-            // Check if it's a power of 2
             if ((requestedMem & (requestedMem - 1)) != 0) {
                 std::cout << BRIGHT_RED << "invalid command\n" << RESET;
                 return;
             }
         }
         catch (...) {
-            // Failed to parse as number, assume no memory size provided
+            // Failed to parse as number
             hasMemorySize = false;
             requestedMem = Config::getInstance().maxMemPerProc;
             instructionStartIndex = 3; // Instructions start at 4th token instead
         }
 
-        // Get instructions string (everything after the appropriate token)
+        // Get instructions string
         std::string instructionsStr;
         for (size_t i = instructionStartIndex; i < tokens.size(); ++i) {
             if (i > instructionStartIndex) instructionsStr += " ";
             instructionsStr += tokens[i];
         }
 
-        // Remove outer quotes if present
         if (instructionsStr.length() >= 2 && instructionsStr.front() == '"' && instructionsStr.back() == '"') {
             instructionsStr = instructionsStr.substr(1, instructionsStr.length() - 2);
         }
 
-        // Split by semicolon
         std::vector<std::string> instructions;
         std::stringstream ss(instructionsStr);
         std::string instruction;
@@ -515,68 +509,6 @@ void CLIManager::showProcessList() const {
         }
     }
 }
-////void CLIManager::printVMStat() {
-//    auto& config = Config::getInstance();
-//    auto& mem = MemoryManager::getInstance();
-//
-//    int totalMem = config.maxOverallMem;
-//    int frameSize = config.memPerFrame;
-//    int totalFrames = totalMem / frameSize;
-//    int usedFrames = mem.getUsedFrames();
-//
-//    int usedMem = usedFrames * frameSize;
-//    int freeMem = totalMem - usedMem;
-//    double memUtilization = totalFrames > 0 ? (static_cast<double>(usedFrames) / totalFrames * 100.0) : 0.0;
-//
-//    std::cout << "=== VIRTUAL MEMORY STATISTICS ===\n";
-//    std::cout << "Physical Memory:\n";
-//    std::cout << "  Total memory        : " << totalMem << " KB\n";
-//    std::cout << "  Used memory         : " << usedMem << " KB (" << std::fixed << std::setprecision(1) << memUtilization << "%)\n";
-//    std::cout << "  Free memory         : " << freeMem << " KB\n";
-//    std::cout << "  Frame size          : " << frameSize << " KB\n";
-//    std::cout << "  Total frames        : " << totalFrames << "\n";
-//    std::cout << "  Used frames         : " << usedFrames << "\n";
-//    std::cout << "  Available frames    : " << (totalFrames - usedFrames) << "\n\n";
-//
-//    std::cout << "Paging Statistics:\n";
-//    std::cout << "  Pages loaded (page-ins)  : " << mem.getPageIns() << "\n";
-//    std::cout << "  Pages evicted (page-outs): " << mem.getPageOuts() << "\n\n";
-//
-//    std::cout << "CPU Statistics:\n";
-//    std::cout << "  Idle CPU ticks      : " << idleCpuTicks.load() << "\n";
-//    std::cout << "  Active CPU ticks    : " << activeCpuTicks.load() << "\n";
-//    std::cout << "  Total CPU ticks     : " << totalCpuTicks.load() << "\n";
-//
-//    if (totalCpuTicks.load() > 0) {
-//        double cpuUtilization = (static_cast<double>(activeCpuTicks.load()) / totalCpuTicks.load()) * 100.0;
-//        std::cout << "  CPU utilization     : " << std::fixed << std::setprecision(1) << cpuUtilization << "%\n";
-//    }
-//
-//    // Show process memory usage
-//    auto allProcesses = ProcessManager::getAllProcesses();
-//    if (!allProcesses.empty()) {
-//        std::cout << "\nPer-Process Memory Usage:\n";
-//        std::cout << "  PID  | Name           | Virtual | Pages in Memory | Pages in Backing\n";
-//        std::cout << "  -----|----------------|---------|------------------|------------------\n";
-//
-//        for (const auto& proc : allProcesses) {
-//            int pagesInMemory = 0;
-//            int pagesInBacking = 0;
-//
-//            for (const auto& [vpn, entry] : proc->pageTable) {
-//                if (entry.valid) pagesInMemory++;
-//                else pagesInBacking++;
-//            }
-//
-//            std::cout << "  " << std::setw(4) << proc->pid << " | "
-//                << std::setw(14) << std::left << proc->name.substr(0, 14) << " | "
-//                << std::setw(7) << std::right << proc->virtualMemoryLimit << " | "
-//                << std::setw(16) << pagesInMemory << " | "
-//                << std::setw(17) << pagesInBacking << "\n";
-//        }
-//    }
-//    std::cout << "===================================\n";
-//}
 
 void CLIManager::printVMStat() {
     auto& config = Config::getInstance();
@@ -609,7 +541,6 @@ void CLIManager::printSystemProcessSMI() {
     auto& mem = MemoryManager::getInstance();
     auto allProcesses = ProcessManager::getAllProcesses();
 
-    // Get current timestamp
     std::string timestamp = getCurrentTimestamp();
 
     // Calculate memory statistics
@@ -693,7 +624,6 @@ void CLIManager::printSystemProcessSMI() {
 
         auto runningProcs = ProcessManager::getRunningProcesses();
         for (const auto& proc : runningProcs) {
-            // Calculate memory usage
             int processMemoryUsage = 0;
             for (const auto& [vpn, entry] : proc->pageTable) {
                 if (entry.valid) {
@@ -701,11 +631,9 @@ void CLIManager::printSystemProcessSMI() {
                 }
             }
 
-            // Calculate progress
             double progress = proc->instructions.size() > 0 ?
                 (static_cast<double>(*proc->completedInstructions) / proc->instructions.size() * 100.0) : 0.0;
 
-            // Truncate long process names
             std::string displayName = proc->name.length() > 16 ?
                 proc->name.substr(0, 13) + "..." : proc->name;
 
@@ -720,7 +648,6 @@ void CLIManager::printSystemProcessSMI() {
         std::cout << "+------+------------------+------+--------+----------+----------+----------+\n\n" << RESET;
     }
 
-    // Waiting Processes (if any)
     if (waitingProcesses > 0) {
         std::cout << BRIGHT_YELLOW << BOLD << "Waiting Processes:\n" << RESET;
         std::cout << BRIGHT_WHITE << "+------------------+------+--------+----------+----------+\n";
@@ -729,7 +656,6 @@ void CLIManager::printSystemProcessSMI() {
 
         auto waitingProcs = ProcessManager::getWaitingProcesses();
         for (const auto& proc : waitingProcs) {
-            // Calculate memory usage
             int processMemoryUsage = 0;
             for (const auto& [vpn, entry] : proc->pageTable) {
                 if (entry.valid) {
@@ -737,11 +663,9 @@ void CLIManager::printSystemProcessSMI() {
                 }
             }
 
-            // Calculate progress
             double progress = proc->instructions.size() > 0 ?
                 (static_cast<double>(*proc->completedInstructions) / proc->instructions.size() * 100.0) : 0.0;
 
-            // Truncate long process names
             std::string displayName = proc->name.length() > 16 ?
                 proc->name.substr(0, 13) + "..." : proc->name;
 
@@ -759,7 +683,6 @@ void CLIManager::printSystemProcessSMI() {
         std::cout << "+------------------+------+--------+----------+----------+\n\n" << RESET;
     }
 
-    // Recent Finished Processes (last 5)
     auto finishedProcs = ProcessManager::getFinishedProcesses();
     if (!finishedProcs.empty()) {
         std::cout << BRIGHT_MAGENTA << BOLD << "Recently Finished Processes (last 5):\n" << RESET;
@@ -767,12 +690,10 @@ void CLIManager::printSystemProcessSMI() {
         std::cout << "| Process Name     | PID  | Memory   | Completed| Status   |\n";
         std::cout << "+------------------+------+----------+----------+----------+\n";
 
-        // Show last 5 finished processes
         int startIdx = std::max(0, static_cast<int>(finishedProcs.size()) - 5);
         for (int i = startIdx; i < static_cast<int>(finishedProcs.size()); ++i) {
             auto proc = finishedProcs[i];
 
-            // Truncate long process names
             std::string displayName = proc->name.length() > 16 ?
                 proc->name.substr(0, 13) + "..." : proc->name;
 
@@ -793,7 +714,6 @@ void CLIManager::printSystemProcessSMI() {
         std::cout << "+------------------+------+----------+----------+----------+\n\n" << RESET;
     }
 
-    // Performance Statistics
     std::cout << BRIGHT_CYAN << BOLD << "Performance Statistics:\n" << RESET;
     std::cout << BRIGHT_WHITE << "+------------------------+----------+\n";
     std::cout << "| Metric                 | Value    |\n";
@@ -816,4 +736,5 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << BRIGHT_WHITE << "Use 'process-smi [process_name]' for detailed process information\n";
     std::cout << "Use 'screen -ls' to see detailed process list with timestamps\n";
     std::cout << BRIGHT_CYAN << BOLD << std::string(80, '=') << "\n" << RESET;
+
 }
