@@ -37,7 +37,6 @@
 #define BRIGHT_CYAN "\033[96m"
 #define BRIGHT_WHITE "\033[97m"
 
-// Custom cream/beige color
 #define CREAM "\033[38;5;230m"
 
 void ConsoleView::clearScreen() {
@@ -61,9 +60,7 @@ void ConsoleView::displayColoredLogs(const std::shared_ptr<Process>& proc, bool 
     for (int i = startIdx; i < logSize; ++i) {
         std::string log = proc->logs[i];
 
-        // Color-code different parts of the log
         if (log.find("DECLARE") != std::string::npos) {
-            // Color timestamps, operations, and values
             size_t timestampEnd = log.find("] ");
             if (timestampEnd != std::string::npos) {
                 std::cout << BRIGHT_CYAN << log.substr(0, timestampEnd + 1) << RESET;
@@ -163,7 +160,6 @@ void ConsoleView::displayColoredLogs(const std::shared_ptr<Process>& proc, bool 
             }
         }
         else {
-            // Default coloring for other logs
             size_t timestampEnd = log.find("] ");
             if (timestampEnd != std::string::npos) {
                 std::cout << BRIGHT_CYAN << log.substr(0, timestampEnd + 1) << RESET;
@@ -199,7 +195,6 @@ void ConsoleView::show(const std::shared_ptr<Process>& proc) {
         else if (input == "process-smi") {
             clearScreen();
 
-            // Styled process-smi output
             std::cout << BRIGHT_CYAN << BOLD << "Process Details\n" << RESET;
             std::cout << BRIGHT_CYAN << "======================================\n" << RESET;
             std::cout << BRIGHT_YELLOW << "Process name: " << BRIGHT_WHITE << proc->name << std::endl;
@@ -284,4 +279,5 @@ void ConsoleView::displayProcessScreen(const std::shared_ptr<Process>& proc) {
         std::cout << BRIGHT_YELLOW << BOLD << "[WAITING] " << BRIGHT_WHITE << "Queued or waiting.\n" << RESET;
     }
     std::cout << BRIGHT_CYAN << "\nAvailable commands: " << BRIGHT_YELLOW << "process-smi" << BRIGHT_CYAN << ", " << BRIGHT_YELLOW << "exit" << RESET;
+
 }
