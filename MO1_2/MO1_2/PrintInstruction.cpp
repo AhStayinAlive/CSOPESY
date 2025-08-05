@@ -1,4 +1,4 @@
-﻿// PrintInstruction.cpp
+
 #include "PrintInstruction.h"
 #include "MemoryManager.h"
 #include "process.h"
@@ -16,7 +16,7 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
 
     if (hasVariable) {
-        // ✅ Fix hash calculation to be safe for 16-bit access
+        
         int maxSafeAddress = std::max(1, proc->virtualMemoryLimit - static_cast<int>(sizeof(uint16_t)));
         int addr = std::hash<std::string>{}(variableName) % maxSafeAddress;
 
@@ -47,3 +47,4 @@ void PrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), coreId);
 }
+
