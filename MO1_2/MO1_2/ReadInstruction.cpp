@@ -18,33 +18,28 @@ void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     //    throw std::runtime_error(oss.str());
     //}
     if (address < 0) {
-        // only check for negative addresses, let MemoryManager handle the rest
+        // only check for negative addresses
         std::ostringstream oss;
         oss << "Memory access violation: WRITE at negative address";
         throw std::runtime_error(oss.str());
     }
 
-    // Read 16-bit value from memory (stored as 2 bytes)
     uint8_t lowByte = MemoryManager::getInstance().read(proc, address);
     uint8_t highByte = 0;
 
-    // Check if we can read the high byte
     if (address + 1 < proc->virtualMemoryLimit) {
         highByte = MemoryManager::getInstance().read(proc, address + 1);
     }
 
     uint16_t value = lowByte | (static_cast<uint16_t>(highByte) << 8);
 
-    // Store the variable in the process's variable table and memory
     int varAddr = MemoryManager::getInstance().allocateVariable(proc, variableName);
 
-    // Write the 16-bit value as two bytes in memory
     MemoryManager::getInstance().write(proc, varAddr, static_cast<uint8_t>(value & 0xFF));
     if (varAddr + 1 < proc->virtualMemoryLimit) {
         MemoryManager::getInstance().write(proc, varAddr + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
     }
 
-    // Also store in legacy memory map for compatibility
     proc->memory[variableName] = value;
 
     std::ostringstream logEntry;
