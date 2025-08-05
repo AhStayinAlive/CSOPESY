@@ -40,7 +40,6 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamic virtual memory expansion
     if (address >= proc->virtualMemoryLimit) {
         // Expand virtual memory to accommodate the address
         int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
@@ -71,7 +70,6 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamic virtual memory expansion
     if (address >= proc->virtualMemoryLimit) {
         // Expand virtual memory to accommodate the address
         int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
@@ -98,7 +96,6 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
     proc->pageTable[pageNum].dirty = true;
 }
 
-// ✅ CRITICAL: This function was missing - here's the implementation
 int MemoryManager::getFrame(std::shared_ptr<Process> proc, int virtualPage) {
     auto it = proc->pageTable.find(virtualPage);
     if (it != proc->pageTable.end() && it->second.valid) {
@@ -120,7 +117,6 @@ int MemoryManager::findFreeFrame() {
 void MemoryManager::evictPage() {
     int victimFrame = -1;
 
-    // First try: Use FIFO queue if available
     if (!fifoQueue.empty()) {
         victimFrame = fifoQueue.front();
         fifoQueue.pop_front();
@@ -134,7 +130,7 @@ void MemoryManager::evictPage() {
         }
     }
 
-    // Second try: Find any occupied frame if FIFO failed
+    // Find any occupied frame if FIFO failed
     if (victimFrame == -1) {
         for (int i = 0; i < totalFrames; ++i) {
             if (frames[i].occupied) {
@@ -144,7 +140,7 @@ void MemoryManager::evictPage() {
         }
     }
 
-    // Critical check: If no frame found, this is a serious error
+    // Critical check: If no frame found
     if (victimFrame == -1) {
         return; // Cannot evict - this should not happen
     }
@@ -181,7 +177,7 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
         freeFrame = findFreeFrame();
 
         if (freeFrame == INVALID_FRAME) {
-            // Try more aggressive eviction - evict multiple frames
+            // Try to evict multiple frames
             for (int attempts = 0; attempts < 3 && freeFrame == INVALID_FRAME; attempts++) {
                 evictPage();
                 freeFrame = findFreeFrame();
@@ -220,7 +216,6 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
     return freeFrame;
 }
 void MemoryManager::writeToBackingStore(int pid, int page, const std::vector<uint8_t>& data) {
-    // First, remove any existing entry for this PID+PAGE combination
     removeFromBackingStore(pid, page);
 
     // Append new entry
@@ -242,12 +237,12 @@ void MemoryManager::writeToBackingStore(int pid, int page, const std::vector<uin
 std::vector<uint8_t> MemoryManager::readFromBackingStore(int pid, int page) {
     std::ifstream file("csopesy-backing-store.txt");
     if (!file) {
-        return {}; // File doesn't exist or can't be opened
+        return {};
     }
 
     std::string line;
     while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#') continue; // Skip comments and empty lines
+        if (line.empty() || line[0] == '#') continue;
 
         std::istringstream iss(line);
         int foundPid, foundPage;
@@ -290,7 +285,6 @@ void MemoryManager::removeFromBackingStore(int pid, int page) {
             continue;
         }
 
-        // Only keep lines that don't match our PID+PAGE
         if (!(foundPid == pid && foundPage == page)) {
             lines.push_back(line);
         }
@@ -322,7 +316,7 @@ int MemoryManager::allocateVariable(std::shared_ptr<Process> proc, const std::st
         return proc->variableTable[varName];
     }
 
-    // ✅ OPTION 2: Dynamically expand virtual memory limit if needed
+    // Dynamically expand virtual memory limit if needed
     if (proc->nextFreeAddress >= proc->virtualMemoryLimit) {
         // Expand virtual memory in chunks (e.g., double it)
         proc->virtualMemoryLimit *= 2;
@@ -422,4 +416,5 @@ void MemoryManager::printMemoryStatus() const {
     std::cout << "Page Outs: " << pageOuts << "\n";
     std::cout << "FIFO Queue Size: " << fifoQueue.size() << "\n";
     std::cout << "=============================\n";
+
 }
