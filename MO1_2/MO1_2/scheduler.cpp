@@ -207,40 +207,28 @@ void cpuWorker(int coreId, int delayMs) {
             proc = readyQueue.front();
             readyQueue.pop();
 
-            // ✅ FIXED: Comprehensive memory availability check
-            auto& memManager = MemoryManager::getInstance();
-            int pageSize = memManager.getPageSize();
-            int totalFrames = memManager.getTotalFrames();
-            int usedFrames = memManager.getUsedFrames();
-            int availableFrames = totalFrames - usedFrames;
+            // ✅ STRICT APPROACH: Check if any other process is currently running
+            auto& config = Config::getInstance();
+            int framesNeeded = (proc->virtualMemoryLimit + config.memPerFrame - 1) / config.memPerFrame;
+            int totalFrames = config.maxOverallMem / config.memPerFrame;
 
-            // Calculate frames needed for this process
-            int framesNeeded = (proc->virtualMemoryLimit + pageSize - 1) / pageSize;
+            bool isNewProcess = proc->startTime.empty();
 
-            // Count how many frames this process already has loaded
-            int processFramesInMemory = 0;
-            for (const auto& [vpn, entry] : proc->pageTable) {
-                if (entry.valid) {
-                    processFramesInMemory++;
+            // If this process needs ALL available memory, check if any other process is using memory
+            if (isNewProcess && framesNeeded >= totalFrames) {
+                // Count how many other processes are currently running
+                int runningProcesses = ProcessManager::getRunningProcessCount();
+
+                if (runningProcesses > 0) {
+                    // Another process is running and using memory, defer this one
+                    readyQueue.push(proc);
+                    idleCpuTicks++;
+                    totalCpuTicks++;
+
+                    lock.unlock();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    continue;
                 }
-            }
-
-            // Calculate additional frames needed
-            int additionalFramesNeeded = framesNeeded - processFramesInMemory;
-
-            // ✅ KEY FIX: Check if there are enough frames for this process to run
-            if (additionalFramesNeeded > 0 && availableFrames < additionalFramesNeeded) {
-                // Not enough memory - defer this process
-                readyQueue.push(proc);  // Put it back in queue
-
-                // Add idle time since this core can't run the process
-                idleCpuTicks++;
-                totalCpuTicks++;
-
-                // Sleep briefly to avoid busy waiting
-                lock.unlock();
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                continue;
             }
 
             proc->coreAssigned = coreId;
@@ -257,6 +245,7 @@ void cpuWorker(int coreId, int delayMs) {
         executeInstructions(proc, coreId, delayMs);
     }
 }
+
 void updateCpuUtilization() {
     auto now = std::chrono::steady_clock::now();
 

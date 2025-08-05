@@ -107,6 +107,71 @@ int MemoryManager::getFrame(std::shared_ptr<Process> proc, int virtualPage) {
     return loadPage(proc, virtualPage);
 }
 
+
+int MemoryManager::findFreeFrame() {
+    for (int i = 0; i < totalFrames; ++i) {
+        if (!frames[i].occupied) {
+            return i;
+        }
+    }
+    return INVALID_FRAME;
+}
+
+void MemoryManager::evictPage() {
+    int victimFrame = -1;
+
+    // First try: Use FIFO queue if available
+    if (!fifoQueue.empty()) {
+        victimFrame = fifoQueue.front();
+        fifoQueue.pop_front();
+
+        // Validate the frame is actually occupied
+        if (victimFrame >= 0 && victimFrame < totalFrames && frames[victimFrame].occupied) {
+            // Good frame found
+        }
+        else {
+            victimFrame = -1; // Invalid frame, need to find another
+        }
+    }
+
+    // Second try: Find any occupied frame if FIFO failed
+    if (victimFrame == -1) {
+        for (int i = 0; i < totalFrames; ++i) {
+            if (frames[i].occupied) {
+                victimFrame = i;
+                break;
+            }
+        }
+    }
+
+    // Critical check: If no frame found, this is a serious error
+    if (victimFrame == -1) {
+        return; // Cannot evict - this should not happen
+    }
+
+    // Perform eviction
+    int pid = frames[victimFrame].pid;
+    int pageNum = frames[victimFrame].pageNumber;
+
+    auto proc = ProcessManager::findByPid(pid);
+    if (proc && proc->pageTable.count(pageNum) && proc->pageTable[pageNum].dirty) {
+        // Write dirty page to backing store
+        writeToBackingStore(pid, pageNum, frames[victimFrame].data);
+        pageOuts++;
+    }
+
+    // Update page table if process still exists
+    if (proc && proc->pageTable.count(pageNum)) {
+        proc->pageTable[pageNum] = { -1, false, false, 0 };
+    }
+
+    // Free the frame
+    frames[victimFrame].occupied = false;
+    frames[victimFrame].pid = -1;
+    frames[victimFrame].pageNumber = -1;
+    std::fill(frames[victimFrame].data.begin(), frames[victimFrame].data.end(), 0);
+}
+
 int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
     int freeFrame = findFreeFrame();
 
@@ -116,7 +181,15 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
         freeFrame = findFreeFrame();
 
         if (freeFrame == INVALID_FRAME) {
-            throw std::runtime_error("Critical: No memory available after eviction");
+            // Try more aggressive eviction - evict multiple frames
+            for (int attempts = 0; attempts < 3 && freeFrame == INVALID_FRAME; attempts++) {
+                evictPage();
+                freeFrame = findFreeFrame();
+            }
+
+            if (freeFrame == INVALID_FRAME) {
+                throw std::runtime_error("Critical: No memory available after multiple eviction attempts");
+            }
         }
     }
 
@@ -146,55 +219,6 @@ int MemoryManager::loadPage(std::shared_ptr<Process> proc, int virtualPage) {
 
     return freeFrame;
 }
-
-int MemoryManager::findFreeFrame() {
-    for (int i = 0; i < totalFrames; ++i) {
-        if (!frames[i].occupied) {
-            return i;
-        }
-    }
-    return INVALID_FRAME;
-}
-
-void MemoryManager::evictPage() {
-    if (fifoQueue.empty()) {
-        // Emergency: find any occupied frame to evict
-        for (int i = 0; i < totalFrames; ++i) {
-            if (frames[i].occupied) {
-                fifoQueue.push_back(i);
-                break;
-            }
-        }
-        if (fifoQueue.empty()) {
-            return; // No frames to evict
-        }
-    }
-
-    int victim = fifoQueue.front();
-    fifoQueue.pop_front();
-
-    int pid = frames[victim].pid;
-    int pageNum = frames[victim].pageNumber;
-
-    auto proc = ProcessManager::findByPid(pid);
-    if (proc && proc->pageTable.count(pageNum) && proc->pageTable[pageNum].dirty) {
-        // Write dirty page to backing store
-        writeToBackingStore(pid, pageNum, frames[victim].data);
-        pageOuts++;
-    }
-
-    // Update page table if process still exists
-    if (proc && proc->pageTable.count(pageNum)) {
-        proc->pageTable[pageNum] = { -1, false, false, 0 };
-    }
-
-    // Free the frame
-    frames[victim].occupied = false;
-    frames[victim].pid = -1;
-    frames[victim].pageNumber = -1;
-    std::fill(frames[victim].data.begin(), frames[victim].data.end(), 0);
-}
-
 void MemoryManager::writeToBackingStore(int pid, int page, const std::vector<uint8_t>& data) {
     // First, remove any existing entry for this PID+PAGE combination
     removeFromBackingStore(pid, page);
