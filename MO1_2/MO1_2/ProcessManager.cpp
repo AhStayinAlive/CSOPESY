@@ -1,4 +1,5 @@
 #include "ProcessManager.h"
+#include "MemoryManager.h"
 #include "DeclareInstruction.h"
 #include "AddInstruction.h"
 #include "SubtractInstruction.h"
@@ -43,6 +44,13 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     std::uniform_int_distribution<> sleepTime(100, 500);
     std::uniform_int_distribution<> loopCountDist(2, 4);
 
+
+    // core vars var0 to var4
+    for (int i = 0; i < 5; ++i) {
+        std::string varName = "var" + std::to_string(i);
+        int addr = MemoryManager::getInstance().allocateVariable(proc, varName);
+        MemoryManager::getInstance().write(proc, addr, 100 + i);  // Any non-zero values
+    }
 
     try {
         int numInstructions = instructionCount(gen);

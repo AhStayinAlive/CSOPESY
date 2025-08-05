@@ -117,6 +117,15 @@ void CLIManager::handleCommand(const std::string& input) {
                 return;
             }
 
+            // Check if it follows min and max mem per proc
+            // const auto& config = Config::getInstance();
+            // if (requestedMem < config.minMemPerProc || requestedMem > config.maxMemPerProc) {
+            //     std::cout << "Error: Memory size must be between " << config.minMemPerProc
+            //               << " and " << config.maxMemPerProc << " bytes.\n";
+            //     std::cout << "invalid memory allocation\n";
+            //     return;
+            // }
+
         }
         catch (...) {
             std::cout << "Error: Invalid memory size format.\n";
