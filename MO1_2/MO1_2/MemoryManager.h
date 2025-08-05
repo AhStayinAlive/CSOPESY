@@ -1,4 +1,4 @@
-// MemoryManager.h - Updated with proper memory management
+// MemoryManager.h
 #pragma once
 
 #include <unordered_map>
@@ -33,7 +33,6 @@ public:
     int getPageOuts() const { return pageOuts; }
     int allocateVariable(std::shared_ptr<Process> proc, const std::string& varName);
 
-    // New methods for proper memory management
     void freeProcessMemory(int pid);
     void cleanupBackingStore(int pid);
     int getTotalFrames() const { return totalFrames; }
@@ -60,4 +59,5 @@ private:
 
     std::vector<Frame> frames;
     std::deque<int> fifoQueue; // stores frame indexes in FIFO order
+
 };
