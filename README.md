@@ -1,15 +1,15 @@
-## MEMBERS:
+## Members
 - Hanna delos Santos
 - Joseph Dean T. Enriquez
 - Shanette Giane G. Presas
 - Jersey Jaclyn K. To
 
-## REQUIREMENTS:
+## Requirements
 - C++17 compatible compiler (MSVC, GCC, or Clang)
 - Windows or Linux terminal (uses console output for interaction)
 - Visual Studio or VS Code recommended for easier builds
 
-## HOW TO RUN:
+## How to Run
 1. Adjust the config.txt file to your desired configuration (including the number of CPU cores, type of scheduler, duration of quantum cycles, etc.).
 2. Debug and run the project on any compatible IDE.
 3. Input command "initialize" to initialize the emulator.
