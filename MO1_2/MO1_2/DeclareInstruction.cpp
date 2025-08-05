@@ -17,7 +17,6 @@ void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     // Store in legacy memory for compatibility
     proc->memory[variableName] = value;
 
-    // FIXED: Allocate proper address using MemoryManager and store in variableTable
     int address = MemoryManager::getInstance().allocateVariable(proc, variableName);
 
     // Write 16-bit value as two bytes
@@ -43,4 +42,5 @@ void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
     proc->logs.push_back(logEntry.str());
     logToFile(proc->name, logEntry.str(), proc->coreAssigned);
+
 }
