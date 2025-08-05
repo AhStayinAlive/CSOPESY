@@ -28,6 +28,7 @@ struct Process {
     bool isFinished = false;
     bool isDetached = false;
     bool hasMemoryViolation = false;
+    bool allowMemoryExpansion = false;  // Only true for screen -c processes
     std::string memoryViolationAddress = "";
     std::string memoryViolationError = "";
 

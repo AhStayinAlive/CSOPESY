@@ -44,16 +44,36 @@ uint8_t MemoryManager::read(std::shared_ptr<Process> proc, int address) {
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamically expand virtual memory if needed
-    if (address >= proc->virtualMemoryLimit) {
-        // Expand virtual memory in reasonable chunks
-        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
-        proc->virtualMemoryLimit = newLimit;
+    //// ✅ FIXED: Dynamically expand virtual memory if needed
+    //if (address >= proc->virtualMemoryLimit) {
+    //    // Expand virtual memory in reasonable chunks
+    //    int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+    //    proc->virtualMemoryLimit = newLimit;
 
-        std::ostringstream log;
-        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-            << std::hex << std::uppercase << address;
-        proc->logs.push_back(log.str());
+    //    std::ostringstream log;
+    //    log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
+    //        << std::hex << std::uppercase << address;
+    //    proc->logs.push_back(log.str());
+    //}
+
+    // ✅ ENHANCED: Dynamically expand virtual memory ONLY for screen -c processes
+    if (address >= proc->virtualMemoryLimit) {
+        if (proc->allowMemoryExpansion) {
+            // Calculate new virtual memory size to accommodate the address + some buffer
+            int newLimit = ((address / pageSize) + 1) * pageSize;
+            proc->virtualMemoryLimit = newLimit;
+
+            std::ostringstream log;
+            log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+                << " bytes to access address 0x" << std::hex << std::uppercase << address;
+            proc->logs.push_back(log.str());
+        }
+        else {
+            std::ostringstream oss;
+            oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
+                << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+            throw std::runtime_error(oss.str());
+        }
     }
 
     int pageNum = address / pageSize;
@@ -75,16 +95,36 @@ void MemoryManager::write(std::shared_ptr<Process> proc, int address, uint8_t va
         throw std::runtime_error("Invalid negative address: " + std::to_string(address));
     }
 
-    // ✅ FIXED: Dynamically expand virtual memory if needed
-    if (address >= proc->virtualMemoryLimit) {
-        // Expand virtual memory in reasonable chunks
-        int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
-        proc->virtualMemoryLimit = newLimit;
+    //// ✅ FIXED: Dynamically expand virtual memory if needed
+    //if (address >= proc->virtualMemoryLimit) {
+    //    // Expand virtual memory in reasonable chunks
+    //    int newLimit = ((address / 512) + 1) * 512;  // Expand in 512-byte chunks
+    //    proc->virtualMemoryLimit = newLimit;
 
-        std::ostringstream log;
-        log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
-            << std::hex << std::uppercase << address;
-        proc->logs.push_back(log.str());
+    //    std::ostringstream log;
+    //    log << "Expanded virtual memory limit to " << newLimit << " bytes to access address 0x"
+    //        << std::hex << std::uppercase << address;
+    //    proc->logs.push_back(log.str());
+    //}
+
+    // ✅ ENHANCED: Dynamically expand virtual memory ONLY for screen -c processes
+    if (address >= proc->virtualMemoryLimit) {
+        if (proc->allowMemoryExpansion) {
+            // Calculate new virtual memory size to accommodate the address + some buffer
+            int newLimit = ((address / pageSize) + 1) * pageSize;
+            proc->virtualMemoryLimit = newLimit;
+
+            std::ostringstream log;
+            log << "[MEMORY] Expanded virtual memory limit to " << newLimit
+                << " bytes to access address 0x" << std::hex << std::uppercase << address;
+            proc->logs.push_back(log.str());
+        }
+        else {
+            std::ostringstream oss;
+            oss << "Memory access violation: WRITE at address 0x" << std::hex << std::uppercase << address
+                << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+            throw std::runtime_error(oss.str());
+        }
     }
 
     int pageNum = address / pageSize;

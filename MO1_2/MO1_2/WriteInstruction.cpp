@@ -11,30 +11,28 @@ WriteInstruction::WriteInstruction(int addr, const std::string& varName, const s
 
 void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     // Validate address bounds
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
+    if (address < 0) {
+        // only check for negative addresses, let MemoryManager handle the rest
         std::ostringstream oss;
-        oss << "Memory access violation: WRITE at address 0x" << std::hex << std::uppercase << address
-            << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+        oss << "Memory access violation: WRITE at negative address";
         throw std::runtime_error(oss.str());
     }
 
     uint16_t value = 0;
 
-    // Get value from variable table
+    // Check both memory locations and use the most recent value
+    if (proc->memory.count(variableName)) {
+        value = proc->memory[variableName];
+    }
     if (proc->variableTable.count(variableName)) {
+        // Also check variable table for potentially newer value
         int varAddr = proc->variableTable[variableName];
-
-        // Read 16-bit value from variable's memory location
         uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
         uint8_t highByte = 0;
         if (varAddr + 1 < proc->virtualMemoryLimit) {
             highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
         }
         value = lowByte | (static_cast<uint16_t>(highByte) << 8);
-    }
-    // Fallback to legacy memory map
-    else if (proc->memory.count(variableName)) {
-        value = proc->memory[variableName];
     }
     else {
         throw std::runtime_error("WRITE: Variable '" + variableName + "' not found");
@@ -56,14 +54,14 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             << " | PID " << proc->pid
             << " | " << logPrefix
             << " | WRITE: " << value
-            << " to 0x" << std::hex << std::uppercase << address;
+            << " to 0x" << std::hex << std::uppercase << address << " - SUCCESS";
     }
     else {
         logEntry << "[" << getCurrentTimestamp() << "] "
             << "Core " << coreId
             << " | PID " << proc->pid
             << " | WRITE: " << value
-            << " to 0x" << std::hex << std::uppercase << address;
+            << " to 0x" << std::hex << std::uppercase << address << " - SUCCESS";
     }
 
     proc->logs.push_back(logEntry.str());

@@ -35,6 +35,7 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
     proc->virtualMemoryLimit = memoryLimit;
+    proc->allowMemoryExpansion = false;  // Regular processes cannot expand memory
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -266,11 +267,18 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
     proc->virtualMemoryLimit = memoryLimit;
+    proc->allowMemoryExpansion = true;  // Mark as screen -c process
     proc->totalInstructions = instructions.size();
 
     // Parse instructions 
+    // Parse instructions 
     for (const auto& instrStr : instructions) {
-        std::stringstream ss(instrStr);
+        std::string trimmed = instrStr;
+        // Remove leading/trailing whitespace
+        trimmed.erase(0, trimmed.find_first_not_of(" \t"));
+        trimmed.erase(trimmed.find_last_not_of(" \t") + 1);
+
+        std::stringstream ss(trimmed);
         std::string cmd;
         ss >> cmd;
 
@@ -292,15 +300,12 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
             std::string hexAddr, varName;
             ss >> hexAddr >> varName;
 
-            // Improved hex parsing
             int address;
             try {
-                // Handle both 0x and 0X prefixes, and plain hex
                 if (hexAddr.substr(0, 2) == "0x" || hexAddr.substr(0, 2) == "0X") {
                     address = std::stoi(hexAddr, nullptr, 16);
                 }
                 else {
-                    // Try hex first, then decimal as fallback
                     try {
                         address = std::stoi(hexAddr, nullptr, 16);
                     }
@@ -311,7 +316,7 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
             }
             catch (const std::exception& e) {
                 std::cerr << "Error parsing address '" << hexAddr << "': " << e.what() << std::endl;
-                address = 0; // Default to 0 on parse error
+                address = 0;
             }
 
             proc->instructions.push_back(std::make_shared<WriteInstruction>(address, varName));
@@ -320,15 +325,12 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
             std::string varName, hexAddr;
             ss >> varName >> hexAddr;
 
-            // Improved hex parsing
             int address;
             try {
-                // Handle both 0x and 0X prefixes, and plain hex
                 if (hexAddr.substr(0, 2) == "0x" || hexAddr.substr(0, 2) == "0X") {
                     address = std::stoi(hexAddr, nullptr, 16);
                 }
                 else {
-                    // Try hex first, then decimal as fallback
                     try {
                         address = std::stoi(hexAddr, nullptr, 16);
                     }
@@ -339,16 +341,20 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
             }
             catch (const std::exception& e) {
                 std::cerr << "Error parsing address '" << hexAddr << "': " << e.what() << std::endl;
-                address = 0; // Default to 0 on parse error
+                address = 0;
             }
 
             proc->instructions.push_back(std::make_shared<ReadInstruction>(varName, address));
         }
-        else if (cmd == "PRINT") {
-            std::string message;
-            std::getline(ss, message);
-            message.erase(0, message.find_first_not_of(" \t"));
-            proc->instructions.push_back(std::make_shared<UserPrintInstruction>(message));
+        else if (trimmed.find("PRINT(") == 0) {
+            // Handle PRINT("message" + variable) format
+            size_t openParen = trimmed.find('(');
+            size_t closeParen = trimmed.rfind(')');
+
+            if (openParen != std::string::npos && closeParen != std::string::npos) {
+                std::string content = trimmed.substr(openParen + 1, closeParen - openParen - 1);
+                proc->instructions.push_back(std::make_shared<UserPrintInstruction>(content));
+            }
         }
     }
 

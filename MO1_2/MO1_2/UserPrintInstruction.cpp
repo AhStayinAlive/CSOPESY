@@ -13,6 +13,14 @@ UserPrintInstruction::UserPrintInstruction(const std::string& msg, const std::st
 void UserPrintInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     std::string output = message;
 
+    size_t pos = 0;
+    while ((pos = output.find("\\\"", pos)) != std::string::npos) {
+        output.replace(pos, 2, "\"");
+    }
+    while ((pos = output.find("\\\\", pos)) != std::string::npos) {
+        output.replace(pos, 2, "\\");
+    }
+
     // Trim whitespace from message
     output.erase(0, output.find_first_not_of(" \t"));
     output.erase(output.find_last_not_of(" \t") + 1);

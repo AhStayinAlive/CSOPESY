@@ -19,6 +19,7 @@ std::shared_ptr<Process> generateRandomProcess(std::string name, int pid, int mi
     proc->isFinished = false;
     proc->isDetached = false;
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
+    proc->allowMemoryExpansion = false;  // Random processes cannot expand memory
 
     std::random_device rd;
     std::mt19937 gen(rd());

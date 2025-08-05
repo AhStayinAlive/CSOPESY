@@ -10,11 +10,17 @@ ReadInstruction::ReadInstruction(const std::string& varName, int addr, const std
 }
 
 void ReadInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
-    // Validate address bounds
-    if (address < 0 || address >= proc->virtualMemoryLimit) {
+    //// Validate address bounds
+    //if (address < 0 || address >= proc->virtualMemoryLimit) {
+    //    std::ostringstream oss;
+    //    oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
+    //        << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+    //    throw std::runtime_error(oss.str());
+    //}
+    if (address < 0) {
+        // only check for negative addresses, let MemoryManager handle the rest
         std::ostringstream oss;
-        oss << "Memory access violation: READ at address 0x" << std::hex << std::uppercase << address
-            << " out of bounds [0, 0x" << std::hex << std::uppercase << (proc->virtualMemoryLimit - 1) << "]";
+        oss << "Memory access violation: WRITE at negative address";
         throw std::runtime_error(oss.str());
     }
 
