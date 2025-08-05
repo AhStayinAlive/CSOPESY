@@ -15,11 +15,49 @@
 #include <algorithm>
 #include <vector>
 
-const std::string CYAN = "\033[36m";
-const std::string YELLOW = "\033[33m";
-const std::string GREEN = "\033[32m";
-const std::string MAGENTA = "\033[35m";
-const std::string RESET = "\033[0m";
+// ANSI Color Codes
+#define RESET "\033[0m"
+#define BOLD "\033[1m"
+#define DIM "\033[2m"
+
+// Text Colors
+#define BLACK "\033[30m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+#define WHITE "\033[37m"
+#define BRIGHT_BLACK "\033[90m"
+#define BRIGHT_RED "\033[91m"
+#define BRIGHT_GREEN "\033[92m"
+#define BRIGHT_YELLOW "\033[93m"
+#define BRIGHT_BLUE "\033[94m"
+#define BRIGHT_MAGENTA "\033[95m"
+#define BRIGHT_CYAN "\033[96m"
+#define BRIGHT_WHITE "\033[97m"
+
+// Background Colors
+#define BG_BLACK "\033[40m"
+#define BG_RED "\033[41m"
+#define BG_GREEN "\033[42m"
+#define BG_YELLOW "\033[43m"
+#define BG_BLUE "\033[44m"
+#define BG_MAGENTA "\033[45m"
+#define BG_CYAN "\033[46m"
+#define BG_WHITE "\033[47m"
+#define BG_BRIGHT_BLACK "\033[100m"
+#define BG_BRIGHT_RED "\033[101m"
+#define BG_BRIGHT_GREEN "\033[102m"
+#define BG_BRIGHT_YELLOW "\033[103m"
+#define BG_BRIGHT_BLUE "\033[104m"
+#define BG_BRIGHT_MAGENTA "\033[105m"
+#define BG_BRIGHT_CYAN "\033[106m"
+#define BG_BRIGHT_WHITE "\033[107m"
+
+// Custom cream/beige color (closest approximation)
+#define CREAM "\033[38;5;230m"  // Light cream color
 
 CLIManager::CLIManager() : schedulerThread(), generating(false) {}
 extern std::atomic<int> totalCpuTicks;
@@ -27,27 +65,30 @@ extern std::atomic<int> activeCpuTicks;
 extern std::atomic<int> idleCpuTicks;
 
 void printBanner() {
+    std::cout << BRIGHT_CYAN << BOLD;
     std::cout << "  ____ _____   ____    ____  _____  _____  __    __\n";
     std::cout << " / ___/ ____| / __ \\  |  _ \\| ____|/ ____| \\ \\  / / \n";
     std::cout << "| |   \\___ \\ | /  \\ | | __)||  _|  \\___ \\   \\ \\/ /\n";
     std::cout << "| |___ ___) || \\__/ | | |   |  |__  ___) |   |  |\n";
     std::cout << " \\____|____/  \\____/  | |   |_____||____/    |__|\n";
+    std::cout << RESET << BRIGHT_YELLOW << BOLD;
     std::cout << "-------------------------------------------------------------\n";
-    std::cout << "Welcome to CSOPESY Emulator!\n";
-    std::cout << "\nDevelopers:\n";
-    std::cout << "Hanna Angela D. De Los Santos\n";
+    std::cout << RESET << BRIGHT_WHITE << BOLD << "Welcome to CSOPESY Emulator!\n" << RESET;
+    std::cout << BRIGHT_GREEN << "\nDevelopers:\n" << RESET;
+    std::cout << CREAM << "Hanna Angela D. De Los Santos\n";
     std::cout << "Joseph Dean T. Enriquez\n";
     std::cout << "Shanette Giane G. Presas\n";
-    std::cout << "Jersey K. To\n";
-    std::cout << "-------------------------------------------------------------\n";
+    std::cout << "Jersey K. To\n" << RESET;
+    std::cout << BRIGHT_YELLOW << BOLD;
+    std::cout << "-------------------------------------------------------------\n" << RESET;
 }
 
 void CLIManager::run() {
     printBanner();
     std::string input;
-    std::cout << "Welcome to the CLI Scheduler. Type 'help' for commands.\n";
+    std::cout << BRIGHT_WHITE << "Welcome to the CLI Scheduler. Type " << BRIGHT_CYAN << "'help'" << BRIGHT_WHITE << " for commands.\n" << RESET;
     while (true) {
-        std::cout << "root:\\> ";
+        std::cout << CREAM << BOLD << "root" << RESET << BRIGHT_WHITE << ":\\> " << RESET;
         std::getline(std::cin, input);
         if (input == "exit") {
             stopScheduler();
@@ -66,18 +107,31 @@ void CLIManager::handleCommand(const std::string& input) {
     const std::string& cmd = tokens[0];
 
     if (cmd != "initialize" && !initialized) {
-        std::cout << "Please run 'initialize' first.\n";
+        std::cout << BRIGHT_RED << "Please run " << BRIGHT_YELLOW << "'initialize'" << BRIGHT_RED << " first.\n" << RESET;
         return;
     }
 
     if (cmd == "initialize") {
         if (Config::getInstance().loadFromFile("config.txt")) {
-            std::cout << "Configuration loaded.\n";
+            std::cout << BRIGHT_GREEN << BOLD << "Configuration loaded successfully:\n" << RESET;
+
+            auto& config = Config::getInstance();
+            std::cout << BRIGHT_CYAN << "  numCPU: " << BRIGHT_WHITE << config.numCPU << "\n";
+            std::cout << BRIGHT_CYAN << "  scheduler: " << BRIGHT_WHITE << "\"" << config.scheduler << "\"\n";
+            std::cout << BRIGHT_CYAN << "  quantumCycles: " << BRIGHT_WHITE << config.quantumCycles << "\n";
+            std::cout << BRIGHT_CYAN << "  batchProcessFreq: " << BRIGHT_WHITE << config.batchProcessFreq << "\n";
+            std::cout << BRIGHT_CYAN << "  minInstructions: " << BRIGHT_WHITE << config.minInstructions << "\n";
+            std::cout << BRIGHT_CYAN << "  maxInstructions: " << BRIGHT_WHITE << config.maxInstructions << "\n";
+            std::cout << BRIGHT_CYAN << "  delayPerInstruction: " << BRIGHT_WHITE << config.delayPerInstruction << "\n";
+            std::cout << BRIGHT_CYAN << "  maxOverallMem: " << BRIGHT_WHITE << config.maxOverallMem << "\n";
+            std::cout << BRIGHT_CYAN << "  memPerFrame: " << BRIGHT_WHITE << config.memPerFrame << "\n";
+            std::cout << BRIGHT_CYAN << "  minMemPerProc: " << BRIGHT_WHITE << config.minMemPerProc << "\n";
+            std::cout << BRIGHT_CYAN << "  maxMemPerProc: " << BRIGHT_WHITE << config.maxMemPerProc << "\n" << RESET;
+
             MemoryManager::getInstance().initialize();
             std::ofstream backingStore("csopesy-backing-store.txt", std::ios::app);
             backingStore.close();
 
-            auto& config = Config::getInstance();
             if (config.scheduler == "FCFS" || config.scheduler == "fcfs") {
                 schedulerType = SchedulerType::FCFS;
             }
@@ -85,18 +139,17 @@ void CLIManager::handleCommand(const std::string& input) {
                 schedulerType = SchedulerType::ROUND_ROBIN;
             }
             else {
-                std::cerr << "Unknown scheduler type in config: " << config.scheduler << ", defaulting to FCFS.\n";
+                std::cerr << BRIGHT_RED << "Unknown scheduler type in config: " << config.scheduler << ", defaulting to FCFS.\n" << RESET;
                 schedulerType = SchedulerType::FCFS;
             }
 
-            // **NEW: Start scheduler immediately during initialization**
             startScheduler(Config::getInstance());
-            std::cout << "Scheduler initialized and ready for processes.\n";
+            std::cout << BRIGHT_GREEN << BOLD << "Scheduler initialized and ready for processes.\n" << RESET;
 
             initialized = true;
         }
         else {
-            std::cout << "Failed to load config.txt.\n";
+            std::cout << BRIGHT_RED << "Failed to load config.txt.\n" << RESET;
         }
     }
 
@@ -110,32 +163,23 @@ void CLIManager::handleCommand(const std::string& input) {
 
             // Validate memory size: must be power of 2 between 64 and 65536
             if (requestedMem < 64 || requestedMem > 65536) {
-                std::cout << "Error: Memory size must be between 64 and 65536 bytes.\n";
-                std::cout << "invalid memory allocation\n";
+                std::cout << BRIGHT_RED << "Error: Memory size must be between 64 and 65536 bytes.\n";
+                std::cout << "invalid memory allocation\n" << RESET;
                 return;
             }
 
             // Check if it's a power of 2
             if ((requestedMem & (requestedMem - 1)) != 0) {
-                std::cout << "Error: Memory size must be a power of 2.\n";
-                std::cout << "Valid sizes: 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536\n";
-                std::cout << "invalid memory allocation\n";
+                std::cout << BRIGHT_RED << "Error: Memory size must be a power of 2.\n";
+                std::cout << BRIGHT_YELLOW << "Valid sizes: 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536\n";
+                std::cout << BRIGHT_RED << "invalid memory allocation\n" << RESET;
                 return;
             }
 
-            // Check if it follows min and max mem per proc
-            // const auto& config = Config::getInstance();
-            // if (requestedMem < config.minMemPerProc || requestedMem > config.maxMemPerProc) {
-            //     std::cout << "Error: Memory size must be between " << config.minMemPerProc
-            //               << " and " << config.maxMemPerProc << " bytes.\n";
-            //     std::cout << "invalid memory allocation\n";
-            //     return;
-            // }
-
         }
         catch (...) {
-            std::cout << "Error: Invalid memory size format.\n";
-            std::cout << "invalid memory allocation\n";
+            std::cout << BRIGHT_RED << "Error: Invalid memory size format.\n";
+            std::cout << "invalid memory allocation\n" << RESET;
             return;
         }
 
@@ -149,26 +193,25 @@ void CLIManager::handleCommand(const std::string& input) {
             int requiredFrames = (requestedMem + config.memPerFrame - 1) / config.memPerFrame; // Ceiling division
 
             if (availableMemory < requestedMem && !mem.hasFreeFrame()) {
-                std::cout << "Warning: Limited physical memory available (" << availableMemory
-                    << " KB free). Process will use virtual memory.\n";
+                std::cout << BRIGHT_YELLOW << "Warning: Limited physical memory available (" << availableMemory
+                    << " KB free). Process will use virtual memory.\n" << RESET;
             }
 
             proc = ProcessManager::createNamedProcess(name, requestedMem);
             ProcessManager::addProcess(proc);
-            // **MODIFIED: Process will be automatically scheduled since scheduler is already running**
             addProcess(proc);
 
-            std::cout << "Process created successfully:\n";
-            std::cout << "  Name: " << name << "\n";
-            std::cout << "  PID: " << proc->pid << "\n";
-            std::cout << "  Memory allocated: " << requestedMem << " bytes\n";
-            std::cout << "  Required frames: " << requiredFrames << "\n";
-            std::cout << "  Status: Added to scheduler queue\n";  // **NEW: Indicate it's queued**
+            std::cout << BRIGHT_GREEN << BOLD << "Process created successfully:\n" << RESET;
+            std::cout << BRIGHT_CYAN << "  Name: " << BRIGHT_WHITE << name << "\n";
+            std::cout << BRIGHT_CYAN << "  PID: " << BRIGHT_WHITE << proc->pid << "\n";
+            std::cout << BRIGHT_CYAN << "  Memory allocated: " << BRIGHT_WHITE << requestedMem << " bytes\n";
+            std::cout << BRIGHT_CYAN << "  Required frames: " << BRIGHT_WHITE << requiredFrames << "\n";
+            std::cout << BRIGHT_CYAN << "  Status: " << BRIGHT_GREEN << "Added to scheduler queue\n" << RESET;
 
             ConsoleView::show(proc);
         }
         else {
-            std::cout << "Error: Process '" << name << "' already exists.\n";
+            std::cout << BRIGHT_RED << "Error: Process '" << name << "' already exists.\n" << RESET;
         }
     }
 
@@ -186,13 +229,13 @@ void CLIManager::handleCommand(const std::string& input) {
 
             // Validate memory size: must be power of 2 between 64 and 65536
             if (requestedMem < 64 || requestedMem > 65536) {
-                std::cout << "invalid command\n";
+                std::cout << BRIGHT_RED << "invalid command\n" << RESET;
                 return;
             }
 
             // Check if it's a power of 2
             if ((requestedMem & (requestedMem - 1)) != 0) {
-                std::cout << "invalid command\n";
+                std::cout << BRIGHT_RED << "invalid command\n" << RESET;
                 return;
             }
         }
@@ -231,7 +274,7 @@ void CLIManager::handleCommand(const std::string& input) {
 
         // Validate instruction count (1-50)
         if (instructions.size() < 1 || instructions.size() > 50) {
-            std::cout << "invalid command\n";
+            std::cout << BRIGHT_RED << "invalid command\n" << RESET;
             return;
         }
 
@@ -239,24 +282,23 @@ void CLIManager::handleCommand(const std::string& input) {
         if (!proc) {
             proc = ProcessManager::createProcessWithInstructions(name, requestedMem, instructions);
             ProcessManager::addProcess(proc);
-            // **MODIFIED: Process will be automatically scheduled since scheduler is already running**
             addProcess(proc);
 
-            std::cout << "Process created successfully:\n";
-            std::cout << "  Name: " << name << "\n";
-            std::cout << "  PID: " << proc->pid << "\n";
-            std::cout << "  Memory allocated: " << requestedMem << " bytes";
+            std::cout << BRIGHT_GREEN << BOLD << "Process created successfully:\n" << RESET;
+            std::cout << BRIGHT_CYAN << "  Name: " << BRIGHT_WHITE << name << "\n";
+            std::cout << BRIGHT_CYAN << "  PID: " << BRIGHT_WHITE << proc->pid << "\n";
+            std::cout << BRIGHT_CYAN << "  Memory allocated: " << BRIGHT_WHITE << requestedMem << " bytes";
             if (!hasMemorySize) {
-                std::cout << " (default)";
+                std::cout << BRIGHT_YELLOW << " (default)";
             }
             std::cout << "\n";
-            std::cout << "  Instructions: " << instructions.size() << "\n";
-            std::cout << "  Status: Added to scheduler queue\n";  // **NEW: Indicate it's queued**
+            std::cout << BRIGHT_CYAN << "  Instructions: " << BRIGHT_WHITE << instructions.size() << "\n";
+            std::cout << BRIGHT_CYAN << "  Status: " << BRIGHT_GREEN << "Added to scheduler queue\n" << RESET;
 
             ConsoleView::show(proc);
         }
         else {
-            std::cout << "Error: Process '" << name << "' already exists.\n";
+            std::cout << BRIGHT_RED << "Error: Process '" << name << "' already exists.\n" << RESET;
         }
     }
 
@@ -265,27 +307,23 @@ void CLIManager::handleCommand(const std::string& input) {
         auto proc = ProcessManager::findByName(name);
 
         if (!proc) {
-            std::cout << "Process not found.\n";
+            std::cout << BRIGHT_RED << "Process not found.\n" << RESET;
             return;
         }
 
-        // **NEW: Check if process finished due to memory access violation**
         if (proc->isFinished && proc->hasMemoryViolation) {
-            std::cout << "Process shut down due to memory access violation error that occurred at "
-                << proc->memoryViolationAddress << ". invalid.\n";
+            std::cout << BRIGHT_RED << "Process shut down due to memory access violation error that occurred at "
+                << proc->memoryViolationAddress << ". invalid.\n" << RESET;
             return;
         }
 
-        // **MODIFIED: Check if process is finished (but not due to memory violation)**
         if (proc->isFinished) {
-            std::cout << "Process not found.\n";  // Treat finished processes as "not found"
+            std::cout << BRIGHT_RED << "Process not found.\n" << RESET;
             return;
         }
 
-        // Process exists and is not finished - show the console
         ConsoleView::show(proc);
-        }
-
+    }
 
     else if (cmd == "screen" && tokens.size() == 2 && tokens[1] == "-ls") {
         showProcessList();
@@ -293,37 +331,26 @@ void CLIManager::handleCommand(const std::string& input) {
 
     else if (cmd == "process-smi") {
         if (tokens.size() == 1) {
-            // **NEW: System-wide process-smi (no arguments)**
             printSystemProcessSMI();
         }
         else if (tokens.size() == 2) {
-            // **EXISTING: Per-process process-smi [name]**
             std::string name = tokens[1];
             auto proc = ProcessManager::findByName(name);
             if (!proc) {
-                std::cout << "Process '" << name << "' not found.\n";
+                std::cout << BRIGHT_RED << "Process '" << name << "' not found.\n" << RESET;
                 return;
             }
-
-            // ... existing per-process code remains the same ...
         }
         else {
-            std::cout << "Usage: process-smi [process_name]\n";
+            std::cout << BRIGHT_YELLOW << "Usage: process-smi [process_name]\n";
             std::cout << "  process-smi           - Show system-wide memory and process overview\n";
-            std::cout << "  process-smi [name]    - Show detailed info for specific process\n";
+            std::cout << "  process-smi [name]    - Show detailed info for specific process\n" << RESET;
         }
-}
-
-    // Enhanced process-smi command (unchanged)
-    else if (cmd == "process-smi" && tokens.size() == 2) {
-        // ... (rest of process-smi code remains the same)
     }
 
-    // **MODIFIED: scheduler-start and scheduler-test now only control batch process generation**
     else if (cmd == "scheduler-start" || cmd == "scheduler-test") {
         if (!generating) {
             generating = true;
-            // **CHANGED: Only start batch process generation thread, scheduler is already running**
             schedulerThread = std::thread([&] {
                 try {
                     auto& config = Config::getInstance();
@@ -335,13 +362,13 @@ void CLIManager::handleCommand(const std::string& input) {
                     }
                 }
                 catch (const std::exception& e) {
-                    std::cerr << "[Scheduler Error] " << e.what() << "\n";
+                    std::cerr << BRIGHT_RED << "[Scheduler Error] " << e.what() << "\n" << RESET;
                 }
                 });
-            std::cout << "Batch process generation started.\n";
+            std::cout << BRIGHT_GREEN << "Batch process generation started.\n" << RESET;
         }
         else {
-            std::cout << "Batch process generation is already running.\n";
+            std::cout << BRIGHT_YELLOW << "Batch process generation is already running.\n" << RESET;
         }
     }
 
@@ -349,52 +376,42 @@ void CLIManager::handleCommand(const std::string& input) {
         if (generating) {
             generating = false;
             if (schedulerThread.joinable()) schedulerThread.join();
-            std::cout << "Stopped generating batch processes.\n";
-            std::cout << "Note: Scheduler continues running for manual processes.\n";  // **NEW: Clarification**
+            std::cout << BRIGHT_GREEN << "Stopped generating batch processes.\n";
+            std::cout << BRIGHT_CYAN << "Note: Scheduler continues running for manual processes.\n" << RESET;
         }
         else {
-            std::cout << "Batch process generation was not running.\n";
+            std::cout << BRIGHT_YELLOW << "Batch process generation was not running.\n" << RESET;
         }
     }
 
-    // Rest of the commands remain unchanged...
     else if (cmd == "vmstat") {
         printVMStat();
     }
 
     else if (cmd == "memory-status") {
         MemoryManager::getInstance().printMemoryStatus();
-        // ... (rest of memory-status code)
     }
 
     else if (cmd == "clear-memory") {
-        std::cout << "Are you sure you want to clear all memory and backing store? (y/N): ";
+        std::cout << BRIGHT_YELLOW << "Are you sure you want to clear all memory and backing store? (y/N): " << RESET;
         std::string confirm;
         std::getline(std::cin, confirm);
 
         if (confirm == "y" || confirm == "Y") {
-            // **MODIFIED: Stop batch generation and restart scheduler**
             if (generating) {
                 generating = false;
                 if (schedulerThread.joinable()) schedulerThread.join();
             }
 
-            // Stop scheduler temporarily
             ::stopScheduler();
-
-            // Clear all processes
             ProcessManager::clearAllProcesses();
-
-            // Reinitialize memory
             MemoryManager::getInstance().initialize();
-
-            // Restart scheduler
             startScheduler(Config::getInstance());
 
-            std::cout << "Memory and backing store cleared. Scheduler restarted.\n";
+            std::cout << BRIGHT_GREEN << "Memory and backing store cleared. Scheduler restarted.\n" << RESET;
         }
         else {
-            std::cout << "Operation cancelled.\n";
+            std::cout << BRIGHT_CYAN << "Operation cancelled.\n" << RESET;
         }
     }
 
@@ -407,38 +424,38 @@ void CLIManager::handleCommand(const std::string& input) {
     }
 
     else {
-        std::cout << "Unknown command. Type 'help' for available commands.\n";
+        std::cout << BRIGHT_RED << "Unknown command. Type " << BRIGHT_CYAN << "'help'" << BRIGHT_RED << " for available commands.\n" << RESET;
     }
 }
+
 void CLIManager::stopScheduler() {
-    // Stop batch process generation
     generating = false;
     if (schedulerThread.joinable()) schedulerThread.join();
-
-    // Stop the main scheduler
     ::stopScheduler();
 }
 
 void CLIManager::showHelp() const {
-    std::cout << "Available commands:\n"
-        << "  initialize                    - Load config.txt, prepare memory, and start scheduler\n"
-        << "  screen -s [name] [memory_size] - Create a process with specified memory (auto-scheduled)\n"
-        << "  screen -c [name] [memory_size] \"[instructions]\" - Create process with user-defined instructions (auto-scheduled)\n"
-        << "  process-smi [name]            - Show detailed information for a specific process\n"
-        << "  screen -r [name]              - Resume and inspect a process\n"
-        << "  screen -ls                    - Show running and finished processes\n"
-        << "  scheduler-start               - Begin automatic batch process generation\n"
-        << "  scheduler-stop                - Stop automatic batch process generation\n"
-        << "  vmstat                        - Show virtual memory statistics\n"
-        << "  memory-status                 - Show detailed memory manager status\n"
-        << "  report-util                   - Generate utilization report\n"
-        << "  clear-memory                  - Clear all memory and backing store (debugging)\n"
-        << "  exit                          - Exit the CLI\n\n"
-        << "Memory allocation examples:\n"
-        << "  screen -s myprocess 256       - Allocate 256 bytes (auto-scheduled)\n"
-        << "  screen -c process2 512 \"DECLARE varA 10; ADD varA varA varB\" - Create with instructions (auto-scheduled)\n\n"
-        << "Note: Scheduler starts automatically with 'initialize'. Manual processes are scheduled immediately.\n"
-        << "      'scheduler-start' only controls automatic batch process generation.\n";
+    std::cout << BRIGHT_CYAN << BOLD << "Available commands:\n" << RESET;
+    std::cout << BRIGHT_YELLOW << "  initialize" << BRIGHT_WHITE << "                    - Load config.txt, prepare memory, and start scheduler\n";
+    std::cout << BRIGHT_YELLOW << "  screen -s [name] [memory_size]" << BRIGHT_WHITE << " - Create a process with specified memory (auto-scheduled)\n";
+    std::cout << BRIGHT_YELLOW << "  screen -c [name] [memory_size] \"[instructions]\"" << BRIGHT_WHITE << " - Create process with user-defined instructions (auto-scheduled)\n";
+    std::cout << BRIGHT_YELLOW << "  process-smi [name]" << BRIGHT_WHITE << "            - Show detailed information for a specific process\n";
+    std::cout << BRIGHT_YELLOW << "  screen -r [name]" << BRIGHT_WHITE << "              - Resume and inspect a process\n";
+    std::cout << BRIGHT_YELLOW << "  screen -ls" << BRIGHT_WHITE << "                    - Show running and finished processes\n";
+    std::cout << BRIGHT_YELLOW << "  scheduler-start" << BRIGHT_WHITE << "               - Begin automatic batch process generation\n";
+    std::cout << BRIGHT_YELLOW << "  scheduler-stop" << BRIGHT_WHITE << "                - Stop automatic batch process generation\n";
+    std::cout << BRIGHT_YELLOW << "  vmstat" << BRIGHT_WHITE << "                        - Show virtual memory statistics\n";
+    std::cout << BRIGHT_YELLOW << "  memory-status" << BRIGHT_WHITE << "                 - Show detailed memory manager status\n";
+    std::cout << BRIGHT_YELLOW << "  report-util" << BRIGHT_WHITE << "                   - Generate utilization report\n";
+    std::cout << BRIGHT_YELLOW << "  clear-memory" << BRIGHT_WHITE << "                  - Clear all memory and backing store (debugging)\n";
+    std::cout << BRIGHT_YELLOW << "  exit" << BRIGHT_WHITE << "                          - Exit the CLI\n\n";
+
+    std::cout << BRIGHT_GREEN << BOLD << "Memory allocation examples:\n" << RESET;
+    std::cout << BRIGHT_CYAN << "  screen -s myprocess 256" << BRIGHT_WHITE << "       - Allocate 256 bytes (auto-scheduled)\n";
+    std::cout << BRIGHT_CYAN << "  screen -c process2 512 \"DECLARE varA 10; ADD varA varA varB\"" << BRIGHT_WHITE << " - Create with instructions (auto-scheduled)\n\n";
+
+    std::cout << BRIGHT_MAGENTA << BOLD << "Note: " << BRIGHT_WHITE << "Scheduler starts automatically with 'initialize'. Manual processes are scheduled immediately.\n";
+    std::cout << "      'scheduler-start' only controls automatic batch process generation.\n" << RESET;
 }
 
 std::vector<std::string> CLIManager::tokenize(const std::string& input) const {
@@ -461,46 +478,43 @@ void CLIManager::showProcessList() const {
 
     int numCPU = Config::getInstance().numCPU;
     if (numCPU == 0) {
-        std::cout << "Error: numCPU is 0. Please check your config.txt file.\n";
+        std::cout << BRIGHT_RED << "Error: numCPU is 0. Please check your config.txt file.\n" << RESET;
         return;
     }
 
     double utilization = (static_cast<double>(running) / numCPU) * 100.0;
     std::cout << std::fixed << std::setprecision(1);
+    std::cout << BRIGHT_CYAN << BOLD << "CPU utilization: " << BRIGHT_WHITE << std::min(utilization, 100.0) << "%\n";
+    std::cout << BRIGHT_CYAN << "Cores used: " << BRIGHT_WHITE << running << "\n";
+    std::cout << BRIGHT_CYAN << "Cores available: " << BRIGHT_WHITE << std::max(0, numCPU - running) << "\n";
+    std::cout << BRIGHT_CYAN << "Total processes: " << BRIGHT_WHITE << all.size() << "\n";
+    std::cout << BRIGHT_CYAN << "Running: " << BRIGHT_GREEN << running << BRIGHT_CYAN << " | Waiting: " << BRIGHT_YELLOW << waiting << BRIGHT_CYAN << " | Finished: " << BRIGHT_MAGENTA << finished << "\n\n" << RESET;
 
-    // Color the CPU utilization and core information
-    std::cout << "CPU utilization: " << MAGENTA << std::min(utilization, 100.0) << "%" << RESET << "\n";
-    std::cout << "Cores used: " << MAGENTA << running << RESET << "\n";
-    std::cout << "Cores available: " << MAGENTA << std::max(0, numCPU - running) << RESET << "\n";
-    std::cout << "Total processes: " << all.size() << "\n";
-    std::cout << "Running: " << running << " | Waiting: " << waiting << " | Finished: " << finished << "\n\n";
-
-    std::cout << "Running processes:\n";
+    std::cout << BRIGHT_GREEN << BOLD << "Running processes:\n" << RESET;
     for (const auto& p : all) {
         if (p->isRunning && !p->isFinished) {
-            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | Core " << p->coreAssigned
-                << " | " << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET
-                << " | Started: " << CYAN << p->startTime << RESET << "\n";
+            std::cout << BRIGHT_WHITE << "  " << p->name << " (PID:" << p->pid << ") | Core " << p->coreAssigned
+                << " | " << *p->completedInstructions << "/" << p->instructions.size()
+                << " | Started: " << p->startTime << "\n" << RESET;
         }
     }
 
-    std::cout << "\nWaiting processes:\n";
+    std::cout << BRIGHT_YELLOW << BOLD << "\nWaiting processes:\n" << RESET;
     for (const auto& p : all) {
         if (!p->isRunning && !p->isFinished) {
-            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | "
-                << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET << " completed\n";
+            std::cout << BRIGHT_WHITE << "  " << p->name << " (PID:" << p->pid << ") | "
+                << *p->completedInstructions << "/" << p->instructions.size() << " completed\n" << RESET;
         }
     }
 
-    std::cout << "\nFinished processes:\n";
+    std::cout << BRIGHT_MAGENTA << BOLD << "\nFinished processes:\n" << RESET;
     for (const auto& p : all) {
         if (p->isFinished) {
-            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | Finished: " << CYAN << p->endTime << RESET
-                << " | " << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET << " completed\n";
+            std::cout << BRIGHT_WHITE << "  " << p->name << " (PID:" << p->pid << ") | Finished: " << p->endTime
+                << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n" << RESET;
         }
     }
 }
-
 ////void CLIManager::printVMStat() {
 //    auto& config = Config::getInstance();
 //    auto& mem = MemoryManager::getInstance();
@@ -580,17 +594,16 @@ void CLIManager::printVMStat() {
     int usedMem = usedFrames * frameSize;
     int freeMem = totalMem - usedMem;
 
-    std::cout << "VMSTAT:\n";
-    std::cout << "  Total memory     : " << MAGENTA << totalMem << " KB" << RESET << "\n";
-    std::cout << "  Used memory      : " << MAGENTA << usedMem << " KB" << RESET << "\n";
-    std::cout << "  Free memory      : " << MAGENTA << freeMem << " KB" << RESET << "\n";
-    std::cout << "  Idle CPU ticks   : " << GREEN << idleCpuTicks.load() << RESET << "\n";
-    std::cout << "  Active CPU ticks : " << GREEN << activeCpuTicks.load() << RESET << "\n";
-    std::cout << "  Total CPU ticks  : " << GREEN << totalCpuTicks.load() << RESET << "\n";
-    std::cout << "  Num paged in     : " << GREEN << mem.getPageIns() << RESET << "\n";
-    std::cout << "  Num paged out    : " << GREEN << mem.getPageOuts() << RESET << "\n";
+    std::cout << BRIGHT_CYAN << BOLD << "VMSTAT:\n" << RESET;
+    std::cout << BRIGHT_YELLOW << "  Total memory     : " << BRIGHT_WHITE << totalMem << " KB\n";
+    std::cout << BRIGHT_YELLOW << "  Used memory      : " << BRIGHT_WHITE << usedMem << " KB\n";
+    std::cout << BRIGHT_YELLOW << "  Free memory      : " << BRIGHT_WHITE << freeMem << " KB\n";
+    std::cout << BRIGHT_YELLOW << "  Idle CPU ticks   : " << BRIGHT_WHITE << idleCpuTicks.load() << "\n";
+    std::cout << BRIGHT_YELLOW << "  Active CPU ticks : " << BRIGHT_WHITE << activeCpuTicks.load() << "\n";
+    std::cout << BRIGHT_YELLOW << "  Total CPU ticks  : " << BRIGHT_WHITE << totalCpuTicks.load() << "\n";
+    std::cout << BRIGHT_YELLOW << "  Num paged in     : " << BRIGHT_WHITE << mem.getPageIns() << "\n";
+    std::cout << BRIGHT_YELLOW << "  Num paged out    : " << BRIGHT_WHITE << mem.getPageOuts() << "\n" << RESET;
 }
-
 void CLIManager::printSystemProcessSMI() {
     auto& config = Config::getInstance();
     auto& mem = MemoryManager::getInstance();
@@ -618,63 +631,63 @@ void CLIManager::printSystemProcessSMI() {
     double cpuUtilization = totalCores > 0 ? (static_cast<double>(runningProcesses) / totalCores * 100.0) : 0.0;
 
     // Header
-    std::cout << std::string(80, '=') << "\n";
+    std::cout << BRIGHT_CYAN << BOLD << std::string(80, '=') << "\n";
     std::cout << "                           CSOPESY PROCESS-SMI\n";
-    std::cout << std::string(80, '=') << "\n";
-    std::cout << "Generated: " << CYAN << timestamp << RESET << "\n\n";
+    std::cout << std::string(80, '=') << "\n" << RESET;
+    std::cout << BRIGHT_WHITE << "Generated: " << timestamp << "\n\n" << RESET;
 
     // Driver and System Info
-    std::cout << "Driver Version: CSOPESY v1.0    Scheduler: " << config.scheduler;
+    std::cout << BRIGHT_GREEN << "Driver Version: CSOPESY v1.0    Scheduler: " << BRIGHT_YELLOW << config.scheduler;
     if (config.scheduler == "RR" || config.scheduler == "rr") {
         std::cout << " (Quantum: " << config.quantumCycles << ")";
     }
-    std::cout << "\n\n";
+    std::cout << "\n\n" << RESET;
 
     // CPU Information
-    std::cout << "CPU Information:\n";
-    std::cout << "+----------------------+----------+----------+----------+\n";
+    std::cout << BRIGHT_CYAN << BOLD << "CPU Information:\n" << RESET;
+    std::cout << BRIGHT_WHITE << "+----------------------+----------+----------+----------+\n";
     std::cout << "| CPU Cores            | Total    | Running  | Idle     |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Count                | " << std::setw(8) << MAGENTA << totalCores << RESET
-        << " | " << std::setw(8) << MAGENTA << runningProcesses << RESET
-        << " | " << std::setw(8) << MAGENTA << (totalCores - runningProcesses) << RESET << " |\n";
+    std::cout << "| Count                | " << std::setw(8) << totalCores
+        << " | " << std::setw(8) << runningProcesses
+        << " | " << std::setw(8) << (totalCores - runningProcesses) << " |\n";
     std::cout << "| Utilization          | " << std::setw(6) << std::fixed << std::setprecision(1)
-        << MAGENTA << cpuUtilization << "%" << RESET << " | " << std::setw(6) << MAGENTA << (100.0 - cpuUtilization) << "%" << RESET << " | N/A      |\n";
-    std::cout << "+----------------------+----------+----------+----------+\n\n";
+        << cpuUtilization << "% | " << std::setw(6) << (100.0 - cpuUtilization) << "% | N/A      |\n";
+    std::cout << "+----------------------+----------+----------+----------+\n\n" << RESET;
 
     // Memory Information
-    std::cout << "Memory Information:\n";
-    std::cout << "+----------------------+----------+----------+----------+\n";
+    std::cout << BRIGHT_CYAN << BOLD << "Memory Information:\n" << RESET;
+    std::cout << BRIGHT_WHITE << "+----------------------+----------+----------+----------+\n";
     std::cout << "| Memory (KB)          | Total    | Used     | Free     |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Physical Memory      | " << std::setw(8) << MAGENTA << totalMemory << RESET
-        << " | " << std::setw(8) << MAGENTA << usedMemory << RESET
-        << " | " << std::setw(8) << MAGENTA << freeMemory << RESET << " |\n";
-    std::cout << "| Memory Frames        | " << std::setw(8) << MAGENTA << totalFrames << RESET
-        << " | " << std::setw(8) << MAGENTA << usedFrames << RESET
-        << " | " << std::setw(8) << MAGENTA << freeFrames << RESET << " |\n";
+    std::cout << "| Physical Memory      | " << std::setw(8) << totalMemory
+        << " | " << std::setw(8) << usedMemory
+        << " | " << std::setw(8) << freeMemory << " |\n";
+    std::cout << "| Memory Frames        | " << std::setw(8) << totalFrames
+        << " | " << std::setw(8) << usedFrames
+        << " | " << std::setw(8) << freeFrames << " |\n";
     std::cout << "| Utilization          | " << std::setw(6) << std::fixed << std::setprecision(1)
-        << MAGENTA << memUtilization << "%" << RESET << " | N/A      | N/A      |\n";
+        << memUtilization << "% | N/A      | N/A      |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Frame Size: " << frameSize << " KB  |  Page-ins: " << std::setw(6) << GREEN << mem.getPageIns() << RESET
-        << "  |  Page-outs: " << std::setw(6) << GREEN << mem.getPageOuts() << RESET << " |\n";
-    std::cout << "+----------------------+----------+----------+----------+\n\n";
+    std::cout << "| Frame Size: " << frameSize << " KB  |  Page-ins: " << std::setw(6) << mem.getPageIns()
+        << "  |  Page-outs: " << std::setw(6) << mem.getPageOuts() << " |\n";
+    std::cout << "+----------------------+----------+----------+----------+\n\n" << RESET;
 
     // Process Overview
-    std::cout << "Process Overview:\n";
-    std::cout << "+----------+----------+----------+----------+\n";
+    std::cout << BRIGHT_CYAN << BOLD << "Process Overview:\n" << RESET;
+    std::cout << BRIGHT_WHITE << "+----------+----------+----------+----------+\n";
     std::cout << "| Total    | Running  | Waiting  | Finished |\n";
     std::cout << "+----------+----------+----------+----------+\n";
     std::cout << "| " << std::setw(8) << allProcesses.size()
-        << " | " << std::setw(8) << MAGENTA << runningProcesses << RESET
+        << " | " << std::setw(8) << runningProcesses
         << " | " << std::setw(8) << waitingProcesses
         << " | " << std::setw(8) << finishedProcesses << " |\n";
-    std::cout << "+----------+----------+----------+----------+\n\n";
+    std::cout << "+----------+----------+----------+----------+\n\n" << RESET;
 
     // Running Processes Detail
     if (runningProcesses > 0) {
-        std::cout << "Running Processes:\n";
-        std::cout << "+------+------------------+------+--------+----------+----------+----------+\n";
+        std::cout << BRIGHT_GREEN << BOLD << "Running Processes:\n" << RESET;
+        std::cout << BRIGHT_WHITE << "+------+------------------+------+--------+----------+----------+----------+\n";
         std::cout << "| Core | Process Name     | PID  | Memory | Progress | CPU Time | Status   |\n";
         std::cout << "+------+------------------+------+--------+----------+----------+----------+\n";
 
@@ -697,20 +710,20 @@ void CLIManager::printSystemProcessSMI() {
                 proc->name.substr(0, 13) + "..." : proc->name;
 
             std::cout << "| " << std::setw(4) << proc->coreAssigned
-                << " | " << std::setw(16) << std::left << YELLOW << displayName << RESET
+                << " | " << std::setw(16) << std::left << displayName
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(6) << MAGENTA << processMemoryUsage << RESET << " | "
-                << std::setw(6) << std::fixed << std::setprecision(1) << GREEN << progress << "%" << RESET << " | "
-                << std::setw(8) << GREEN << *proc->completedInstructions << RESET << " | "
-                << std::setw(8) << "RUNNING" << " |\n";
+                << " | " << std::setw(6) << processMemoryUsage << " | "
+                << std::setw(6) << std::fixed << std::setprecision(1) << progress << "% | "
+                << std::setw(8) << *proc->completedInstructions << " | "
+                << std::setw(8) << BRIGHT_GREEN << "RUNNING" << BRIGHT_WHITE << " |\n";
         }
-        std::cout << "+------+------------------+------+--------+----------+----------+----------+\n\n";
+        std::cout << "+------+------------------+------+--------+----------+----------+----------+\n\n" << RESET;
     }
 
     // Waiting Processes (if any)
     if (waitingProcesses > 0) {
-        std::cout << "Waiting Processes:\n";
-        std::cout << "+------------------+------+--------+----------+----------+\n";
+        std::cout << BRIGHT_YELLOW << BOLD << "Waiting Processes:\n" << RESET;
+        std::cout << BRIGHT_WHITE << "+------------------+------+--------+----------+----------+\n";
         std::cout << "| Process Name     | PID  | Memory | Progress | Status   |\n";
         std::cout << "+------------------+------+--------+----------+----------+\n";
 
@@ -737,20 +750,20 @@ void CLIManager::printSystemProcessSMI() {
                 status = "ERROR";
             }
 
-            std::cout << "| " << std::setw(16) << std::left << YELLOW << displayName << RESET
+            std::cout << "| " << std::setw(16) << std::left << displayName
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(6) << MAGENTA << processMemoryUsage << RESET << " | "
-                << std::setw(6) << std::fixed << std::setprecision(1) << GREEN << progress << "%" << RESET << " | "
-                << std::setw(8) << status << " |\n";
+                << " | " << std::setw(6) << processMemoryUsage << " | "
+                << std::setw(6) << std::fixed << std::setprecision(1) << progress << "% | "
+                << std::setw(8) << BRIGHT_YELLOW << status << BRIGHT_WHITE << " |\n";
         }
-        std::cout << "+------------------+------+--------+----------+----------+\n\n";
+        std::cout << "+------------------+------+--------+----------+----------+\n\n" << RESET;
     }
 
     // Recent Finished Processes (last 5)
     auto finishedProcs = ProcessManager::getFinishedProcesses();
     if (!finishedProcs.empty()) {
-        std::cout << "Recently Finished Processes (last 5):\n";
-        std::cout << "+------------------+------+----------+----------+----------+\n";
+        std::cout << BRIGHT_MAGENTA << BOLD << "Recently Finished Processes (last 5):\n" << RESET;
+        std::cout << BRIGHT_WHITE << "+------------------+------+----------+----------+----------+\n";
         std::cout << "| Process Name     | PID  | Memory   | Completed| Status   |\n";
         std::cout << "+------------------+------+----------+----------+----------+\n";
 
@@ -771,36 +784,36 @@ void CLIManager::printSystemProcessSMI() {
                 status = "ERROR";
             }
 
-            std::cout << "| " << std::setw(16) << std::left << YELLOW << displayName << RESET
+            std::cout << "| " << std::setw(16) << std::left << displayName
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(8) << MAGENTA << proc->virtualMemoryLimit << RESET << " | "
-                << std::setw(8) << GREEN << *proc->completedInstructions << RESET << " | "
-                << std::setw(8) << status << " |\n";
+                << " | " << std::setw(8) << proc->virtualMemoryLimit << " | "
+                << std::setw(8) << *proc->completedInstructions << " | "
+                << std::setw(8) << BRIGHT_MAGENTA << status << BRIGHT_WHITE << " |\n";
         }
-        std::cout << "+------------------+------+----------+----------+----------+\n\n";
+        std::cout << "+------------------+------+----------+----------+----------+\n\n" << RESET;
     }
 
     // Performance Statistics
-    std::cout << "Performance Statistics:\n";
-    std::cout << "+------------------------+----------+\n";
+    std::cout << BRIGHT_CYAN << BOLD << "Performance Statistics:\n" << RESET;
+    std::cout << BRIGHT_WHITE << "+------------------------+----------+\n";
     std::cout << "| Metric                 | Value    |\n";
     std::cout << "+------------------------+----------+\n";
-    std::cout << "| Total CPU Ticks        | " << std::setw(8) << GREEN << totalCpuTicks.load() << RESET << " |\n";
-    std::cout << "| Active CPU Ticks       | " << std::setw(8) << GREEN << activeCpuTicks.load() << RESET << " |\n";
-    std::cout << "| Idle CPU Ticks         | " << std::setw(8) << GREEN << idleCpuTicks.load() << RESET << " |\n";
+    std::cout << "| Total CPU Ticks        | " << std::setw(8) << totalCpuTicks.load() << " |\n";
+    std::cout << "| Active CPU Ticks       | " << std::setw(8) << activeCpuTicks.load() << " |\n";
+    std::cout << "| Idle CPU Ticks         | " << std::setw(8) << idleCpuTicks.load() << " |\n";
 
     if (totalCpuTicks.load() > 0) {
         double overallCpuUtil = (static_cast<double>(activeCpuTicks.load()) / totalCpuTicks.load()) * 100.0;
         std::cout << "| Overall CPU Utilization| " << std::setw(6) << std::fixed << std::setprecision(1)
-            << MAGENTA << overallCpuUtil << "%" << RESET << " |\n";
+            << overallCpuUtil << "% |\n";
     }
 
     std::cout << "| Instruction Delay      | " << std::setw(6) << config.delayPerInstruction << "ms |\n";
-    std::cout << "+------------------------+----------+\n\n";
+    std::cout << "+------------------------+----------+\n\n" << RESET;
 
     // Footer
-    std::cout << std::string(80, '=') << "\n";
-    std::cout << "Use 'process-smi [process_name]' for detailed process information\n";
+    std::cout << BRIGHT_CYAN << BOLD << std::string(80, '=') << "\n";
+    std::cout << BRIGHT_WHITE << "Use 'process-smi [process_name]' for detailed process information\n";
     std::cout << "Use 'screen -ls' to see detailed process list with timestamps\n";
-    std::cout << std::string(80, '=') << "\n";
+    std::cout << BRIGHT_CYAN << BOLD << std::string(80, '=') << "\n" << RESET;
 }

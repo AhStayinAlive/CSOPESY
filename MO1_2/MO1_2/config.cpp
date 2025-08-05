@@ -27,19 +27,5 @@ bool Config::loadFromFile(const std::string& filename) {
         else if (key == "min-mem-per-proc") file >> minMemPerProc;
         else if (key == "max-mem-per-proc") file >> maxMemPerProc;
     }
-
-    std::cout << "Configuration loaded successfully:\n";
-    std::cout << "  numCPU: " << numCPU << "\n";
-    std::cout << "  scheduler: " << scheduler << "\n";
-    std::cout << "  quantumCycles: " << quantumCycles << "\n";
-    std::cout << "  batchProcessFreq: " << batchProcessFreq << "\n";
-    std::cout << "  minInstructions: " << minInstructions << "\n";
-    std::cout << "  maxInstructions: " << maxInstructions << "\n";
-    std::cout << "  delayPerInstruction: " << delayPerInstruction << "\n";
-    std::cout << "  maxOverallMem: " << maxOverallMem << "\n";
-    std::cout << "  memPerFrame: " << memPerFrame << "\n";
-    std::cout << "  minMemPerProc: " << minMemPerProc << "\n";
-    std::cout << "  maxMemPerProc: " << maxMemPerProc << "\n";
-
     return true;
 }
