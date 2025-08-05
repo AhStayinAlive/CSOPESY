@@ -35,6 +35,18 @@ std::shared_ptr<Process> ProcessManager::createProcess(const std::string& name, 
     proc->completedInstructions = std::make_shared<std::atomic<int>>(0);
     proc->virtualMemoryLimit = memoryLimit;
 
+    {
+        int spacing = Config::getInstance().memPerFrame / 4;  // 16B if frame = 64B
+        int preVarCount = proc->virtualMemoryLimit / spacing;
+        for (int i = 0; i < preVarCount; ++i) {
+            std::string varName = "prealloc" + std::to_string(i);
+            int addr = proc->nextFreeAddress;
+            proc->variableTable[varName] = addr;
+            proc->nextFreeAddress += spacing;
+            MemoryManager::getInstance().write(proc, addr, static_cast<uint8_t>(i + 1));
+        }
+    }
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> instructionCount(minInstructions, maxInstructions);
@@ -353,4 +365,5 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
 
     return proc;
 }
+
 
