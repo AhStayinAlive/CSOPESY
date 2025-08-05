@@ -1,4 +1,5 @@
 #include "ProcessManager.h"
+#include "MemoryManager.h"
 #include "DeclareInstruction.h"
 #include "AddInstruction.h"
 #include "SubtractInstruction.h"
@@ -365,5 +366,6 @@ std::shared_ptr<Process> ProcessManager::createProcessWithInstructions(const std
 
     return proc;
 }
+
 
 
