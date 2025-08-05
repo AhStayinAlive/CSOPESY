@@ -6,20 +6,19 @@
 #include <sstream>
 #include <cstdint>
 
-
 DeclareInstruction::DeclareInstruction(
-    const std::string& varName, 
-    int val, 
+    const std::string& varName,
+    int val,
     const std::string& logPrefix)
     : variableName(varName), value(static_cast<uint16_t>(std::clamp(val, 0, 65535))), logPrefix(logPrefix) {
 }
 
 void DeclareInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
+    // Store in legacy memory for compatibility
     proc->memory[variableName] = value;
 
-    // ✅ Use safe hash calculation for consistency
-    int maxSafeAddress = std::max(1, proc->virtualMemoryLimit - static_cast<int>(sizeof(uint16_t)));
-    int address = std::hash<std::string>{}(variableName) % maxSafeAddress;
+    // FIXED: Allocate proper address using MemoryManager and store in variableTable
+    int address = MemoryManager::getInstance().allocateVariable(proc, variableName);
 
     // Write 16-bit value as two bytes
     MemoryManager::getInstance().write(proc, address, static_cast<uint8_t>(value & 0xFF));

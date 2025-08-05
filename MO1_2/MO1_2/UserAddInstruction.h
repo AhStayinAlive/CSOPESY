@@ -16,4 +16,4 @@ public:
     void execute(std::shared_ptr<Process> proc, int coreId) override;
 };
 
-#endif#pragma once
+#endif

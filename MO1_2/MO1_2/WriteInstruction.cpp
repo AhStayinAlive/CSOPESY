@@ -12,7 +12,6 @@ WriteInstruction::WriteInstruction(int addr, const std::string& varName, const s
 void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
     // Validate address bounds
     if (address < 0) {
-        // only check for negative addresses, let MemoryManager handle the rest
         std::ostringstream oss;
         oss << "Memory access violation: WRITE at negative address";
         throw std::runtime_error(oss.str());
@@ -20,12 +19,8 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
 
     uint16_t value = 0;
 
-    // Check both memory locations and use the most recent value
-    if (proc->memory.count(variableName)) {
-        value = proc->memory[variableName];
-    }
+    // FIXED: Look in both variableTable and legacy memory, prioritizing the most recent
     if (proc->variableTable.count(variableName)) {
-        // Also check variable table for potentially newer value
         int varAddr = proc->variableTable[variableName];
         uint8_t lowByte = MemoryManager::getInstance().read(proc, varAddr);
         uint8_t highByte = 0;
@@ -33,6 +28,9 @@ void WriteInstruction::execute(std::shared_ptr<Process> proc, int coreId) {
             highByte = MemoryManager::getInstance().read(proc, varAddr + 1);
         }
         value = lowByte | (static_cast<uint16_t>(highByte) << 8);
+    }
+    else if (proc->memory.count(variableName)) {
+        value = proc->memory[variableName];
     }
     else {
         throw std::runtime_error("WRITE: Variable '" + variableName + "' not found");

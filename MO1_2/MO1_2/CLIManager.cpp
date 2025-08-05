@@ -15,6 +15,12 @@
 #include <algorithm>
 #include <vector>
 
+const std::string CYAN = "\033[36m";
+const std::string YELLOW = "\033[33m";
+const std::string GREEN = "\033[32m";
+const std::string MAGENTA = "\033[35m";
+const std::string RESET = "\033[0m";
+
 CLIManager::CLIManager() : schedulerThread(), generating(false) {}
 extern std::atomic<int> totalCpuTicks;
 extern std::atomic<int> activeCpuTicks;
@@ -461,34 +467,36 @@ void CLIManager::showProcessList() const {
 
     double utilization = (static_cast<double>(running) / numCPU) * 100.0;
     std::cout << std::fixed << std::setprecision(1);
-    std::cout << "CPU utilization: " << std::min(utilization, 100.0) << "%\n";
-    std::cout << "Cores used: " << running << "\n";
-    std::cout << "Cores available: " << std::max(0, numCPU - running) << "\n";
+
+    // Color the CPU utilization and core information
+    std::cout << "CPU utilization: " << MAGENTA << std::min(utilization, 100.0) << "%" << RESET << "\n";
+    std::cout << "Cores used: " << MAGENTA << running << RESET << "\n";
+    std::cout << "Cores available: " << MAGENTA << std::max(0, numCPU - running) << RESET << "\n";
     std::cout << "Total processes: " << all.size() << "\n";
     std::cout << "Running: " << running << " | Waiting: " << waiting << " | Finished: " << finished << "\n\n";
 
     std::cout << "Running processes:\n";
     for (const auto& p : all) {
         if (p->isRunning && !p->isFinished) {
-            std::cout << "  " << p->name << " (PID:" << p->pid << ") | Core " << p->coreAssigned
-                << " | " << *p->completedInstructions << "/" << p->instructions.size()
-                << " | Started: " << p->startTime << "\n";
+            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | Core " << p->coreAssigned
+                << " | " << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET
+                << " | Started: " << CYAN << p->startTime << RESET << "\n";
         }
     }
 
     std::cout << "\nWaiting processes:\n";
     for (const auto& p : all) {
         if (!p->isRunning && !p->isFinished) {
-            std::cout << "  " << p->name << " (PID:" << p->pid << ") | "
-                << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
+            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | "
+                << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET << " completed\n";
         }
     }
 
     std::cout << "\nFinished processes:\n";
     for (const auto& p : all) {
         if (p->isFinished) {
-            std::cout << "  " << p->name << " (PID:" << p->pid << ") | Finished: " << p->endTime
-                << " | " << *p->completedInstructions << "/" << p->instructions.size() << " completed\n";
+            std::cout << "  " << YELLOW << p->name << RESET << " (PID:" << p->pid << ") | Finished: " << CYAN << p->endTime << RESET
+                << " | " << GREEN << *p->completedInstructions << "/" << p->instructions.size() << RESET << " completed\n";
         }
     }
 }
@@ -573,14 +581,14 @@ void CLIManager::printVMStat() {
     int freeMem = totalMem - usedMem;
 
     std::cout << "VMSTAT:\n";
-    std::cout << "  Total memory     : " << totalMem << " KB\n";
-    std::cout << "  Used memory      : " << usedMem << " KB\n";
-    std::cout << "  Free memory      : " << freeMem << " KB\n";
-    std::cout << "  Idle CPU ticks   : " << idleCpuTicks.load() << "\n";
-    std::cout << "  Active CPU ticks : " << activeCpuTicks.load() << "\n";
-    std::cout << "  Total CPU ticks  : " << totalCpuTicks.load() << "\n";
-    std::cout << "  Num paged in     : " << mem.getPageIns() << "\n";
-    std::cout << "  Num paged out    : " << mem.getPageOuts() << "\n";
+    std::cout << "  Total memory     : " << MAGENTA << totalMem << " KB" << RESET << "\n";
+    std::cout << "  Used memory      : " << MAGENTA << usedMem << " KB" << RESET << "\n";
+    std::cout << "  Free memory      : " << MAGENTA << freeMem << " KB" << RESET << "\n";
+    std::cout << "  Idle CPU ticks   : " << GREEN << idleCpuTicks.load() << RESET << "\n";
+    std::cout << "  Active CPU ticks : " << GREEN << activeCpuTicks.load() << RESET << "\n";
+    std::cout << "  Total CPU ticks  : " << GREEN << totalCpuTicks.load() << RESET << "\n";
+    std::cout << "  Num paged in     : " << GREEN << mem.getPageIns() << RESET << "\n";
+    std::cout << "  Num paged out    : " << GREEN << mem.getPageOuts() << RESET << "\n";
 }
 
 void CLIManager::printSystemProcessSMI() {
@@ -613,7 +621,7 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << std::string(80, '=') << "\n";
     std::cout << "                           CSOPESY PROCESS-SMI\n";
     std::cout << std::string(80, '=') << "\n";
-    std::cout << "Generated: " << timestamp << "\n\n";
+    std::cout << "Generated: " << CYAN << timestamp << RESET << "\n\n";
 
     // Driver and System Info
     std::cout << "Driver Version: CSOPESY v1.0    Scheduler: " << config.scheduler;
@@ -627,11 +635,11 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << "+----------------------+----------+----------+----------+\n";
     std::cout << "| CPU Cores            | Total    | Running  | Idle     |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Count                | " << std::setw(8) << totalCores
-        << " | " << std::setw(8) << runningProcesses
-        << " | " << std::setw(8) << (totalCores - runningProcesses) << " |\n";
+    std::cout << "| Count                | " << std::setw(8) << MAGENTA << totalCores << RESET
+        << " | " << std::setw(8) << MAGENTA << runningProcesses << RESET
+        << " | " << std::setw(8) << MAGENTA << (totalCores - runningProcesses) << RESET << " |\n";
     std::cout << "| Utilization          | " << std::setw(6) << std::fixed << std::setprecision(1)
-        << cpuUtilization << "% | " << std::setw(6) << (100.0 - cpuUtilization) << "% | N/A      |\n";
+        << MAGENTA << cpuUtilization << "%" << RESET << " | " << std::setw(6) << MAGENTA << (100.0 - cpuUtilization) << "%" << RESET << " | N/A      |\n";
     std::cout << "+----------------------+----------+----------+----------+\n\n";
 
     // Memory Information
@@ -639,17 +647,17 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << "+----------------------+----------+----------+----------+\n";
     std::cout << "| Memory (KB)          | Total    | Used     | Free     |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Physical Memory      | " << std::setw(8) << totalMemory
-        << " | " << std::setw(8) << usedMemory
-        << " | " << std::setw(8) << freeMemory << " |\n";
-    std::cout << "| Memory Frames        | " << std::setw(8) << totalFrames
-        << " | " << std::setw(8) << usedFrames
-        << " | " << std::setw(8) << freeFrames << " |\n";
+    std::cout << "| Physical Memory      | " << std::setw(8) << MAGENTA << totalMemory << RESET
+        << " | " << std::setw(8) << MAGENTA << usedMemory << RESET
+        << " | " << std::setw(8) << MAGENTA << freeMemory << RESET << " |\n";
+    std::cout << "| Memory Frames        | " << std::setw(8) << MAGENTA << totalFrames << RESET
+        << " | " << std::setw(8) << MAGENTA << usedFrames << RESET
+        << " | " << std::setw(8) << MAGENTA << freeFrames << RESET << " |\n";
     std::cout << "| Utilization          | " << std::setw(6) << std::fixed << std::setprecision(1)
-        << memUtilization << "% | N/A      | N/A      |\n";
+        << MAGENTA << memUtilization << "%" << RESET << " | N/A      | N/A      |\n";
     std::cout << "+----------------------+----------+----------+----------+\n";
-    std::cout << "| Frame Size: " << frameSize << " KB  |  Page-ins: " << std::setw(6) << mem.getPageIns()
-        << "  |  Page-outs: " << std::setw(6) << mem.getPageOuts() << " |\n";
+    std::cout << "| Frame Size: " << frameSize << " KB  |  Page-ins: " << std::setw(6) << GREEN << mem.getPageIns() << RESET
+        << "  |  Page-outs: " << std::setw(6) << GREEN << mem.getPageOuts() << RESET << " |\n";
     std::cout << "+----------------------+----------+----------+----------+\n\n";
 
     // Process Overview
@@ -658,7 +666,7 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << "| Total    | Running  | Waiting  | Finished |\n";
     std::cout << "+----------+----------+----------+----------+\n";
     std::cout << "| " << std::setw(8) << allProcesses.size()
-        << " | " << std::setw(8) << runningProcesses
+        << " | " << std::setw(8) << MAGENTA << runningProcesses << RESET
         << " | " << std::setw(8) << waitingProcesses
         << " | " << std::setw(8) << finishedProcesses << " |\n";
     std::cout << "+----------+----------+----------+----------+\n\n";
@@ -689,11 +697,11 @@ void CLIManager::printSystemProcessSMI() {
                 proc->name.substr(0, 13) + "..." : proc->name;
 
             std::cout << "| " << std::setw(4) << proc->coreAssigned
-                << " | " << std::setw(16) << std::left << displayName
+                << " | " << std::setw(16) << std::left << YELLOW << displayName << RESET
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(6) << processMemoryUsage << " | "
-                << std::setw(6) << std::fixed << std::setprecision(1) << progress << "% | "
-                << std::setw(8) << *proc->completedInstructions << " | "
+                << " | " << std::setw(6) << MAGENTA << processMemoryUsage << RESET << " | "
+                << std::setw(6) << std::fixed << std::setprecision(1) << GREEN << progress << "%" << RESET << " | "
+                << std::setw(8) << GREEN << *proc->completedInstructions << RESET << " | "
                 << std::setw(8) << "RUNNING" << " |\n";
         }
         std::cout << "+------+------------------+------+--------+----------+----------+----------+\n\n";
@@ -729,10 +737,10 @@ void CLIManager::printSystemProcessSMI() {
                 status = "ERROR";
             }
 
-            std::cout << "| " << std::setw(16) << std::left << displayName
+            std::cout << "| " << std::setw(16) << std::left << YELLOW << displayName << RESET
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(6) << processMemoryUsage << " | "
-                << std::setw(6) << std::fixed << std::setprecision(1) << progress << "% | "
+                << " | " << std::setw(6) << MAGENTA << processMemoryUsage << RESET << " | "
+                << std::setw(6) << std::fixed << std::setprecision(1) << GREEN << progress << "%" << RESET << " | "
                 << std::setw(8) << status << " |\n";
         }
         std::cout << "+------------------+------+--------+----------+----------+\n\n";
@@ -763,10 +771,10 @@ void CLIManager::printSystemProcessSMI() {
                 status = "ERROR";
             }
 
-            std::cout << "| " << std::setw(16) << std::left << displayName
+            std::cout << "| " << std::setw(16) << std::left << YELLOW << displayName << RESET
                 << " | " << std::setw(4) << std::right << proc->pid
-                << " | " << std::setw(8) << proc->virtualMemoryLimit << " | "
-                << std::setw(8) << *proc->completedInstructions << " | "
+                << " | " << std::setw(8) << MAGENTA << proc->virtualMemoryLimit << RESET << " | "
+                << std::setw(8) << GREEN << *proc->completedInstructions << RESET << " | "
                 << std::setw(8) << status << " |\n";
         }
         std::cout << "+------------------+------+----------+----------+----------+\n\n";
@@ -777,14 +785,14 @@ void CLIManager::printSystemProcessSMI() {
     std::cout << "+------------------------+----------+\n";
     std::cout << "| Metric                 | Value    |\n";
     std::cout << "+------------------------+----------+\n";
-    std::cout << "| Total CPU Ticks        | " << std::setw(8) << totalCpuTicks.load() << " |\n";
-    std::cout << "| Active CPU Ticks       | " << std::setw(8) << activeCpuTicks.load() << " |\n";
-    std::cout << "| Idle CPU Ticks         | " << std::setw(8) << idleCpuTicks.load() << " |\n";
+    std::cout << "| Total CPU Ticks        | " << std::setw(8) << GREEN << totalCpuTicks.load() << RESET << " |\n";
+    std::cout << "| Active CPU Ticks       | " << std::setw(8) << GREEN << activeCpuTicks.load() << RESET << " |\n";
+    std::cout << "| Idle CPU Ticks         | " << std::setw(8) << GREEN << idleCpuTicks.load() << RESET << " |\n";
 
     if (totalCpuTicks.load() > 0) {
         double overallCpuUtil = (static_cast<double>(activeCpuTicks.load()) / totalCpuTicks.load()) * 100.0;
         std::cout << "| Overall CPU Utilization| " << std::setw(6) << std::fixed << std::setprecision(1)
-            << overallCpuUtil << "% |\n";
+            << MAGENTA << overallCpuUtil << "%" << RESET << " |\n";
     }
 
     std::cout << "| Instruction Delay      | " << std::setw(6) << config.delayPerInstruction << "ms |\n";
